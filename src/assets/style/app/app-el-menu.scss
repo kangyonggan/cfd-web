@@ -1,0 +1,35 @@
+.el-menu {
+  background: none;
+  border-right: none;
+}
+
+.el-menu-item, .el-sub-menu__title {
+  color: var(--app-text-color);
+}
+
+.el-menu-item:hover, .el-sub-menu__title:hover {
+ background-color: var(--app-bg-color-light);
+}
+
+.el-menu--horizontal {
+  border-bottom: none;
+}
+
+.el-menu--horizontal>.el-menu-item, .el-menu--horizontal>.el-sub-menu .el-sub-menu__title {
+  color: var(--app-text-color-light);
+}
+
+.el-menu--horizontal .el-menu-item:not(.is-disabled):focus, .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
+  background: none;
+  color: var(--el-color-primary);
+}
+
+.el-menu--horizontal>.el-sub-menu .el-sub-menu__title:hover {
+  background: none;
+  color: var(--el-color-primary);
+}
+
+.el-popper.is-light, .el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-sub-menu__title {
+  background: var(--app-bg-color);
+  color: var(--app-text-color-light);
+}

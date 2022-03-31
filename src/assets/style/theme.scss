@@ -1,0 +1,46 @@
+//黑夜
+[theme="dark"] {
+  --app-bg-color: #171a21;
+  --app-bg-color-light: rgba(30, 36, 50, .9);
+  --app-bg-color-active: rgba(25, 30, 42, .9);
+  --app-bg-color-select: rgb(30, 36, 50);
+  --app-text-color: #a6afc6;
+  --app-text-color-black: #000;
+  --app-text-color-dark: #828ea1;
+  --app-text-color-light: #CCC;
+  --app-text-color-white: #FFF;
+  --app-link-color: #357CE1;
+  --app-border-color: #293448;
+  --app-border-color-light: #dcdfe6;
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    background: var(--app-bg-color-light); /* 整个滚条背景 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background: var(--app-bg-color); /* 滚条内嵌颜色 */
+  }
+
+  ::-webkit-scrollbar-button {
+    background-color: var(--app-bg-color); /* 两边端按钮颜色 */
+  }
+}
+
+//白天
+[theme="light"] {
+  --app-bg-color: #FFF;
+  --app-bg-color-light: #FcFcFc;
+  --app-bg-color-active: rgba(245, 245, 245, .9);
+  --app-bg-color-select: #F5F5F5;
+  --app-text-color: #555;
+  --app-text-color-black: #FFF;
+  --app-text-color-dark: #828ea1;
+  --app-text-color-light: #333;
+  --app-text-color-white: #000;
+  --app-link-color: #357CE1;
+  --app-border-color: #E5E5E5;
+  --app-border-color-light: #A5A5A5;
+}

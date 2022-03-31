@@ -1,0 +1,40 @@
+.el-picker-panel, .el-picker-panel [slot=sidebar], .el-picker-panel__sidebar {
+  background: var(--app-bg-color);
+}
+
+.el-popper.is-light .el-popper__arrow::before {
+  background: var(--el-color-primary);
+}
+
+.el-picker-panel__icon-btn, .el-picker-panel__shortcut, .el-date-range-picker__header, .el-date-table th {
+  color: var(--app-text-color);
+}
+
+.el-date-table td.today .el-date-table-cell__text {
+ color: var(--app-text-color-white);
+}
+
+.el-date-table td.next-month, .el-date-table td.prev-month {
+  color: var(--app-text-color-dark);
+}
+
+.el-date-table td.available {
+  color: var(--app-text-color);
+}
+
+.el-date-table td.in-range .el-date-table-cell {
+  background: var(--app-bg-color-select);
+}
+
+.el-date-table td.in-range .el-date-table-cell:hover {
+  background: var(--app-bg-color-select);
+  color: var(--app-text-color-light);
+}
+
+.el-date-editor .el-range-input {
+  color: var(--app-text-color);
+}
+
+.el-picker__popper.el-popper[role=tooltip] {
+  background: none;
+}

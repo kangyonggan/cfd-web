@@ -1,0 +1,18 @@
+.el-descriptions {
+  .el-descriptions__header {
+    color: var(--app-text-color-light);
+  }
+
+  .el-descriptions__body {
+    background: none;
+    color: var(--app-text-color);
+
+    .el-descriptions__label {
+      background: none;
+    }
+    .el-descriptions__content {
+      min-width: 90px;
+      background: var(--app-bg-color);
+    }
+  }
+}

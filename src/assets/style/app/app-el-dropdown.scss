@@ -1,0 +1,21 @@
+.el-dropdown {
+  color: var(--app-text-color);
+  cursor: pointer;
+}
+
+.el-dropdown-menu {
+  background: var(--app-bg-color);
+
+  .el-dropdown-menu__item {
+    color: var(--app-text-color)
+  }
+
+  .el-dropdown-menu__item--divided:before {
+    background-color: var(--app-text-color-dark)
+  }
+
+  .el-dropdown-menu__item:not(.is-disabled):hover {
+    background: var(--app-bg-color);
+    color: var(--el-color-primary);
+  }
+}

@@ -1,0 +1,25 @@
+.el-input {
+  --el-input-text-color: var(--app-text-color-light);
+  --el-input-bg-color: none;
+}
+
+.el-input-group__append, .el-input-group__prepend {
+  background: none;
+  color: var(--app-text-color);
+}
+
+.el-input__inner {
+  background: none;
+}
+
+.el-input__inner::placeholder {
+  color: var(--app-text-color-dark);
+}
+
+input {
+  background: none;
+}
+
+.el-input .el-input__count .el-input__count-inner {
+  background: none;
+}

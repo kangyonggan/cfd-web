@@ -1,0 +1,40 @@
+.el-table {
+  background: var(--app-bg-color);
+  color: var(--app-text-color);
+
+  tr {
+    background: var(--app-bg-color);
+
+    th {
+      color: var(--app-text-color-light);
+    }
+
+    th.el-table__cell {
+      background: var(--app-bg-color);
+    }
+
+    th.el-table__cell.is-leaf {
+      border-bottom-color: var(--app-border-color);
+    }
+  }
+}
+
+.el-table::before {
+  background-color: var(--app-border-color);
+}
+
+.el-table .hover-row td {
+  background: var(--app-bg-color-light) !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell {
+  background: var(--app-bg-color-light);
+}
+
+.el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf {
+  border-bottom-color: var(--app-border-color);
+}
+
+.el-table__fixed-right::before, .el-table__fixed::before {
+  background-color: var(--app-border-color)
+}

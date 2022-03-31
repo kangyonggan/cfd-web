@@ -1,0 +1,7 @@
+.el-message-box {
+  background: var(--app-bg-color);
+
+  .el-message-box__title, .el-message-box__message {
+    color: var(--app-text-color)
+  }
+}

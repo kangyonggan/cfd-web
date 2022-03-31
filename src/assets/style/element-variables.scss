@@ -1,0 +1,32 @@
+@charset "UTF-8";
+:root {
+  --el-color-white: #ffffff;
+  --el-color-black: #000000;
+  --el-color-primary: #fca235;
+  --el-color-success: #13b887;
+  --el-color-danger: #eb4d5c;
+}
+
+@import "./app/app-el-card";
+@import "./app/app-el-input";
+@import "./app/app-el-input-number";
+@import "./app/app-el-loading";
+@import "./app/app-el-dropdown";
+@import "./app/app-el-messagebox";
+@import "./app/app-el-button";
+@import "./app/app-el-form";
+@import "./app/app-el-table";
+@import "./app/app-el-dialog";
+@import "./app/app-el-tabs";
+@import "./app/app-el-timeline";
+@import "./app/app-el-pagination";
+@import "./app/app-el-menu";
+@import "./app/app-el-backtop";
+@import "./app/app-el-radio";
+@import "./app/app-el-select";
+@import "./app/app-el-datepicker";
+@import "./app/app-el-breadcrumb";
+@import "./app/app-el-collapse";
+@import "./app/app-el-slider";
+@import "./app/app-el-descriptions";
+@import "./app/app-el-upload";

@@ -1,0 +1,11 @@
+.el-select__popper.el-popper[role=tooltip] {
+  background: var(--app-bg-color-light);
+}
+
+.el-select-dropdown__item {
+  color: var(--app-text-color);
+}
+
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover {
+  background: var(--app-bg-color-active);
+}

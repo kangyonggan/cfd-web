@@ -1,0 +1,21 @@
+.el-dialog {
+  background: var(--app-bg-color);
+
+  .el-dialog__header {
+    border-bottom: 1px solid var(--app-border-color);
+    background: var(--app-bg-color);
+  }
+
+  .el-dialog__body {
+    color: var(--app-text-color);
+    background: var(--app-bg-color);
+  }
+
+  .el-dialog__footer {
+    background: var(--app-bg-color);
+  }
+
+  .el-dialog__title {
+    color: var(--app-text-color-light);
+  }
+}
