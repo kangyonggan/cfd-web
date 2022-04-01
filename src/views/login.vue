@@ -90,6 +90,9 @@
         >
           登 录
         </el-button>
+        <div style="color: var(--el-color-success);font-size: 12px;text-align: center">
+          使用验证码登录可快速注册
+        </div>
       </el-form>
     </el-card>
   </div>
@@ -234,7 +237,6 @@
     }
 
     .el-button {
-      margin-top: 5px;
       width: 100%;
       font-size: 16px;
       border-radius: 20px;
