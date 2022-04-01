@@ -1,0 +1,11 @@
+.el-select .el-select__tags .el-tag--info {
+  background: var(--app-bg-color-select);
+}
+
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
+  background: none;
+}
+
+.el-select-dropdown__item.is-disabled:hover {
+  background-color: var(--app-bg-color-select);
+}

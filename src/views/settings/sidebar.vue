@@ -1,0 +1,76 @@
+<template>
+  <ul>
+    <li
+      v-for="item in items"
+      :key="item.code"
+    >
+      <router-link
+        :to="'/settings/' + item.code"
+        :class="{active: code === item.code}"
+      >
+        {{ item.name }}
+      </router-link>
+    </li>
+  </ul>
+</template>
+
+<script>
+  export default {
+    props: {
+      code: {
+        required: true,
+        type: String
+      }
+    },
+    data() {
+      return {
+        items: [{
+          code: 'profile',
+          name: '个人信息'
+        }, {
+          code: 'account',
+          name: '账户管理'
+        }, {
+          code: 'safety',
+          name: '账户安全'
+        }, {
+          code: 'notifications',
+          name: '消息通知'
+        }, {
+          code: 'token',
+          name: 'Token'
+        }]
+      }
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+  ul {
+    float: left;
+    width: 300px;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0;
+    border: 1px solid var(--app-border-color);
+    border-bottom: 0;
+
+    li {
+      a {
+        display: inline-block;
+        width: calc(100% - 30px);
+        padding-left: 30px;
+        height: 48px;
+        line-height: 48px;
+        text-decoration: none;
+        color: var(--app-text-color-dark);
+        border-bottom: 1px solid var(--app-border-color);
+        border-left: 2px solid transparent;
+      }
+
+      a.active {
+        border-left: 2px solid var(--el-color-primary);
+      }
+    }
+  }
+</style>

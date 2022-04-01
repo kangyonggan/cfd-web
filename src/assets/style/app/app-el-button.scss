@@ -21,6 +21,7 @@
 
 .el-button:active, .el-button:focus {
   color: var(--app-text-color-white);
+  background: var(--el-color-primary);
 }
 
 .el-button--primary:hover {
