@@ -22,13 +22,59 @@
       />
     </el-menu>
 
-    <div
-      class="logout"
+    <el-dropdown
       v-if="$store.getters.getUserInfo.token"
-      @click="logout"
+      trigger="click"
+      class="profile"
+      @command="handleCommand"
     >
-      注销
-    </div>
+      <span class="avatar">
+        <img
+          alt="avatar"
+          :src="$store.getters.getUserInfo.avatar ? $store.getters.getUserInfo.avatar : defaultAvatar"
+        >
+        <el-icon>
+          <arrow-down />
+        </el-icon>
+      </span>
+
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item
+            command="/wallet"
+          >
+            <el-icon>
+              <Coin />
+            </el-icon>
+            我的钱包
+          </el-dropdown-item>
+          <el-dropdown-item
+            command="/settings"
+          >
+            <el-icon>
+              <Setting />
+            </el-icon>
+            账户设置
+          </el-dropdown-item>
+          <el-dropdown-item
+            command="/login"
+            divided
+          >
+            <el-icon>
+              <Switch />
+            </el-icon>
+            切换账号
+          </el-dropdown-item>
+
+          <el-dropdown-item command="logout">
+            <el-icon>
+              <switch-button />
+            </el-icon>
+            退出登录
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
 
     <router-link
       v-else
@@ -41,15 +87,18 @@
 </template>
 
 <script>
+  import {ArrowDown, Switch, SwitchButton, Setting, Coin} from '@element-plus/icons'
   import NavbarMenu from './navbar-menu'
   import Menus from './menus'
+  import DefaultAvatar from '../../assets/imgs/default.png'
 
   export default {
-    components: {NavbarMenu},
+    components: {NavbarMenu, ArrowDown, Switch, SwitchButton, Setting, Coin},
     data() {
       return {
         activeIndex: this.$route.path || '/',
         menus: Menus,
+        defaultAvatar: DefaultAvatar
       }
     },
     methods: {
@@ -58,7 +107,14 @@
           this.$store.commit("setUserInfo", {})
           this.$router.push('/login')
         })
-      }
+      },
+      handleCommand: function (command) {
+        if (command === 'logout') {
+          this.logout()
+        } else {
+          this.$router.push(command)
+        }
+      },
     },
     watch: {
       '$route'(newRoute) {
@@ -68,9 +124,7 @@
   }
 </script>
 
-<style
-  scoped
-  lang="scss">
+<style scoped lang="scss">
   .navbar {
     height: 60px;
     line-height: 60px;
@@ -91,7 +145,29 @@
       width: calc(100% - 280px);
       float: left;
       margin-left: 20px;
+
+      .el-menu-item {
+        font-size: 15px;
+      }
     }
+
+    .profile {
+      .avatar {
+        img {
+          border-radius: 50%;
+          height: 30px;
+          width: 30px;
+          float: left;
+          margin-top: 15px;
+        }
+
+        i {
+          margin-right: 10px;
+          margin-left: 3px;
+          margin-top: 23px;
+        }
+      }
+     }
 
     .logout {
       float: right;

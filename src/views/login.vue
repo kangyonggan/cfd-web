@@ -74,8 +74,7 @@
             <template #append>
               <a
                 @click="sendCode"
-                v-loading="loading"
-                style="color: var(--app-text-color);cursor: pointer"
+                style="cursor: pointer"
               >
                 {{ codeText }}
               </a>
@@ -86,7 +85,7 @@
           type="primary"
           size="medium"
           @click="submit"
-          v-loading="loading"
+          :disabled="loading"
           style="margin-bottom: 10px;"
         >
           登 录

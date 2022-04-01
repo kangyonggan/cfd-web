@@ -12,14 +12,23 @@ const routes = [
       {
         path: '/',
         component: Index,
+        meta: {
+          title: '首页'
+        }
       },
       {
         path: 'login',
         component: Login,
+        meta: {
+          title: '登录'
+        }
       },
       {
         path: '/:catchAll(.*)',
-        component: NotFound
+        component: NotFound,
+        meta: {
+          title: '404'
+        }
       }
     ]
   }
@@ -41,6 +50,9 @@ router.beforeEach(async (to, from, next) => {
       return
     }
   }
+
+  let title = to.meta.title || ''
+  document.title = title + ' - CFD'
 
   next()
 })

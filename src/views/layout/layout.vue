@@ -20,7 +20,6 @@
               :sm="22"
               :xs="22"
             >
-              <breadcrumb v-show="$route.path !== '/' && $route.path !== '/login'" />
               <component :is="Component" />
             </el-col>
             <el-col
@@ -42,10 +41,9 @@
 <script>
 import Navbar from "./navbar"
 import Footer from "./footer"
-import Breadcrumb from './breadcrumb.vue'
 
 export default {
-  components: {Footer, Navbar, Breadcrumb},
+  components: {Footer, Navbar},
 }
 </script>
 
