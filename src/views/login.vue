@@ -111,13 +111,14 @@
         second: 60,
         params: {
           type: 'BY_CODE',
-          email: (JSON.parse(localStorage.getItem('userInfo')) || {}).email,
+          email: '',
           loginPwd: '',
           verifyCode: ''
         },
         rules: {
           email: [
-            {required: true, message: '邮箱为必填项'}
+            {required: true, message: '邮箱为必填项'},
+            {validator: this.validateEmail}
           ],
           loginPwd: [
             {required: true, message: '密码为必填项'}
@@ -129,6 +130,19 @@
       }
     },
     methods: {
+      validateEmail: function (rule, value, callback) {
+        if (!value) {
+          callback()
+          return
+        }
+
+        let pattern = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/
+        if (!pattern.test(value)) {
+          callback(new Error('邮箱格式错误'))
+        } else {
+          callback()
+        }
+      },
       changeType(type) {
         this.params.type = type
       },
@@ -199,6 +213,10 @@
           })
         })
       }
+    },
+    activated() {
+      this.params.email = this.$route.query.email || ''
+      this.params.type = 'BY_CODE'
     }
   }
 </script>

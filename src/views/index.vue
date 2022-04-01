@@ -12,11 +12,12 @@
           <el-input
             placeholder="使用邮箱验证码登录可快速注册"
             v-model="email"
-            @keyup.enter.native="submit"
+            @keyup.enter.native="toLogin"
             autocomplete="off"
           />
           <el-button
             type="primary"
+            @click="toLogin"
           >
             开始使用
           </el-button>
@@ -47,35 +48,35 @@
       </div>
       <ul>
         <li style="margin-bottom: 10px;">
-          <span class="left">
+          <span>
             交易对
           </span>
-          <span>
+          <span class="right">
             最新价
           </span>
-          <span class="right">
+          <span class="right2">
             24h涨跌
           </span>
         </li>
         <li class="item">
-          <span class="left">
+          <span>
             BTCUSDT永续合约
           </span>
-          <span>
+          <span class="right">
             $47982.73
           </span>
-          <span class="right">
+          <span class="right2">
             -5.23%
           </span>
         </li>
         <li class="item">
-          <span class="left">
+          <span>
             ETHUSDT永续合约
           </span>
-          <span>
+          <span class="right">
             $3282.97
           </span>
-          <span class="right">
+          <span class="right2">
             -3.76%
           </span>
         </li>
@@ -92,8 +93,13 @@ export default {
     }
   },
   methods: {
-    submit() {
-
+    toLogin() {
+      this.$router.push({
+        path: '/login',
+        query: {
+          email: this.email
+        }
+      })
     }
   },
   mounted() {
@@ -185,15 +191,17 @@ export default {
 
         span {
           display: inline-block;
-          width: 33.33%;
-          text-align: center;
-        }
-
-        .left {
+          width: 20%;
           text-align: left;
         }
 
         .right {
+          width: 35%;
+          text-align: right;
+        }
+
+        .right2 {
+          width: 45%;
           text-align: right;
         }
       }

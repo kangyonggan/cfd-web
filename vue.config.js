@@ -1,4 +1,5 @@
 module.exports = {
+  publicPath: '/cfd/',
   devServer: {
     disableHostCheck: true,
     port: 9086,
