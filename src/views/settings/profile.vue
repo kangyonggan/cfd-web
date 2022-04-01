@@ -47,10 +47,10 @@
         >
           <el-upload
             drag
+            action=""
             :before-upload="beforeUpload"
-            :on-success="uploadSuccess"
-            action="https://jsonplaceholder.typicode.com/posts/"
             :show-file-list="false"
+            v-loading="uploading"
           >
             <img
               alt="avatar"
@@ -83,11 +83,13 @@
 <script>
   import Sidebar from './sidebar'
   import {UploadFilled} from "@element-plus/icons"
+  import {NFTStorage} from 'nft.storage'
 
   export default {
     components: {Sidebar, UploadFilled},
     data() {
       return {
+        uploading: false,
         loading: false,
         params: {
           nickName: '',
@@ -125,18 +127,27 @@
           return false
         }
 
-        return true
-      },
-      uploadSuccess(res) {
-        console.log(res)
-        if (!res.success) {
-          this.$error(res.msg)
-          return
-        }
+        let nftStorage = new NFTStorage({token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDgxYWE2MTQ2NzU3NzIyQTU1REFEMjMyQjUyMWQ1ZTExNDdiRDZBYUEiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0NTc3OTQ5NTYyMiwibmFtZSI6InRlc3QifQ.ZrLuOfNE7EUtGiySyx6LNFhR4uYSrZpq-Ukgb_13fsQ'})
 
-        this.params.avatar = res.data
+        this.uploading = true
+        nftStorage.store({
+          image: file,
+          name: file.name,
+          description: file.name,
+        }).then(res => {
+          this.params.avatar = res.url
+        }).catch(() => {
+          this.$error('上传失败，请稍后再试')
+        }).finally(() => {
+          this.uploading = false
+        })
+
+        return false
       },
       getProfile() {
+        if (this.uploading) {
+          return
+        }
         this.loading = true;
         this.axios.get('/v1/user/profile').then(data => {
           this.$store.commit('setUserInfo', data)
