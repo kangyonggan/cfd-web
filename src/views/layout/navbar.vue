@@ -31,7 +31,7 @@
       <span class="avatar">
         <img
           alt="avatar"
-          :src="$store.getters.getUserInfo.avatar ? $store.getters.getUserInfo.avatar : defaultAvatar"
+          :src="$store.getters.getUserInfo.avatar ? axios.defaults.baseURL + $store.getters.getUserInfo.avatar : defaultAvatar"
         >
         <el-icon>
           <arrow-down />

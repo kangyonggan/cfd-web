@@ -5,6 +5,11 @@ let baseUrl = '/cfd-api/'
 axios.defaults.timeout = 30000
 axios.defaults.headers['Content-Type'] = 'application/json'
 axios.defaults.baseURL = baseUrl
+axios.defaults.uploadUrl = 'http://localhost:9080/file'
+
+if (process.env.NODE_ENV === 'production') {
+  axios.defaults.uploadUrl = baseUrl
+}
 
 // 请求拦截器
 axios.interceptors.request.use(function (config) {

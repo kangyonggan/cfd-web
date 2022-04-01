@@ -47,15 +47,16 @@
         >
           <el-upload
             drag
-            action=""
+            :action="axios.defaults.baseURL + 'file'"
             :before-upload="beforeUpload"
+            :on-success="uploadSuccess"
             :show-file-list="false"
             v-loading="uploading"
           >
             <img
               alt="avatar"
               v-if="params.avatar"
-              :src="params.avatar"
+              :src="axios.defaults.baseURL + params.avatar"
               class="avatar"
             >
             <el-icon
@@ -83,7 +84,6 @@
 <script>
   import Sidebar from './sidebar'
   import {UploadFilled} from "@element-plus/icons"
-  import {NFTStorage} from 'nft.storage'
 
   export default {
     components: {Sidebar, UploadFilled},
@@ -110,7 +110,7 @@
           'image/png',
           'image/webp'
         ],
-        size: 2
+        size: 1
       }
     },
     methods: {
@@ -127,22 +127,16 @@
           return false
         }
 
-        let nftStorage = new NFTStorage({token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDgxYWE2MTQ2NzU3NzIyQTU1REFEMjMyQjUyMWQ1ZTExNDdiRDZBYUEiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0NTc3OTQ5NTYyMiwibmFtZSI6InRlc3QifQ.ZrLuOfNE7EUtGiySyx6LNFhR4uYSrZpq-Ukgb_13fsQ'})
+        return true
+      },
+      uploadSuccess(res) {
+        console.log(res)
+        if (!res.success) {
+          this.$error(res.msg);
+          return;
+        }
 
-        this.uploading = true
-        nftStorage.store({
-          image: file,
-          name: file.name,
-          description: file.name,
-        }).then(res => {
-          this.params.avatar = res.url
-        }).catch(() => {
-          this.$error('上传失败，请稍后再试')
-        }).finally(() => {
-          this.uploading = false
-        })
-
-        return false
+        this.params.avatar = res.data;
       },
       getProfile() {
         if (this.uploading) {
@@ -193,5 +187,10 @@
     width: calc(100% - 370px);
     border: 1px solid var(--app-border-color);
     padding: 20px;
+
+    .avatar {
+      max-width: 360px;
+      max-height: 180px;
+    }
   }
 </style>
