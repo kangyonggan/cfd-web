@@ -94,25 +94,49 @@
       <div class="item">
         <div class="left-icon">
           <el-icon>
-            <circle-close style="font-size: 40px;color: var(--el-color-danger)" />
+            <circle-check
+              v-if="profile.hasGoogleSecretKey"
+              style="font-size: 40px;color: var(--el-color-success)"
+            />
+            <circle-close
+              v-else
+              style="font-size: 40px;color: var(--el-color-danger)"
+            />
           </el-icon>
         </div>
         <div>
           <div class="title">
-            谷歌验证码
+            谷歌验证
           </div>
           <div class="desc">
-            已设置，进一步加强账户安全性
+            <span v-if="profile.hasGoogleSecretKey">已设置，大额提币时需要进行谷歌验证</span>
+            <span v-else>未设置，无法进行大额提币</span>
           </div>
         </div>
         <div class="actions">
-          更改
+          <span
+            v-if="profile.hasGoogleSecretKey"
+            @click="setGoogleSecretKey"
+          >
+            更改
+          </span>
+          <span
+            v-else
+            @click="setGoogleSecretKey"
+          >
+            设置
+          </span>
         </div>
       </div>
     </div>
 
     <password-modal
       ref="password-modal"
+      @success="success"
+    />
+
+    <google-secret-modal
+      ref="google-secret-modal"
       @success="success"
     />
   </div>
@@ -122,9 +146,10 @@
   import Sidebar from './sidebar'
   import {CircleCheck, CircleClose} from "@element-plus/icons"
   import PasswordModal from './pasword-modal'
+  import GoogleSecretModal from './google-secret-modal'
 
   export default {
-    components: {Sidebar, CircleCheck, CircleClose, PasswordModal},
+    components: {Sidebar, CircleCheck, CircleClose, PasswordModal, GoogleSecretModal},
     data() {
       return {
         profile: {}
@@ -146,6 +171,9 @@
       },
       setPwd(type) {
         this.$refs['password-modal'].show(this.profile, type)
+      },
+      setGoogleSecretKey() {
+        this.$refs['google-secret-modal'].show(this.profile)
       }
     },
     mounted() {
