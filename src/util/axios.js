@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // 30s超时
 let baseUrl = '/cfd-api/'
-axios.defaults.timeout = 30000
+axios.defaults.timeout = 10000
 axios.defaults.headers['Content-Type'] = 'application/json'
 axios.defaults.baseURL = baseUrl
 axios.defaults.uploadUrl = 'http://localhost:9080/file'

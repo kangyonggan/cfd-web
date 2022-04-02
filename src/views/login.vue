@@ -45,6 +45,7 @@
           <el-input
             placeholder="请输入密码"
             type="password"
+            show-password
             v-model="params.loginPwd"
             @keyup.enter.native="submit"
             autocomplete="off"
@@ -117,14 +118,14 @@
         },
         rules: {
           email: [
-            {required: true, message: '邮箱为必填项'},
+            {required: true, message: '请输入邮箱'},
             {validator: this.validateEmail}
           ],
           loginPwd: [
-            {required: true, message: '密码为必填项'}
+            {required: true, message: '请输入密码'}
           ],
           verifyCode: [
-            {required: true, message: '验证码为必填项'}
+            {required: true, message: '请输入验证码'}
           ]
         }
       }
