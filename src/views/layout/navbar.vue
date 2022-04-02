@@ -41,20 +41,20 @@
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item
+            command="/settings"
+          >
+            <el-icon>
+              <user />
+            </el-icon>
+            个人信息
+          </el-dropdown-item>
+          <el-dropdown-item
             command="/wallet"
           >
             <el-icon>
               <Coin />
             </el-icon>
             我的钱包
-          </el-dropdown-item>
-          <el-dropdown-item
-            command="/settings"
-          >
-            <el-icon>
-              <Setting />
-            </el-icon>
-            账户设置
           </el-dropdown-item>
           <el-dropdown-item
             command="/login"
@@ -87,13 +87,13 @@
 </template>
 
 <script>
-  import {ArrowDown, Switch, SwitchButton, Setting, Coin} from '@element-plus/icons'
+  import {ArrowDown, Switch, SwitchButton, User, Coin} from '@element-plus/icons'
   import NavbarMenu from './navbar-menu'
   import Menus from './menus'
   import DefaultAvatar from '../../assets/imgs/default.png'
 
   export default {
-    components: {NavbarMenu, ArrowDown, Switch, SwitchButton, Setting, Coin},
+    components: {NavbarMenu, ArrowDown, Switch, SwitchButton, User, Coin},
     data() {
       return {
         activeIndex: this.$route.path || '/',

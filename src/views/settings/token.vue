@@ -3,7 +3,7 @@
     <sidebar code="token" />
 
     <div class="content">
-      token
+      开发中...
     </div>
   </div>
 </template>

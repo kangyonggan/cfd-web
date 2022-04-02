@@ -66,10 +66,13 @@
         color: var(--app-text-color-dark);
         border-bottom: 1px solid var(--app-border-color);
         border-left: 2px solid transparent;
+        opacity: 0.9;
       }
 
       a.active {
         border-left: 2px solid var(--el-color-primary);
+        opacity: 1;
+        color: var(--app-text-color);
       }
     }
   }

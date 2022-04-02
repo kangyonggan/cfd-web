@@ -5,10 +5,17 @@ let baseUrl = '/cfd-api/'
 axios.defaults.timeout = 10000
 axios.defaults.headers['Content-Type'] = 'application/json'
 axios.defaults.baseURL = baseUrl
-axios.defaults.uploadUrl = 'http://localhost:9080/file'
 
-if (process.env.NODE_ENV === 'production') {
-  axios.defaults.uploadUrl = baseUrl
+let deviceId = localStorage.getItem('deviceId') || ''
+let deviceName = navigator.userAgentData.brands[2].brand
+let platform = navigator.userAgentData.platform
+
+if (!deviceId) {
+  const fpPromise = import('@fingerprintjs/fingerprintjs').then(FingerprintJS => FingerprintJS.load())
+  fpPromise.then(fp => fp.get()).then(result => {
+    deviceId = result.visitorId
+    localStorage.setItem('deviceId', deviceId)
+  })
 }
 
 // 请求拦截器
@@ -22,6 +29,9 @@ axios.interceptors.request.use(function (config) {
       config.headers['Authorization'] = userInfo.token
     }
   }
+  config.headers['deviceId'] = deviceId
+  config.headers['deviceName'] = deviceName
+  config.headers['platform'] = platform
 
   return config
 }, function (error) {

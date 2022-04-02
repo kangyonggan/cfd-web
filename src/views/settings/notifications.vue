@@ -3,7 +3,7 @@
     <sidebar code="notifications" />
 
     <div class="content">
-      notifications
+      开发中...
     </div>
   </div>
 </template>

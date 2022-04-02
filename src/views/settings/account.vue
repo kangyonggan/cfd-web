@@ -17,6 +17,11 @@
             {{ profile.email || '--' }}
           </div>
         </div>
+        <div class="actions">
+          <span style="cursor: not-allowed;color: var(--app-text-color-dark)">
+            换绑
+          </span>
+        </div>
       </div>
       <div class="item">
         <div class="left-icon">
