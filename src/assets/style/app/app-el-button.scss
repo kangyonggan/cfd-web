@@ -9,7 +9,7 @@
   color: var(--app-text-color);
 }
 
-.el-button--default:focus {
+.el-button--default:active, .el-button--default:focus {
   background: none;
 }
 
@@ -21,7 +21,6 @@
 
 .el-button:active, .el-button:focus {
   color: var(--app-text-color-white);
-  background: var(--el-color-primary);
 }
 
 .el-button--primary:hover {

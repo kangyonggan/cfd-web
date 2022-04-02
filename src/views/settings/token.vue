@@ -18,8 +18,6 @@
 <style scoped lang="scss">
   .content {
     float: right;
-    width: calc(100% - 370px);
-    border: 1px solid var(--app-border-color);
-    padding: 20px;
+    width: calc(100% - 330px);
   }
 </style>
