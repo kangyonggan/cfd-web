@@ -1,23 +1,18 @@
 <template>
-
   <div style="height: 100%">
-
     <div class="wrapper">
-
       <navbar />
 
       <router-view v-slot="{ Component }">
-
         <keep-alive>
-
           <el-row>
-
             <el-col
               :xl="3"
               :lg="1"
               :md="1"
               :sm="1"
-              :xs="1" />
+              :xs="1"
+            />
 
             <el-col
               style="padding: 20px"
@@ -25,8 +20,8 @@
               :lg="22"
               :md="22"
               :sm="22"
-              :xs="22">
-
+              :xs="22"
+            >
               <component :is="Component" />
             </el-col>
 
@@ -35,7 +30,8 @@
               :lg="1"
               :md="1"
               :sm="1"
-              :xs="1" />
+              :xs="1"
+            />
           </el-row>
         </keep-alive>
       </router-view>
