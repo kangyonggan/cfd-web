@@ -13,6 +13,13 @@
           >
             划转
           </el-button>
+
+          <router-link
+            to="/wallet/contract/stat"
+            style="cursor: pointer;color: var(--el-color-primary);font-size: 14px;float: right;margin-right: 20px;margin-top: 10px;text-decoration: none"
+          >
+            盈亏分析
+          </router-link>
         </div>
         <div class="details">
           <div class="item">
