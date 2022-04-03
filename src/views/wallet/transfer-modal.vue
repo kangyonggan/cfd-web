@@ -96,7 +96,7 @@
             {validator: this.validateAmount}
           ],
         },
-        userAccountCurrencies: [],
+        transferCurrencies: [],
         currencyList: [],
         amountMap: {}
       }
@@ -137,8 +137,8 @@
       },
       getCurrencyList(accountType) {
         let list = []
-        for (let i = 0; i < this.userAccountCurrencies.length; i++) {
-          let item = this.userAccountCurrencies[i]
+        for (let i = 0; i < this.transferCurrencies.length; i++) {
+          let item = this.transferCurrencies[i]
           if (item.accountType !== accountType) {
             continue
           }
@@ -148,8 +148,8 @@
       },
       getAmountMap(accountType) {
         let map = {}
-        for (let i = 0; i < this.userAccountCurrencies.length; i++) {
-          let item = this.userAccountCurrencies[i]
+        for (let i = 0; i < this.transferCurrencies.length; i++) {
+          let item = this.transferCurrencies[i]
           if (item.accountType !== accountType) {
             continue
           }
@@ -157,13 +157,13 @@
         }
         this.amountMap = map
       },
-      getUserAccountCurrencies() {
+      getTransferCurrencies() {
         this.loading = true
-        this.userAccountCurrencies = []
+        this.transferCurrencies = []
         this.currencyList = []
         this.amountMap = {}
-        this.axios.get('/v1/wallet/userAccountCurrency').then(data => {
-          this.userAccountCurrencies = data
+        this.axios.get('/v1/wallet/transferCurrency').then(data => {
+          this.transferCurrencies = data
           this.changeType()
         }).catch(res => {
           this.$error(res.msg)
@@ -182,7 +182,7 @@
         this.params.type = type
         this.params.amount = ''
 
-        this.getUserAccountCurrencies()
+        this.getTransferCurrencies()
         this.$refs.modal.show()
       },
     }
