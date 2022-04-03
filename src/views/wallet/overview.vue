@@ -3,10 +3,7 @@
     <sidebar code="overview" />
 
     <div class="content">
-      <div
-        class="overview"
-        v-loading="loading"
-      >
+      <div class="overview">
         <v-chart
           style="height: 204px;width: 204px;float: left"
           :option="optionOverview"
@@ -16,7 +13,10 @@
           <div class="asset">
             总资产：{{ totalAmount }} USDT
           </div>
-          <div style="margin-top: 40px;">
+          <div
+            style="margin-top: 40px;"
+            v-loading="loading"
+          >
             <el-button
               type="primary"
             >

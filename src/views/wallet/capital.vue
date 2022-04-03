@@ -6,9 +6,12 @@
       <div class="overview">
         <div class="actions">
           <div class="asset">
-            总资产：88888888.88888888 USDT
+            总资产：{{ totalAmount }} USDT
           </div>
-          <div style="margin-top: 30px;">
+          <div
+            style="margin-top: 30px;"
+            v-loading="loading"
+          >
             <el-button
               type="primary"
             >
@@ -53,13 +56,13 @@
               {{ item.currency }}
             </div>
             <div>
-              {{ NumberUtil.format(item.totalAmount) }}
+              {{ item.totalAmount }}
             </div>
             <div style="text-align: center">
-              {{ NumberUtil.format(item.frozenAmount) }}
+              {{ item.frozenAmount }}
             </div>
             <div style="text-align: right">
-              {{ NumberUtil.format(item.totalAmount - item.frozenAmount) }}
+              {{ item.totalAmount - item.frozenAmount }}
             </div>
           </li>
         </ul>
@@ -72,6 +75,7 @@
             v-model="currency"
             style="float: right"
             size="small"
+            @change="getAccountLog(1)"
           >
             <el-option
               label="全部币种"
@@ -85,7 +89,10 @@
             />
           </el-select>
         </template>
-        <ul class="log-list">
+        <ul
+          class="log-list"
+          v-loading="loadingAccountLog"
+        >
           <li>
             <div>
               币种
@@ -103,6 +110,11 @@
               详情
             </div>
           </li>
+          <li v-if="!total">
+            <div style="text-align: center;width: 100%;color: var(--app-text-color-dark);font-size: 13px;">
+              暂无数据
+            </div>
+          </li>
           <li
             v-for="item in accountLogList"
             :key="item.id"
@@ -114,7 +126,7 @@
               {{ item.type }}
             </div>
             <div class="large">
-              {{ NumberUtil.format(item.amount) }}
+              {{ item.amount }}
             </div>
             <div class="large">
               {{ DateTimeUtil.format(item.createTime) }}
@@ -126,6 +138,15 @@
             </div>
           </li>
         </ul>
+
+        <el-pagination
+          v-show="total > 10"
+          style="margin: 10px 0;float:right"
+          layout="prev, pager, next"
+          @current-change="getAccountLog($event)"
+          :total="total"
+          :current-page="pageNum"
+        />
       </el-card>
     </div>
   </div>
@@ -140,27 +161,50 @@
     data() {
       return {
         loading: false,
-        currencyList: [{
-          currency: 'USDT',
-          totalAmount: 88888888.88888888,
-          frozenAmount: 0,
-        }],
+        totalAmount: 0,
+        currencyList: [],
         currency: '',
-        accountLogList: [{
-          currency: 'USDT',
-          type: '充值',
-          amount: 1000,
-          createTime: 1648912000118,
-        }, {
-          currency: 'USDT',
-          type: '划转',
-          amount: 200,
-          createTime: 1648912000118,
-        }]
+        loadingAccountLog: false,
+        accountLogList: [],
+        total: 0,
+        pageNum: 1
       }
     },
-    methods: {},
+    methods: {
+      getAccountDetail() {
+        this.loading = true
+        this.totalAmount = 0
+        this.currencyList = []
+        this.axios.get('/v1/wallet/accountDetail?accountType=CAPITAL').then(data => {
+          this.totalAmount = data.totalAmount
+          this.currencyList = data.list
+        }).catch(res => {
+          this.$error(res.msg)
+        }).finally(() => {
+          this.loading = false
+        })
+      },
+      getAccountLog(pageNum) {
+        if (!pageNum) {
+          pageNum = 1
+        }
+        this.pageNum = pageNum
+        this.loadingAccountLog = true
+        this.totalAmount = 0
+        this.currencyList = []
+        this.axios.get('/v1/wallet/accountLog?accountType=CAPITAL&pageNum=' + pageNum + '&currency=' + this.currency).then(data => {
+          this.accountLogList = data.records
+          this.total = data.total
+        }).catch(res => {
+          this.$error(res.msg)
+        }).finally(() => {
+          this.loadingAccountLog = false
+        })
+      }
+    },
     mounted() {
+      this.getAccountDetail()
+      this.getAccountLog()
     }
   }
 </script>
