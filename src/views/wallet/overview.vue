@@ -3,7 +3,10 @@
     <sidebar code="overview" />
 
     <div class="content">
-      <div class="overview">
+      <div
+        class="overview"
+        v-loading="loading"
+      >
         <v-chart
           style="height: 204px;width: 204px;float: left"
           :option="optionOverview"
@@ -11,7 +14,7 @@
         />
         <div class="actions">
           <div class="asset">
-            总资产：88888888.88888888 USDT
+            总资产：{{ totalAmount }} USDT
           </div>
           <div style="margin-top: 40px;">
             <el-button
@@ -38,17 +41,20 @@
         <template #header>
           <span style="color: var(--app-text-color-light)">我的资产</span>
         </template>
-        <ul class="account-list">
+        <ul
+          class="account-list"
+          v-loading="loading"
+        >
           <li
             v-for="account in accountList"
-            :key="account.type"
+            :key="account.accountType"
           >
             <div>
-              {{ account.name }}
+              {{ account.accountType === 'CAPITAL' ? '资金账户' : '合约账户' }}
             </div>
 
             <div class="asset">
-              {{ NumberUtil.format(account.totalAmount) }} USDT
+              {{ account.totalAmount }} USDT
             </div>
           </li>
         </ul>
@@ -65,6 +71,8 @@
     data() {
       return {
         loading: false,
+        totalAmount: '',
+        accountList: [],
         optionOverview: {
           color: ['#5dccc8', '#fca235'],
           tooltip: {
@@ -88,20 +96,38 @@
               ]
             }
           ]
-        },
-        accountList: [{
-          type: 'CAPITAL',
-          name: '资金账户',
-          totalAmount: 88888888.88888888
-        }, {
-          type: 'CONTRACT',
-          name: '合约账户',
-          totalAmount: 88888888.88888888
-        }]
+        }
       }
     },
-    methods: {},
+    methods: {
+      /**
+       * 账户概览
+       */
+      getOverview() {
+        this.loading = true
+        this.totalAmount = 0
+        this.accountList = []
+        this.optionOverview.series[0].data = []
+        this.axios.get('/v1/wallet/overview').then(data => {
+          this.totalAmount = data.totalAmount
+          this.accountList = data.list
+          let seriesData = []
+          for (let i = 0; i < data.list.length; i++) {
+            seriesData[i] = {
+              value: data.list[i].totalAmount,
+              name: data.list[i].accountType === 'CAPITAL' ? '资金账户' : '合约账户'
+            }
+          }
+          this.optionOverview.series[0].data = seriesData
+        }).catch(res => {
+          this.$error(res.msg)
+        }).finally(() => {
+          this.loading = false
+        })
+      }
+    },
     mounted() {
+      this.getOverview()
     }
   }
 </script>
