@@ -24,7 +24,7 @@
         <div class="details">
           <div class="item">
             <div class="label">
-              钱包余额(USDT)
+              账户余额(USDT)
             </div>
             <div class="value">
               88888888.88888888
