@@ -157,12 +157,12 @@
         }
         this.amountMap = map
       },
-      getTransferCurrencies() {
+      getTransfer() {
         this.loading = true
         this.transferCurrencies = []
         this.currencyList = []
         this.amountMap = {}
-        this.axios.get('/v1/wallet/transferCurrency').then(data => {
+        this.axios.get('/v1/wallet/transfer').then(data => {
           this.transferCurrencies = data
           this.changeType()
         }).catch(res => {
@@ -182,7 +182,7 @@
         this.params.type = type
         this.params.amount = ''
 
-        this.getTransferCurrencies()
+        this.getTransfer()
         this.$refs.modal.show()
       },
     }
