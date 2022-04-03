@@ -10,6 +10,7 @@
           <el-button
             type="primary"
             style="float: right"
+            @click="$refs['transfer-modal'].show()"
           >
             划转
           </el-button>
@@ -92,14 +93,19 @@
         />
       </el-table>
     </div>
+
+    <transfer-modal
+      ref="transfer-modal"
+    />
   </div>
 </template>
 
 <script>
   import Sidebar from './sidebar'
+  import TransferModal from "./transfer-modal"
 
   export default {
-    components: {Sidebar},
+    components: {Sidebar, TransferModal},
     data() {
       return {
         loading: false,

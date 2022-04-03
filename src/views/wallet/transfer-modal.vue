@@ -103,7 +103,6 @@
     },
     methods: {
       validateAmount: function (rule, value, callback) {
-        console.log(value)
         if (value === undefined || value === '') {
           callback()
           return

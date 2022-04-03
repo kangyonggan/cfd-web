@@ -25,7 +25,10 @@
             >
               转账
             </el-button>
-            <el-button plain>
+            <el-button
+              plain
+              @click="$refs['transfer-modal'].show()"
+            >
               划转
             </el-button>
           </div>
@@ -100,17 +103,20 @@
             <div>
               类型
             </div>
+            <div
+              class="large"
+              style="text-align: left"
+            >
+              流水号
+            </div>
             <div class="large">
               金额
             </div>
             <div class="large">
               时间
             </div>
-            <div style="width: 10%;text-align: right">
-              详情
-            </div>
           </li>
-          <li v-if="!total">
+          <li v-if="accountLogList.length === 0">
             <div style="text-align: center;width: 100%;color: var(--app-text-color-dark);font-size: 13px;">
               暂无数据
             </div>
@@ -123,18 +129,19 @@
               {{ item.currency }}
             </div>
             <div>
-              {{ item.type }}
+              {{ getTransferType(item.type) }}
+            </div>
+            <div
+              class="large"
+              style="text-align: left"
+            >
+              {{ item.serialNo }}
             </div>
             <div class="large">
               {{ item.amount }}
             </div>
             <div class="large">
               {{ DateTimeUtil.format(item.createTime) }}
-            </div>
-            <div style="width: 10%;text-align: right">
-              <el-icon style="cursor: pointer;font-size: 18px;">
-                <View />
-              </el-icon>
             </div>
           </li>
         </ul>
@@ -149,15 +156,20 @@
         />
       </el-card>
     </div>
+
+    <transfer-modal
+      ref="transfer-modal"
+      @success="reload"
+    />
   </div>
 </template>
 
 <script>
   import Sidebar from './sidebar'
-  import {View} from '@element-plus/icons'
+  import TransferModal from "./transfer-modal"
 
   export default {
-    components: {Sidebar, View},
+    components: {Sidebar, TransferModal},
     data() {
       return {
         loading: false,
@@ -171,6 +183,15 @@
       }
     },
     methods: {
+      getTransferType(type) {
+        if (type === 'TRANSFER_IN') {
+          return '划转-转入'
+        } else if (type === 'TRANSFER_OUT') {
+          return '划转-转出'
+        }
+
+        return  type
+      },
       getAccountDetail() {
         this.loading = true
         this.totalAmount = 0
@@ -190,8 +211,6 @@
         }
         this.pageNum = pageNum
         this.loadingAccountLog = true
-        this.totalAmount = 0
-        this.currencyList = []
         this.axios.get('/v1/wallet/accountLog?accountType=CAPITAL&pageNum=' + pageNum + '&currency=' + this.currency).then(data => {
           this.accountLogList = data.records
           this.total = data.total
@@ -200,11 +219,14 @@
         }).finally(() => {
           this.loadingAccountLog = false
         })
+      },
+      reload() {
+        this.getAccountDetail()
+        this.getAccountLog()
       }
     },
     mounted() {
-      this.getAccountDetail()
-      this.getAccountLog()
+      this.reload()
     }
   }
 </script>
@@ -267,11 +289,11 @@
 
         div {
           display: inline-block;
-          width: 15%;
+          width: 14%;
         }
 
         .large {
-          width: 30%;
+          width: 24%;
           text-align: right;
         }
       }
