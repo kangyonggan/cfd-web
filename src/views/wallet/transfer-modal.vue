@@ -8,24 +8,23 @@
     @success="$emit('success', $event)"
     :width="500"
   >
-    <el-form-item
-      prop="type"
-      label="方向"
-    >
-      <el-select
-        v-model="params.type"
-        style="width: 90%"
-        @change="changeType"
-      >
-        <el-option
-          value="CAPITAL_CONTRACT"
-          label="资金 --> 合约"
-        />
-        <el-option
-          value="CONTRACT_CAPITAL"
-          label="合约 --> 资金"
-        />
-      </el-select>
+    <el-form-item prop="type">
+      <div class="transfer">
+        <span>
+          {{ this.params.type === 'CAPITAL_CONTRACT' ? '资金账户' : '合约账户' }}
+        </span>
+        <span style="text-align: center;">
+          <el-icon>
+            <Switch
+              @click="changeType"
+              style="font-size: 30px;color: var(--el-color-primary);padding-top: 2px;cursor: pointer;"
+            />
+          </el-icon>
+        </span>
+        <span style="text-align: right">
+          {{ this.params.type === 'CAPITAL_CONTRACT' ? '合约账户' : '资金账户' }}
+        </span>
+      </div>
     </el-form-item>
     <el-form-item
       prop="currency"
@@ -50,7 +49,7 @@
         </el-option>
       </el-select>
     </el-form-item>
-    <div style="text-align: right;padding-right: 38px;">
+    <div style="padding-left: 95px;">
       可用：{{ amountMap[params.currency] }}
     </div>
     <el-form-item
@@ -66,7 +65,7 @@
       >
         <template #append>
           <span
-            style="cursor: pointer;"
+            class="select-all"
             @click="params.amount = amountMap[params.currency]"
           >
             全部
@@ -80,10 +79,11 @@
 <script>
   import BaseModal from '@/components/base-modal.vue'
   import NaturalInput from "../../components/natural-input";
+  import {Switch} from '@element-plus/icons'
 
   export default {
     emits: ['success'],
-    components: {NaturalInput, BaseModal},
+    components: {NaturalInput, BaseModal, Switch},
     data() {
       return {
         zj: '资金账户',
@@ -121,6 +121,12 @@
         callback()
       },
       changeType() {
+        this.params.amount = ''
+        if (this.params.type === 'CAPITAL_CONTRACT') {
+          this.params.type = 'CONTRACT_CAPITAL'
+        } else if (this.params.type === 'CONTRACT_CAPITAL') {
+          this.params.type = 'CAPITAL_CONTRACT'
+        }
         let currencyAccountType = this.params.type.replace('CAPITAL', '')
         currencyAccountType = currencyAccountType.replace('_', '')
         this.getCurrencyList(currencyAccountType)
@@ -192,4 +198,25 @@
 </script>
 
 <style scoped lang="scss">
+  .select-all {
+    cursor: pointer;
+    -moz-user-select: none; /*火狐*/
+    -webkit-user-select: none; /*webkit浏览器*/
+    -ms-user-select: none; /*IE10*/
+    user-select: none;
+  }
+  .transfer {
+    width: 90%;
+
+    span {
+      display: inline-block;
+      width: 33.33%;
+      color: var(--app-text-color-light);
+      float: left;
+      -moz-user-select: none; /*火狐*/
+      -webkit-user-select: none; /*webkit浏览器*/
+      -ms-user-select: none; /*IE10*/
+      user-select: none;
+    }
+  }
 </style>
