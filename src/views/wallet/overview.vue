@@ -30,7 +30,10 @@
             >
               转账
             </el-button>
-            <el-button plain>
+            <el-button
+              plain
+              @click="$refs['transfer-modal'].show()"
+            >
               划转
             </el-button>
           </div>
@@ -60,14 +63,20 @@
         </ul>
       </el-card>
     </div>
+
+    <transfer-modal
+      ref="transfer-modal"
+      @success="getOverview"
+    />
   </div>
 </template>
 
 <script>
   import Sidebar from './sidebar'
+  import TransferModal from "./transfer-modal"
 
   export default {
-    components: {Sidebar},
+    components: {TransferModal, Sidebar},
     data() {
       return {
         loading: false,

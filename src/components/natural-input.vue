@@ -1,7 +1,9 @@
 <template>
   <el-input
+    :size="size"
     :model-value="modelValue"
     @input="input"
+    autocomplete="off"
     :placeholder="placeholder"
     :readonly="readonly"
     :clearable="!readonly"
@@ -19,20 +21,21 @@
 export default {
   props: {
     modelValue:{
-      required: true,
-      type: [String, Number]
+      required: false,
+      type: [String, Number],
+      default: ''
     },
     precision: {
       required: false,
       type: Number,
       default: 0
     },
-    maxLength: {
-      required: false,
-      type: Number,
-      default: -1
-    },
     placeholder: {
+      required: false,
+      type: String,
+      default: ''
+    },
+    size: {
       required: false,
       type: String,
       default: ''
@@ -54,11 +57,7 @@ export default {
         this.$emit('update:modelValue', val)
         return
       }
-      val = this.NumberUtil.toNumber(val, this.precision)
-      if (this.maxLength > 0 && val.toString().length > this.maxLength) {
-        val = val.toString().substring(0, this.maxLength) * 1
-      }
-      this.$emit('update:modelValue', val)
+      this.$emit('update:modelValue', this.NumberUtil.toNumber(val, this.precision))
     },
   }
 }
