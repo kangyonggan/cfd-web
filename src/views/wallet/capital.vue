@@ -211,7 +211,7 @@
         }
         this.pageNum = pageNum
         this.loadingAccountLog = true
-        this.axios.get('/v1/wallet/accountLog?accountType=CAPITAL&pageNum=' + pageNum + '&currency=' + this.currency).then(data => {
+        this.axios.get('/v1/wallet/accountLog?accountType=CAPITAL&current=' + pageNum + '&currency=' + this.currency).then(data => {
           this.accountLogList = data.records
           this.total = data.total
         }).catch(res => {
