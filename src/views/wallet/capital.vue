@@ -6,7 +6,7 @@
       <div class="overview">
         <div class="actions">
           <div class="asset">
-            总资产：88888888.88888888 BTC ≈ <span>$88888888.88888888</span>
+            总资产：88888888.88888888 USDT
           </div>
           <div style="margin-top: 30px;">
             <el-button
@@ -181,12 +181,6 @@
           font-weight: 500;
           margin-top: 20px;
           color: var(--app-text-color-light);
-
-          span {
-            font-size: 16px;
-            opacity: 0.9;
-            color: var(--app-text-color-dark);
-          }
         }
 
         .el-button {

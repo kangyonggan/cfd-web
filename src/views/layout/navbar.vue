@@ -49,6 +49,14 @@
             个人信息
           </el-dropdown-item>
           <el-dropdown-item
+            command="/wallet"
+          >
+            <el-icon>
+              <coin />
+            </el-icon>
+            我的钱包
+          </el-dropdown-item>
+          <el-dropdown-item
             command="/login"
             divided
           >
@@ -79,13 +87,13 @@
 </template>
 
 <script>
-  import {ArrowDown, Switch, SwitchButton, User} from '@element-plus/icons'
+  import {ArrowDown, Switch, SwitchButton, User, Coin} from '@element-plus/icons'
   import NavbarMenu from './navbar-menu'
   import Menus from './menus'
   import DefaultAvatar from '../../assets/imgs/default.png'
 
   export default {
-    components: {NavbarMenu, ArrowDown, Switch, SwitchButton, User},
+    components: {NavbarMenu, ArrowDown, Switch, SwitchButton, User, Coin},
     data() {
       return {
         activeIndex: this.$route.path || '/',

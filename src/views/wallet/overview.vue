@@ -11,7 +11,7 @@
         />
         <div class="actions">
           <div class="asset">
-            总资产：88888888.88888888 BTC ≈ <span>$88888888.88888888</span>
+            总资产：88888888.88888888 USDT
           </div>
           <div style="margin-top: 40px;">
             <el-button
@@ -48,7 +48,7 @@
             </div>
 
             <div class="asset">
-              {{ NumberUtil.format(account.totalAmount) }} BTC ≈ <span>${{ NumberUtil.format(account.totalAmount) }}</span>
+              {{ NumberUtil.format(account.totalAmount) }} USDT
             </div>
           </li>
         </ul>
@@ -156,12 +156,6 @@
           width: 70%;
           text-align: right;
           color: var(--app-text-color-light);
-
-          span {
-            font-size: 13px;
-            opacity: 0.9;
-            color: var(--app-text-color-dark);
-          }
         }
       }
 
