@@ -51,7 +51,7 @@
       </el-select>
     </el-form-item>
     <div style="text-align: right;padding-right: 38px;">
-      可用：{{ amountMap[params.currency] || '--' }}
+      可用：{{ amountMap[params.currency] }}
     </div>
     <el-form-item
       prop="amount"
