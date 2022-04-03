@@ -65,7 +65,10 @@
         append
       >
         <template #append>
-          <span style="cursor: pointer;">
+          <span
+            style="cursor: pointer;"
+            @click="params.amount = amountMap[params.currency]"
+          >
             全部
           </span>
         </template>
