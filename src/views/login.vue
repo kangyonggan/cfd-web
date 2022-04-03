@@ -215,8 +215,13 @@
         })
       }
     },
-    activated() {
-      this.params.email = this.$route.query.email || ''
+    mounted() {
+      let email = this.$route.query.email || ''
+      if (!email) {
+        let userInfo = JSON.parse(localStorage.getItem('userInfo')) || {}
+        email = userInfo.email || ''
+      }
+      this.params.email = email
       this.params.type = 'BY_CODE'
     }
   }
