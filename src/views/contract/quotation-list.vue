@@ -36,7 +36,7 @@
       </el-table-column>
       <el-table-column
         prop="rose"
-        label="今日涨幅"
+        label="24h涨跌"
         :sortable="true"
         align="right"
         width="115"
