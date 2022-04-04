@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <sidebar code="safety" />
 
     <div class="content">

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <sidebar code="profile" />
 
     <div class="content">

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 30px 50px;">
     <el-card class="header">
       <div class="description">
         <div class="title">

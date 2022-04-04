@@ -5,34 +5,7 @@
 
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <el-row>
-            <el-col
-              :xl="3"
-              :lg="1"
-              :md="1"
-              :sm="1"
-              :xs="1"
-            />
-
-            <el-col
-              style="padding: 20px"
-              :xl="18"
-              :lg="22"
-              :md="22"
-              :sm="22"
-              :xs="22"
-            >
-              <component :is="Component" />
-            </el-col>
-
-            <el-col
-              :xl="3"
-              :lg="1"
-              :md="1"
-              :sm="1"
-              :xs="1"
-            />
-          </el-row>
+          <component :is="Component" />
         </keep-alive>
       </router-view>
 
@@ -87,6 +60,10 @@
   .wrapper {
     min-height: 100%;
     margin-bottom: -61px;
+  }
+
+  .main {
+    padding: 30px 50px;
   }
 
   .bullish {

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="padding: 30px;">
     <div class="left">
-      CFD
+      Welcome CFD
     </div>
     <el-card class="right">
       <template #header>
@@ -230,8 +230,8 @@
 <style scoped lang="scss">
   .left {
     float: left;
-    width: 50%;
-    font-size: 150px;
+    width: calc(100% - 450px);
+    font-size: 120px;
     font-weight: bold;
     font-style: italic;
     color: var(--el-color-primary);
@@ -242,7 +242,7 @@
   .right {
     float: right;
     width: 380px;
-    margin-top: 120px;
+    margin-top: 90px;
     margin-right: 50px;
 
     .login-type {
