@@ -34,7 +34,6 @@ export default {
 
       let that = this;
       this.ws.onopen = function () {
-        console.log('onopen')
         // 订阅K线并自动获取一次历史K线，自动推送全部交易对的最新价
         that.sub()
       }
@@ -52,7 +51,9 @@ export default {
           // K线
           if (!that.loading) {
             // 历史K线加载之后，再去画最新K线
-            that.$refs['kline-body'].kline.updateData(data)
+            if (that.$refs['kline-body']) {
+              that.$refs['kline-body'].kline.updateData(data)
+            }
           }
 
           // 最新价

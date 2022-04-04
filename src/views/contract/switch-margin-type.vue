@@ -4,7 +4,6 @@
     title="修改保证金模式"
     url="/v1/contract/order/switchMode"
     :params="params"
-    :method="'GET'"
     :width="320"
     @success="$emit('success', this.params.mode)"
   >
@@ -26,24 +25,24 @@
 </template>
 
 <script>
-import BaseModal from '@/components/base-modal.vue'
+  import BaseModal from '@/components/base-modal.vue'
 
-export default {
-  emits: ['success'],
-  components: {BaseModal},
-  data() {
-    return {
-      params: {
-        mode: ''
+  export default {
+    emits: ['success'],
+    components: {BaseModal},
+    data() {
+      return {
+        params: {
+          mode: ''
+        }
+      }
+    },
+    methods: {
+      show(marginType) {
+        this.params.mode = marginType
+        this.$refs.modal.show()
       }
     }
-  },
-  methods: {
-    show(marginType) {
-      this.params.mode = marginType
-      this.$refs.modal.show()
-    }
   }
-}
 </script>
 

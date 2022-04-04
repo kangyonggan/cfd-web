@@ -656,8 +656,8 @@
       },
     },
     activated() {
-      this.reload()
-      this.initWs()
+      // this.reload()
+      // this.initWs()
     },
   }
 </script>

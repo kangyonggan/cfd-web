@@ -192,11 +192,11 @@
       },
     },
     activated() {
-      this.reload()
+      // this.reload()
     },
     watch: {
       '$route.query.symbol': function () {
-        this.reload()
+        // this.reload()
       },
     }
   }

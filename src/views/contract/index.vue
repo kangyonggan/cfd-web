@@ -1,8 +1,9 @@
 <template>
   <div>
-    <symbol-list />
+    <quotation-list ref="quotation-list" />
     <kline
       ref="kline"
+      @update-ticket="updateTicket"
     />
 
     <order-form
@@ -19,16 +20,19 @@
 </template>
 
 <script>
-import SymbolList from "./symbol-list"
+import QuotationList from "./quotation-list"
 import Kline from "./kline"
 import OrderForm from './order-form'
 import OrderList from "./order-list"
 
 export default {
-  components: {OrderList, Kline, SymbolList, OrderForm},
+  components: {OrderList, Kline, QuotationList, OrderForm},
   methods: {
     updateMarginCoinConfig(marginCoinConfig) {
       this.$refs['kline'].updateMarginCoinConfig(marginCoinConfig)
+    },
+    updateTicket(ticket) {
+      this.$refs['quotation-list'].updateTicket(ticket)
     }
   }
 }
