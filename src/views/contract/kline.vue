@@ -124,7 +124,7 @@ export default {
 
 <style scoped lang="scss">
 .kline {
-  height: 524px;
+  height: 388px;
   width: calc(100% - 332px);
   float: left;
 }

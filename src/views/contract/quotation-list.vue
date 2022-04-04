@@ -5,7 +5,7 @@
       :data="quotationList"
       :row-style="tableRowStyle"
       :cell-style="{padding: '5px'}"
-      height="524"
+      height="398"
       @row-click="changeSymbol"
     >
       <el-table-column
@@ -14,7 +14,12 @@
         width="120"
       >
         <template #default="scope">
-          {{ scope.row.quotationCoin }}/{{ scope.row.marginCoin }}
+          <span style="color: var(--el-color-primary)">
+            {{ scope.row.quotationCoin }}
+          </span>
+          <span style="font-size: 12px;color: var(--app-text-color-dark)">
+            /{{ scope.row.marginCoin }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -24,8 +29,8 @@
         align="right"
       >
         <template #default="scope">
-          <span :class="ticketMap[scope.row.quotationCoin + scope.row.marginCoin].priceColorClass">
-            {{ ticketMap[scope.row.quotationCoin + scope.row.marginCoin].close || '--' }}
+          <span :class="scope.row.priceColorClass">
+            {{ scope.row.lastPrice || '--' }}
           </span>
         </template>
       </el-table-column>
@@ -38,10 +43,10 @@
       >
         <template #default="scope">
           <span
-            v-if="ticketMap[scope.row.quotationCoin + scope.row.marginCoin].rose !== undefined"
-            :class="ticketMap[scope.row.quotationCoin + scope.row.marginCoin].rose > 0 ? 'bullish' : ticketMap[scope.row.quotationCoin + scope.row.marginCoin].rose < 0 ? 'bearish' : ''"
+            v-if="scope.row.rose !== undefined"
+            :class="scope.row.rose > 0 ? 'bullish' : scope.row.rose < 0 ? 'bearish' : ''"
           >
-            {{ ticketMap[scope.row.quotationCoin + scope.row.marginCoin].rose >= 0 ? '+' : '' }}{{ NumberUtil.formatUsdt(ticketMap[scope.row.quotationCoin + scope.row.marginCoin].rose * 100) }}%
+            {{ scope.row.rose >= 0 ? '+' : '' }}{{ NumberUtil.formatUsdt(scope.row.rose * 100) }}%
           </span>
           <span v-else>
             --
@@ -59,7 +64,6 @@
         loading: false,
         quotationList: [],
         timer: undefined,
-        ticketMap: {}
       }
     },
     methods: {
@@ -81,19 +85,22 @@
         })
       },
       updateTicket(ticket) {
-        let oldTicket = this.ticketMap[ticket.symbol]
-        if (oldTicket.close) {
-          ticket.priceColorClass = oldTicket.close <= oldTicket.close ? 'bullish' : 'bearish'
+        for (let i = 0; i < this.quotationList.length; i++) {
+          let item = this.quotationList[i]
+          if (item.quotationCoin + item.marginCoin === ticket.symbol) {
+            if (item.lastPrice) {
+              item.priceColorClass = item.lastPrice <= ticket.close ? 'bullish' : 'bearish'
+            }
+            item.lastPrice = ticket.close
+            item.rose = ticket.rose
+            this.quotationList[i] = item
+            break
+          }
         }
-        this.ticketMap[ticket.symbol] = ticket
       },
       loadQuotationList() {
         this.loading = true
         this.axios.get('/v1/market/quotationList').then(data => {
-          for (let i = 0; i < data.length; i++) {
-            let ticket = data[i]
-            this.ticketMap[ticket.quotationCoin + ticket.marginCoin] = ticket
-          }
           this.quotationList = data
         }).catch(res => {
           this.$error(res.msg)
@@ -112,7 +119,7 @@
   .quotation-list {
     width: 330px;
     float: left;
-    height: 524px;
+    height: 398px;
     border-right: 1px solid var(--app-border-color);
   }
 </style>

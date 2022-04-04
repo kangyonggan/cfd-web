@@ -29,7 +29,7 @@
        * 画K线
        */
       initKline() {
-        // 初始化图表
+        // 初始化60
         this.kline = init('kline', {
           // 网格线
           grid: {
@@ -83,7 +83,7 @@
         this.kline.setOffsetRightSpace(6)
         this.kline.setDataSpace(10)
         this.kline.resize()
-        this.changeIndicator(['VOL'])
+        // this.changeIndicator(['VOL'])
       },
     },
     mounted() {
@@ -106,6 +106,6 @@
 
 <style scoped lang="scss">
   #kline {
-    height: 494px;
+    height: 370px;
   }
 </style>
