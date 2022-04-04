@@ -47,6 +47,11 @@ export default {
           // 历史K线
           that.$refs['kline-body'].kline.applyNewData(msg.data)
           that.loading = false
+          let item = that.$store.getters.getQuotationMap[that.symbol]
+          if (item) {
+            // 设置K线价格精度
+            that.$refs['kline-body'].kline.setPriceVolumePrecision(item.quotationPrecision, 1)
+          }
         } else if (event === 'kline' && topic === that.symbol + '@' + that.interval) {
           // K线
           if (!that.loading) {

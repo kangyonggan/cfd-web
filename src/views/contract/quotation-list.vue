@@ -101,6 +101,12 @@
       loadQuotationList() {
         this.loading = true
         this.axios.get('/v1/market/quotationList').then(data => {
+          let quotationMap = {}
+          for (let i = 0; i < data.length; i++) {
+            quotationMap[data[i].quotationCoin + data[i].marginCoin] = data[i]
+          }
+          this.$store.commit('setQuotationMap', quotationMap)
+
           this.quotationList = data
         }).catch(res => {
           this.$error(res.msg)
