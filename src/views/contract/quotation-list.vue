@@ -115,7 +115,7 @@
         })
       },
     },
-    activated() {
+    mounted() {
       this.loadQuotationList()
     }
   }
