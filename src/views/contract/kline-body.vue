@@ -86,6 +86,9 @@
         // this.changeIndicator(['VOL'])
       },
     },
+    activated() {
+      this.resetKline()
+    },
     mounted() {
       this.initKline()
 
