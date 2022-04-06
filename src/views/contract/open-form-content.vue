@@ -22,11 +22,7 @@
         size="small"
         v-model="readonlyVal"
         readonly
-      >
-        <template #append>
-          USDT
-        </template>
-      </el-input>
+      />
     </el-form-item>
 
     <el-form-item

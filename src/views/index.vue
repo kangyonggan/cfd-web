@@ -48,37 +48,42 @@
       </div>
       <ul>
         <li style="margin-bottom: 10px;">
-          <span>
+          <div>
             交易对
-          </span>
-          <span class="right">
+          </div>
+          <div class="left">
             最新价
-          </span>
-          <span class="right2">
+          </div>
+          <div class="right2">
             24h涨跌
-          </span>
+          </div>
         </li>
-        <li class="item">
-          <span>
-            BTCUSDT永续合约
-          </span>
-          <span class="right">
-            $47982.73
-          </span>
-          <span class="right2">
-            -5.23%
-          </span>
-        </li>
-        <li class="item">
-          <span>
-            ETHUSDT永续合约
-          </span>
-          <span class="right">
-            $3282.97
-          </span>
-          <span class="right2">
-            -3.76%
-          </span>
+        <li
+          class="item"
+          v-for="item in quotationList"
+          :key="item.quotationCoin"
+        >
+          <div>
+            <router-link
+              style="text-decoration: none;"
+              :to="'/contract?symbol=' + item.quotationCoin + item.marginCoin"
+            >
+              <span style="color: var(--el-color-primary);">{{ item.quotationCoin }}</span><span
+                style="font-size: 13px;color: var(--app-text-color-dark)"
+              >/{{ item.marginCoin }}</span>
+            </router-link>
+          </div>
+          <div :class="'left ' + item.priceColorClass">
+            <span v-if="item.lastPrice">
+              ${{ item.lastPrice }}
+            </span>
+            <span v-else>
+              --
+            </span>
+          </div>
+          <div :class="'right2 ' + (item.rose > 0 ? 'bullish' : item.rose < 0 ? 'bearish' : '')">
+            {{ NumberUtil.format(item.rose * 100, 2) }}%
+          </div>
         </li>
       </ul>
     </div>
@@ -86,25 +91,104 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      email: ''
-    }
-  },
-  methods: {
-    toLogin() {
-      this.$router.push({
-        path: '/login',
-        query: {
-          email: this.email
+  import Env from '@/util/env'
+
+  export default {
+    data() {
+      return {
+        email: '',
+        quotationList: [],
+        ws: undefined,
+        retryCount: 0
+      }
+    },
+    methods: {
+      toLogin() {
+        this.$router.push({
+          path: '/login',
+          query: {
+            email: this.email
+          }
+        })
+      },
+      updateTicket(ticket) {
+        for (let i = 0; i < this.quotationList.length; i++) {
+          let item = this.quotationList[i]
+          if (item.quotationCoin + item.marginCoin === ticket.symbol) {
+            if (item.lastPrice) {
+              item.priceColorClass = item.lastPrice <= ticket.close ? 'bullish' : 'bearish'
+            }
+            item.lastPrice = ticket.close
+            item.rose = ticket.rose
+            this.quotationList[i] = item
+            break
+          }
         }
-      })
+      },
+      /**
+       * 初始化ws
+       */
+      initWs() {
+        this.ws = new WebSocket(Env.wsHost + '/ws/market')
+
+        let that = this;
+        this.ws.onmessage = function (e) {
+          let msg = JSON.parse(e.data)
+          let event = msg.event
+          let data = msg.data
+          if (event === 'ticket') {
+            // 最新价 & 涨跌幅 & 成交量
+            that.updateTicket(data)
+          } else if (event === 'ping') {
+            // 心跳，回应 pong
+            that.sendHeartbeat()
+          }
+        }
+
+        this.ws.onclose = function () {
+          if (that.ws) {
+            that.ws.close()
+          }
+          that.ws = undefined
+
+          that.retryCount %= 10
+          that.retryCount++
+          let timeout = that.retryCount * 2000
+          setTimeout(function () {
+            that.initWs()
+          }, timeout)
+        }
+      },
+      sendHeartbeat() {
+        let req = {
+          topic: 'pong'
+        }
+        if (this.ws && this.ws.readyState === 1) {
+          this.ws.send(JSON.stringify(req))
+        }
+      },
+      loadQuotationList() {
+        this.loading = true
+        this.axios.get('/v1/market/quotationList').then(data => {
+          let quotationMap = {}
+          for (let i = 0; i < data.length; i++) {
+            quotationMap[data[i].quotationCoin + data[i].marginCoin] = data[i]
+          }
+          this.$store.commit('setQuotationMap', quotationMap)
+
+          this.quotationList = data
+        }).catch(res => {
+          this.$error(res.msg)
+        }).finally(() => {
+          this.loading = false
+        })
+      },
+    },
+    mounted() {
+      this.loadQuotationList()
+      this.initWs()
     }
-  },
-  mounted() {
   }
-}
 </script>
 
 <style scoped lang="scss">
@@ -189,19 +273,19 @@ export default {
       li {
         padding: 0 20px;
 
-        span {
+        div {
           display: inline-block;
-          width: 20%;
+          width: 50%;
           text-align: left;
         }
 
-        .right {
-          width: 35%;
-          text-align: right;
+        .left {
+          width: 25%;
+          text-align: left;
         }
 
         .right2 {
-          width: 45%;
+          width: 25%;
           text-align: right;
         }
       }
@@ -209,7 +293,6 @@ export default {
       .item {
         height: 64px;
         line-height: 64px;
-        cursor: pointer;
       }
 
       .item:hover {

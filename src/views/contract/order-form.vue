@@ -17,6 +17,7 @@
         <span style="cursor: auto;color: var(--app-text-color);padding-right: 20px;">
           可用保证金 {{ marginCoinConfig.available == undefined ? '--' : NumberUtil.formatUsdt(marginCoinConfig.available) + 'USDT' }}
           <el-icon
+            style="vertical-align: middle"
             v-if="$store.getters.getUserInfo.uid"
             @click="$refs['fund-transfer'].show('TOHY', 'USDT')"
           >

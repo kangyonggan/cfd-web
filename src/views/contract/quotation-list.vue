@@ -63,7 +63,6 @@
       return {
         loading: false,
         quotationList: [],
-        timer: undefined,
       }
     },
     methods: {
