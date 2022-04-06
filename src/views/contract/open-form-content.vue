@@ -16,12 +16,7 @@
         :precision="priceScale[symbol.replace('/USDT', '').toLowerCase()]"
         placeholder="请输入触发价"
         size="small"
-        append
-      >
-        <template #append>
-          USDT
-        </template>
-      </natural-input>
+      />
       <el-input
         v-else
         size="small"
@@ -58,7 +53,7 @@
       @click="submit"
       :disabled="loading"
     >
-      {{ operType === 'BULLISH' ? '开多' : '开空' }}
+      {{ operType === 'BULLISH' ? '做多' : '做空' }}
     </el-button>
   </el-form>
 </template>

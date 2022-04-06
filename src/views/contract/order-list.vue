@@ -57,13 +57,13 @@
           <span
             :style="'color: ' + (scope.row.operType === 'BULLISH' ? 'var(--el-color-success)' : 'var(--el-color-danger)')"
           >
-            {{ scope.row.operType === 'BULLISH' ? '开多' : '开空' }}({{ scope.row.leverage }}x)
+            {{ scope.row.operType === 'BULLISH' ? '做多' : '做空' }}({{ scope.row.leverage }}x)
           </span>
         </template>
       </el-table-column>
       <el-table-column
         prop="margin"
-        label="保证金(USDT)"
+        label="保证金"
         min-width="110"
       />
       <el-table-column
@@ -78,17 +78,17 @@
       />
       <el-table-column
         prop="txFee"
-        label="手续费(USDT)"
+        label="手续费"
         min-width="110"
       />
       <el-table-column
         prop="fundFee"
-        label="资金费(USDT)"
+        label="资金费"
         min-width="110"
       />
       <el-table-column
         prop="profit"
-        label="未实现盈亏(USDT)"
+        label="未实现盈亏"
         min-width="170"
       >
         <template #default="scope">
@@ -187,7 +187,7 @@
       </el-table-column>
       <el-table-column
         prop="margin"
-        label="保证金(USDT)"
+        label="保证金"
       />
       <el-table-column
         prop="triggerPrice"
@@ -272,7 +272,7 @@
       </el-table-column>
       <el-table-column
         prop="profit"
-        label="盈亏(USDT)"
+        label="盈亏"
       >
         <template #default="scope">
           <span
@@ -359,7 +359,7 @@
       </el-table-column>
       <el-table-column
         prop="margin"
-        label="保证金(USDT)"
+        label="保证金"
       >
         <template #default="scope">
           {{ NumberUtil.formatUsdt(scope.row.margin) }}

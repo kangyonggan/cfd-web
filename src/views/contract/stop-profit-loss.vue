@@ -21,7 +21,7 @@
         </span>
         <span
           :style="'font-weight: bold;margin-left: 10px;color: ' + (row.operType === 'BULLISH' ? 'var(--el-color-success)' : 'var(--el-color-danger)')"
-        >{{ row.operType === 'BULLISH' ? '开多' : '开空' }}({{ row.leverage }}x)
+        >{{ row.operType === 'BULLISH' ? '做多' : '做空' }}({{ row.leverage }}x)
         </span>
       </div>
       <div style="width: 50%;float: left;margin-top: 5px;">
@@ -53,12 +53,7 @@
         placeholder="止盈价格"
         size="small"
         @input="calcProfit"
-        append
-      >
-        <template #append>
-          USDT
-        </template>
-      </natural-input>
+      />
     </el-form-item>
     <div style="margin-right: 60px;margin-bottom: 20px;float: right;font-size: 13px;">
       <span style="display: inline-block;width: 70px;text-align: right;color: var(--app-text-color-light); ">
@@ -83,12 +78,7 @@
         placeholder="止损价格"
         size="small"
         @input="calcLoss"
-        append
-      >
-        <template #append>
-          USDT
-        </template>
-      </natural-input>
+      />
     </el-form-item>
     <div style="margin-right: 60px;margin-bottom: 20px;float: right;font-size: 13px;">
       <span style="display: inline-block;width: 70px;text-align: right;color: var(--app-text-color-light); ">

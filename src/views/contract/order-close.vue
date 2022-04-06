@@ -20,7 +20,7 @@
         </span>
         <span
           :style="'font-weight: bold;margin-left: 10px;color: ' + (row.operType === 'BULLISH' ? 'var(--el-color-success)' : 'var(--el-color-danger)')"
-        >{{ row.operType === 'BULLISH' ? '开多' : '开空' }}({{ row.leverage }}x)
+        >{{ row.operType === 'BULLISH' ? '做多' : '做空' }}({{ row.leverage }}x)
         </span>
       </div>
       <div style="width: 50%;float: left;margin-top: 20px;">
