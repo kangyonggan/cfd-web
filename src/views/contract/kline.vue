@@ -120,15 +120,29 @@ export default {
       }
       this.sendMsg(req)
     },
+    unsub() {
+      // 取消订阅K线
+      let req = {
+        method: 'UNSUB',
+        topic: 'KLINE_' + this.symbol + '@' + this.interval
+      }
+      this.sendMsg(req)
+    },
     subTickets() {
       // 订阅全币种最新价
+      let topics = ''
       for (let i = 0; i < this.quotationList.length; i++) {
-        let req = {
-          method: 'SUB',
-          topic: 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
+        if (i) {
+          topics += ','
         }
-        this.sendMsg(req)
+        topics += 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
       }
+
+      let req = {
+        method: 'SUB',
+        topic: topics
+      }
+      this.sendMsg(req)
       this.hasSubTicket = true
     },
     sendMsg(req) {
@@ -151,9 +165,11 @@ export default {
   },
   watch: {
     '$route.query.symbol': function () {
+      this.unsub()
       this.sub()
     },
     '$route.query.interval': function () {
+      this.unsub()
       this.sub()
     }
   }

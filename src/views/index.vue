@@ -177,14 +177,20 @@
       },
       subTickets() {
         // 订阅全币种最新价
+        let topics = ''
         for (let i = 0; i < this.quotationList.length; i++) {
-          let req = {
-            method: 'SUB',
-            topic: 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
+          if (i) {
+            topics += ','
           }
-          if (this.ws && this.ws.readyState === 1) {
-            this.ws.send(JSON.stringify(req))
-          }
+          topics += 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
+        }
+
+        let req = {
+          method: 'SUB',
+          topic: topics
+        }
+        if (this.ws && this.ws.readyState === 1) {
+          this.ws.send(JSON.stringify(req))
         }
         this.hasSubTicket = true
       },
