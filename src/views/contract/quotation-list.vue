@@ -59,6 +59,7 @@
 
 <script>
   export default {
+    emits: ['updateQuotationList'],
     data() {
       return {
         loading: false,
@@ -107,6 +108,7 @@
           this.$store.commit('setQuotationMap', quotationMap)
 
           this.quotationList = data
+          this.$emit('updateQuotationList', data)
         }).catch(res => {
           this.$error(res.msg)
         }).finally(() => {

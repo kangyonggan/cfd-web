@@ -22,7 +22,9 @@ export default {
       ws: undefined,
       symbol: '',
       interval: '',
-      retryCount: 0
+      retryCount: 0,
+      quotationList: [],
+      hasSubTicket: false
     }
   },
   methods: {
@@ -34,8 +36,10 @@ export default {
 
       let that = this;
       this.ws.onopen = function () {
-        // 订阅K线并自动获取一次历史K线，自动推送全部交易对的最新价
         that.sub()
+        if (that.quotationList.length && !that.hasSubTicket) {
+          that.subTickets()
+        }
       }
 
       this.ws.onmessage = function (e) {
@@ -43,7 +47,7 @@ export default {
         let event = msg.event
         let topic = msg.topic
         let data = msg.data
-        if (event === 'history' && topic === that.symbol + '@' + that.interval) {
+        if (event === 'HISTORY' && topic === that.symbol + '@' + that.interval) {
           // 历史K线
           that.$refs['kline-body'].kline.applyNewData(msg.data)
           that.loading = false
@@ -52,7 +56,7 @@ export default {
             // 设置K线价格精度
             that.$refs['kline-body'].kline.setPriceVolumePrecision(item.quotationPrecision, 1)
           }
-        } else if (event === 'kline' && topic === that.symbol + '@' + that.interval) {
+        } else if (event === 'KLINE' && topic === that.symbol + '@' + that.interval) {
           // K线
           if (!that.loading) {
             // 历史K线加载之后，再去画最新K线
@@ -65,10 +69,10 @@ export default {
           let lastPrice = data.close * 1
           that.$emit('updateLastPrice', lastPrice)
           that.$refs['kline-header'].updateLastPrice(lastPrice)
-        } else if (event === 'ticket') {
+        } else if (event === 'TICKET') {
           // 最新价 & 涨跌幅 & 成交量
           that.$emit('updateTicket', data)
-        } else if (event === 'ping') {
+        } else if (event === 'PING') {
           // 心跳，回应 pong
           that.sendHeartbeat()
         }
@@ -90,7 +94,8 @@ export default {
     },
     sendHeartbeat() {
       let req = {
-        topic: 'pong'
+        method: 'REQ',
+        topic: 'PONG'
       }
       if (this.ws && this.ws.readyState === 1) {
         this.ws.send(JSON.stringify(req))
@@ -101,12 +106,40 @@ export default {
       this.interval = this.$route.query.interval || localStorage.getItem('interval') || '1h'
       this.loading = true
 
+      // 请求历史K线
       let req = {
-        topic: 'sub',
-        data: this.symbol + '@' + this.interval
+        method: 'REQ',
+        topic: 'HISTORY_' + this.symbol + '@' + this.interval
       }
+      this.sendMsg(req)
+
+      // 订阅K线
+      req = {
+        method: 'SUB',
+        topic: 'KLINE_' + this.symbol + '@' + this.interval
+      }
+      this.sendMsg(req)
+    },
+    subTickets() {
+      // 订阅全币种最新价
+      for (let i = 0; i < this.quotationList.length; i++) {
+        let req = {
+          method: 'SUB',
+          topic: 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
+        }
+        this.sendMsg(req)
+      }
+      this.hasSubTicket = true
+    },
+    sendMsg(req) {
       if (this.ws && this.ws.readyState === 1) {
         this.ws.send(JSON.stringify(req))
+      }
+    },
+    updateQuotationList(quotationList) {
+      this.quotationList = quotationList
+      if (!this.hasSubTicket) {
+        this.subTickets()
       }
     },
     updateMarginCoinConfig(marginCoinConfig) {

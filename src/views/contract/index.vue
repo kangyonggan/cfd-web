@@ -1,6 +1,9 @@
 <template>
   <div>
-    <quotation-list ref="quotation-list" />
+    <quotation-list
+      ref="quotation-list"
+      @update-quotation-list="updateQuotationList"
+    />
     <kline
       ref="kline"
       @update-ticket="updateTicket"
@@ -33,6 +36,9 @@ export default {
     },
     updateTicket(ticket) {
       this.$refs['quotation-list'].updateTicket(ticket)
+    },
+    updateQuotationList(list) {
+      this.$refs['kline'].updateQuotationList(list)
     }
   }
 }

@@ -98,6 +98,7 @@
       return {
         email: '',
         quotationList: [],
+        hasSubTicket: false,
         ws: undefined,
         retryCount: 0
       }
@@ -132,14 +133,20 @@
         this.ws = new WebSocket(Env.wsHost + '/ws/market')
 
         let that = this;
+        this.ws.onopen = function () {
+          if (that.quotationList.length && !that.hasSubTicket) {
+            that.subTickets()
+          }
+        }
+
         this.ws.onmessage = function (e) {
           let msg = JSON.parse(e.data)
           let event = msg.event
           let data = msg.data
-          if (event === 'ticket') {
+          if (event === 'TICKET') {
             // 最新价 & 涨跌幅 & 成交量
             that.updateTicket(data)
-          } else if (event === 'ping') {
+          } else if (event === 'PING') {
             // 心跳，回应 pong
             that.sendHeartbeat()
           }
@@ -161,11 +168,25 @@
       },
       sendHeartbeat() {
         let req = {
-          topic: 'pong'
+          method: 'REQ',
+          topic: 'PONG'
         }
         if (this.ws && this.ws.readyState === 1) {
           this.ws.send(JSON.stringify(req))
         }
+      },
+      subTickets() {
+        // 订阅全币种最新价
+        for (let i = 0; i < this.quotationList.length; i++) {
+          let req = {
+            method: 'SUB',
+            topic: 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
+          }
+          if (this.ws && this.ws.readyState === 1) {
+            this.ws.send(JSON.stringify(req))
+          }
+        }
+        this.hasSubTicket = true
       },
       loadQuotationList() {
         this.loading = true
@@ -177,6 +198,9 @@
           this.$store.commit('setQuotationMap', quotationMap)
 
           this.quotationList = data
+          if (!this.hasSubTicket) {
+            this.subTickets()
+          }
         }).catch(res => {
           this.$error(res.msg)
         }).finally(() => {
