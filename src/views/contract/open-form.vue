@@ -6,7 +6,7 @@
       :symbol="symbol"
       :leverage="leverage"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
-      oper-type="BULLISH"
+      oper-type="LONG"
       :margin-coin-config="marginCoinConfig"
       @success="$emit('success')"
     />
@@ -16,7 +16,7 @@
       :symbol="symbol"
       :leverage="leverage"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
-      oper-type="BEARISH"
+      oper-type="SHORT"
       :margin-coin-config="marginCoinConfig"
       @success="$emit('success')"
     />

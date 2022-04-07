@@ -8,8 +8,8 @@
         市价
       </span>
       <span
-        :class="{active: delegateType === 'PLAN'}"
-        @click="changeDelegateType('PLAN')"
+        :class="{active: delegateType === 'LIMIT'}"
+        @click="changeDelegateType('LIMIT')"
       >
         限价
       </span>
@@ -97,7 +97,7 @@
        * 获取保证金信息
        */
       getMarginCoinConfig() {
-        let params = 'quotationCoin=' + this.symbol.replace('/USDT', '') + '&accountType=USDT'
+        let params = 'quotationCoin=' + this.symbol.replace('USDT', '') + '&accountType=USDT'
         this.axios.get('/v1/contract/order/marginCoinConfig?' + params).then(data => {
           this.marginCoinConfig = data
           this.$emit('updateMarginCoinConfig', data)
@@ -109,7 +109,7 @@
        * 加载杠杆、可用保证金
        */
       reload() {
-        let symbol = this.$route.query.symbol || 'BTC/USDT'
+        let symbol = this.$route.query.symbol || 'BTCUSDT'
         let userInfo = this.$store.getters.getUserInfo
         if (!userInfo.uid) {
           this.leverage = ''
@@ -122,7 +122,7 @@
         this.symbol = symbol
         this.leverage = localStorage.getItem('contractLeverage-' + symbol) || ''
         this.marginType = localStorage.getItem('contractMarginType') || ''
-        this.getLeverageList(symbol.toUpperCase().replace('/USDT', ''))
+        this.getLeverageList(symbol.toUpperCase().replace('USDT', ''))
         this.getMarginCoinConfig()
         if (!this.marginType) {
           this.getMarginType()

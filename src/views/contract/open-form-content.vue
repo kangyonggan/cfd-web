@@ -11,9 +11,9 @@
       label="触发价"
     >
       <natural-input
-        v-if="delegateType === 'PLAN'"
+        v-if="delegateType === 'LIMIT'"
         v-model="params.triggerPrice"
-        :precision="priceScale[symbol.replace('/USDT', '').toLowerCase()]"
+        :precision="priceScale[symbol.replace('USDT', '').toLowerCase()]"
         placeholder="请输入触发价"
         size="small"
       />
@@ -154,7 +154,7 @@
           params.delegateType = this.delegateType
           params.operType = this.operType
           params.leverage = this.leverage
-          params.quotationCoin = this.symbol.replace('/USDT', '')
+          params.quotationCoin = this.symbol.replace('USDT', '')
 
           this.axios.post('/v1/contract/order/open', params).then(() => {
             this.$success('下单成功')
