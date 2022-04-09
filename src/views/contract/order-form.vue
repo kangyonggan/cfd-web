@@ -2,32 +2,37 @@
   <div class="order-form">
     <div class="header">
       <span
-        :class="{active: type === 'MARKET'}"
+        :class="{active: type === 'MARKET', tab: true}"
         @click="changeType('MARKET')"
       >
         市价
       </span>
       <span
-        :class="{active: type === 'LIMIT'}"
+        :class="{active: type === 'LIMIT', tab: true}"
         @click="changeType('LIMIT')"
       >
         限价
       </span>
       <div class="actions">
-        <span style="cursor: auto;color: var(--app-text-color);padding-right: 20px;">
-          可用保证金 --
-          <el-icon
-            style="vertical-align: middle"
-            v-if="$store.getters.getUserInfo.uid"
-            @click="$refs['fund-transfer'].show('TOHY', 'USDT')"
-          >
-            <circle-plus style="font-size: 16px;color: var(--el-color-primary)" />
-          </el-icon>
+        <span class="item">
+          账户余额 {{ account.totalAmount === undefined ? '--' : account.totalAmount + ' USDT' }}
         </span>
-        <span>
+        <span class="item">
+          净资产 {{ account.netAmount === undefined ? '--' : account.netAmount + ' USDT' }}
+        </span>
+        <span class="item">
+          持仓保证金 {{ account.frozenAmount === undefined ? '--' : account.frozenAmount + ' USDT' }}
+        </span>
+        <span class="item">
+          未实现盈亏 {{ account.unsettleAmount === undefined ? '--' : account.unsettleAmount + ' USDT' }}
+        </span>
+        <span class="item">
+          可用保证金 {{ account.availableAmount === undefined ? '--' : account.availableAmount + ' USDT' }}
+        </span>
+        <span class="item">
           --
         </span>
-        <span>
+        <span class="item">
           {{ marginType ? (marginType === 'SINGLE' ? '逐仓' : '全仓'): '--' }}
         </span>
       </div>
@@ -56,29 +61,23 @@
     <switch-margin-type
       ref="switch-margin-type"
     />
-
-    <fund-transfer
-      ref="fund-transfer"
-      @success="reload"
-    />
   </div>
 </template>
 
 <script>
   import OpenForm from './open-form'
   import SwitchMarginType from "./switch-margin-type"
-  import FundTransfer from '../wallet/transfer-modal.vue'
-  import {CirclePlus} from '@element-plus/icons'
 
   export default {
-    components: {SwitchMarginType, OpenForm, FundTransfer, CirclePlus},
+    components: {SwitchMarginType, OpenForm},
     emits: ['success'],
     data() {
       return {
         symbol: '',
         type: localStorage.getItem('orderType') || 'MARKET',
         leverage: '20',
-        marginType: 'CROSSED'
+        marginType: 'CROSSED',
+        account: {}
       }
     },
     methods: {
@@ -91,6 +90,9 @@
       changeType(type) {
         this.type = type
         localStorage.setItem('orderType', type)
+      },
+      updateAccount(account) {
+        this.account = account.list[1]
       }
     },
     activated() {
@@ -109,7 +111,7 @@
       background: var(--app-bg-color-light);
       border-bottom: 1px solid var(--app-border-color);
 
-      span {
+      .tab {
         display: inline-block;
         min-width: 45px;
         text-align: center;
@@ -129,20 +131,17 @@
       .actions {
         float: right;
 
-        span {
+        .item {
           display: inline-block;
-          height: 43px;
-          line-height: 43px;
-          cursor: pointer;
           font-size: 13px;
           border-right: 1px solid var(--app-border-color);
           text-align: center;
           min-width: 60px;
-          margin-right: 0;
-          color: var(--el-color-primary);
+          padding: 0 15px;
+          margin-top: 15px;
         }
 
-        span:last-child {
+        .item:last-child {
           border-right: 0;
         }
       }

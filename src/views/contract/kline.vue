@@ -75,6 +75,8 @@ export default {
         } else if (event === 'PING') {
           // 心跳，回应 pong
           that.sendHeartbeat()
+        } else if (event === 'ERROR') {
+          that.$error(data)
         }
       }
 
