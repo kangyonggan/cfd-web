@@ -2,22 +2,20 @@
   <div style="width: 100%">
     <open-form-content
       ref="buy-form"
-      :delegate-type="delegateType"
+      :type="type"
       :symbol="symbol"
       :leverage="leverage"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
-      oper-type="LONG"
-      :margin-coin-config="marginCoinConfig"
+      position-side="LONG"
       @success="$emit('success')"
     />
     <open-form-content
       ref="sell-form"
-      :delegate-type="delegateType"
+      :type="type"
       :symbol="symbol"
       :leverage="leverage"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
-      oper-type="SHORT"
-      :margin-coin-config="marginCoinConfig"
+      position-side="SHORT"
       @success="$emit('success')"
     />
   </div>
@@ -30,13 +28,9 @@
     emits: ['success'],
     components: {OpenFormContent},
     props: {
-      delegateType: {
+      type: {
         required: true,
         type: String
-      },
-      marginCoinConfig: {
-        required: true,
-        type: Object
       },
       symbol: {
         required: true,

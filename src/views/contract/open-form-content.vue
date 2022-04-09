@@ -11,7 +11,7 @@
       label="触发价"
     >
       <natural-input
-        v-if="delegateType === 'LIMIT'"
+        v-if="type === 'LIMIT'"
         v-model="params.triggerPrice"
         :precision="priceScale[symbol.replace('USDT', '').toLowerCase()]"
         placeholder="请输入触发价"
@@ -44,12 +44,12 @@
 
     <el-button
       style="width: 100%;margin-top: 5px;"
-      :type="operType === 'BULLISH' ? 'success' : 'danger'"
+      :type="positionSide === 'LONG' ? 'success' : 'danger'"
       size="medium"
       @click="submit"
       :disabled="loading"
     >
-      {{ operType === 'BULLISH' ? '做多' : '做空' }}
+      {{ positionSide === 'LONG' ? '做多' : '做空' }}
     </el-button>
   </el-form>
 </template>
@@ -62,17 +62,13 @@
     emits: ['success'],
     components: {NaturalInput},
     props: {
-      delegateType: {
+      type: {
         required: true,
         type: String
       },
-      operType: {
+      positionSide: {
         required: true,
         type: String
-      },
-      marginCoinConfig: {
-        required: true,
-        type: Object
       },
       symbol: {
         required: true,
@@ -91,9 +87,7 @@
         params: {
           triggerPrice: '',
           margin: '',
-          price: 1,
-          marginCoin: 'USDT',
-          accountType: 'USDT',
+          marginCoin: 'USDT'
         },
         rules: {
           triggerPrice: [
@@ -107,7 +101,7 @@
     },
     methods: {
       validatePrice: function (rule, value, callback) {
-        if (this.delegateType === 'MARKET') {
+        if (this.type === 'MARKET') {
           callback()
           return
         }
@@ -123,15 +117,15 @@
       },
       validateMargin: function (rule, value, callback) {
         if (!isNaN(value) && value * 1 > 0) {
-          let availableMargin = this.marginCoinConfig.available
-          if (value > availableMargin) {
-            callback(new Error('保证金不足'))
-            return
-          }
-          if (value < this.marginCoinConfig.minMargin) {
-            callback(new Error('合约交易保证金太少,不能开仓'))
-            return
-          }
+          // let availableMargin = this.marginCoinConfig.available
+          // if (value > availableMargin) {
+          //   callback(new Error('保证金不足'))
+          //   return
+          // }
+          // if (value < this.marginCoinConfig.minMargin) {
+          //   callback(new Error('合约交易保证金太少,不能开仓'))
+          //   return
+          // }
           callback()
         } else {
           callback(new Error('保证金有误'))
@@ -151,12 +145,12 @@
           this.loading = true
           let params = Object.assign({}, this.params)
 
-          params.delegateType = this.delegateType
-          params.operType = this.operType
+          params.type = this.type
+          params.positionSide = this.positionSide
           params.leverage = this.leverage
           params.quotationCoin = this.symbol.replace('USDT', '')
 
-          this.axios.post('/v1/contract/order/open', params).then(() => {
+          this.axios.post('/v1/order/open', params).then(() => {
             this.$success('下单成功')
             this.params.triggerPrice = ''
             this.params.margin = ''

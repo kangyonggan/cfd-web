@@ -12,7 +12,6 @@
     <order-form
       ref="order-form"
       @update-margin-coin-config="updateMarginCoinConfig"
-      @success="$refs['order-list'].reload()"
     />
 
     <order-list
