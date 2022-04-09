@@ -46,6 +46,7 @@ export default {
     },
     updateQuotationList(list) {
       this.$refs['kline'].updateQuotationList(list)
+      this.$refs['order-list'].updateQuotationList(list)
     },
     accountUpdate(data) {
       this.$refs['order-form'].updateAccount(data)

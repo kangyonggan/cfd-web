@@ -68,13 +68,17 @@
         prop="openPrice"
         label="开仓价格"
         min-width="100"
-      />
+      >
+        <template #default="scope">
+          {{ NumberUtil.format(scope.row.openPrice, quotationMap[scope.row.quotationCoin]) }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="最新价格"
         min-width="100"
       >
         <template #default="scope">
-          {{ ticketMap[scope.row.quotationCoin + scope.row.marginCoin] ? ticketMap[scope.row.quotationCoin + scope.row.marginCoin].close : '--' }}
+          {{ ticketMap[scope.row.quotationCoin + scope.row.marginCoin] ? NumberUtil.format(ticketMap[scope.row.quotationCoin + scope.row.marginCoin].close, quotationMap[scope.row.quotationCoin]) : '--' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -146,7 +150,8 @@ export default {
         loading: false,
         activeTab: localStorage.getItem('orderTab') || '0',
         orderHeldList: [],
-        ticketMap: {}
+        ticketMap: {},
+        quotationMap: {},
       }
     },
     methods: {
@@ -181,6 +186,14 @@ export default {
       updateTicket(ticket) {
         this.ticketMap[ticket.symbol] = ticket
         this.refreshOrderHeldList()
+      },
+      updateQuotationList(quotationList) {
+        let quotationMap = {}
+        for (let i = 0; i < quotationList.length; i++) {
+          quotationMap[quotationList[i].quotationCoin] = quotationList[i].quotationPrecision
+        }
+
+        this.quotationMap = quotationMap
       },
       refreshOrderHeldList() {
         for (let i = 0; i < this.orderHeldList.length; i++) {
