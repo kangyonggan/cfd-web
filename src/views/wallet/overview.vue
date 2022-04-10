@@ -48,16 +48,22 @@
           class="account-list"
           v-loading="loading"
         >
-          <li
-            v-for="account in accountList"
-            :key="account.accountType"
-          >
+          <li>
             <div>
-              {{ account.accountType === 'CAPITAL' ? '资金账户' : '合约账户' }}
+              资金账户
             </div>
 
             <div class="asset">
-              {{ account.totalAmount }} USDT
+              {{ assets['CAPITAL'] }} USDT
+            </div>
+          </li>
+          <li>
+            <div>
+              合约账户
+            </div>
+
+            <div class="asset">
+              {{ assets['CONTRACT'] }} USDT
             </div>
           </li>
         </ul>
@@ -72,131 +78,131 @@
 </template>
 
 <script>
-  import Sidebar from './sidebar'
-  import TransferModal from "./transfer-modal"
+import Sidebar from './sidebar'
+import TransferModal from "./transfer-modal"
 
-  export default {
-    components: {TransferModal, Sidebar},
-    data() {
-      return {
-        loading: false,
-        totalAmount: '',
-        accountList: [],
-        optionOverview: {
-          color: ['#5dccc8', '#fca235'],
-          tooltip: {
-            trigger: 'item',
-            formatter: '{b}（{d}%）<br/>${c}'
-          },
-          legend: {
-            show: false
-          },
-          series: [
-            {
-              type: 'pie',
-              radius: ['40%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                show: false,
-              },
-              data: [
-                {value: 88888888.88888888, name: '资金账户'},
-                {value: 88888888.88888888, name: '合约账户'},
-              ]
-            }
-          ]
-        }
-      }
-    },
-    methods: {
-      /**
-       * 账户概览
-       */
-      getOverview() {
-        this.loading = true
-        this.totalAmount = 0
-        this.accountList = []
-        this.optionOverview.series[0].data = []
-        this.axios.get('/v1/wallet/overview').then(data => {
-          this.totalAmount = data.totalAmount
-          this.accountList = data.list
-          let seriesData = []
-          for (let i = 0; i < data.list.length; i++) {
-            seriesData[i] = {
-              value: data.list[i].totalAmount,
-              name: data.list[i].accountType === 'CAPITAL' ? '资金账户' : '合约账户'
-            }
+export default {
+  components: {TransferModal, Sidebar},
+  data() {
+    return {
+      loading: false,
+      totalAmount: '',
+      assets: {},
+      optionOverview: {
+        color: ['#5dccc8', '#fca235'],
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}（{d}%）<br/>${c}'
+        },
+        legend: {
+          show: false
+        },
+        series: [
+          {
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+            },
+            data: [
+              {value: 0, name: '资金账户'},
+              {value: 0, name: '合约账户'},
+            ]
           }
-          this.optionOverview.series[0].data = seriesData
-        }).catch(res => {
-          this.$error(res.msg)
-        }).finally(() => {
-          this.loading = false
-        })
+        ]
       }
-    },
-    mounted() {
-      this.getOverview()
     }
+  },
+  methods: {
+    /**
+     * 账户概览
+     */
+    getOverview() {
+      this.loading = true
+      this.totalAmount = 0
+      this.assets = {}
+      this.optionOverview.series[0].data = []
+      this.axios.get('/v1/wallet/overview').then(data => {
+        this.totalAmount = data.totalAmount
+        this.assets = data.assets
+        let seriesData = [{
+          value: data.assets['CAPITAL'],
+          name: '资金账户'
+        }, {
+          value: data.assets['CONTRACT'],
+          name: '合约账户'
+        }]
+        this.optionOverview.series[0].data = seriesData
+      }).catch(res => {
+        this.$error(res.msg)
+      }).finally(() => {
+        this.loading = false
+      })
+    }
+  },
+  mounted() {
+    this.getOverview()
   }
+}
 </script>
 
 <style scoped lang="scss">
-  .content {
-    float: right;
-    width: calc(100% - 330px);
+.content {
+  float: right;
+  width: calc(100% - 330px);
 
-    .overview {
-      height: 205px;
+  .overview {
+    height: 205px;
 
-      .actions {
-        float: left;
+    .actions {
+      float: left;
 
-        .asset {
-          font-size: 20px;
-          font-weight: 500;
-          margin-top: 50px;
-          color: var(--app-text-color-light);
+      .asset {
+        font-size: 20px;
+        font-weight: 500;
+        margin-top: 50px;
+        color: var(--app-text-color-light);
 
-          span {
-            font-size: 16px;
-            opacity: 0.9;
-            color: var(--app-text-color-dark);
-          }
-        }
-
-        .el-button {
-          letter-spacing: 8px;
-          padding-left: 25px;
-        }
-      }
-    }
-
-    .account-list {
-      list-style: none;
-      padding-left: 0;
-      margin-top: 0;
-
-      li {
-        height: 35px;
-        border-bottom: 1px solid var(--app-border-color);
-        padding-top: 19px;
-
-        div {
-          display: inline-block;
-          width: 30%;
-        }
-
-        .asset {
-          width: 70%;
-          text-align: right;
-          color: var(--app-text-color-light);
+        span {
+          font-size: 16px;
+          opacity: 0.9;
+          color: var(--app-text-color-dark);
         }
       }
 
-      li:first-child {
-        padding-top: 0;
+      .el-button {
+        letter-spacing: 8px;
+        padding-left: 25px;
       }
     }
   }
+
+  .account-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0;
+
+    li {
+      height: 35px;
+      border-bottom: 1px solid var(--app-border-color);
+      padding-top: 19px;
+
+      div {
+        display: inline-block;
+        width: 30%;
+      }
+
+      .asset {
+        width: 70%;
+        text-align: right;
+        color: var(--app-text-color-light);
+      }
+    }
+
+    li:first-child {
+      padding-top: 0;
+    }
+  }
+}
 </style>

@@ -19,7 +19,7 @@
             账户余额(USDT)
           </div>
           <div class="btm">
-            {{ NumberUtil.formatUsdt(account.totalAmount ) }}
+            {{ NumberUtil.formatUsdt(totalAmount ) }}
           </div>
         </div>
         <div class="item">
@@ -27,7 +27,7 @@
             净资产(USDT)
           </div>
           <div class="btm">
-            {{ account.totalAmount === undefined ? '--' : NumberUtil.formatUsdt((account.totalAmount + orderAmountInfo.unsettleProfit)) }}
+            {{ totalAmount === undefined ? '--' : NumberUtil.formatUsdt((totalAmount + orderAmountInfo.unsettleProfit)) }}
           </div>
         </div>
         <div class="item">
@@ -103,9 +103,7 @@
         type: localStorage.getItem('orderType') || 'MARKET',
         leverage: '20',
         marginType: 'CROSSED',
-        account: {
-          totalAmount: 0
-        },
+        totalAmount: 0,
         orderAmountInfo: {
           unsettleProfit: 0,
           totalMargin: 0,
@@ -114,7 +112,7 @@
     },
     methods: {
       calcAvailableMargin() {
-        return new Big(this.account.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
+        return new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
       },
       /**
        * 加载杠杆、可用保证金
@@ -127,7 +125,7 @@
         localStorage.setItem('orderType', type)
       },
       updateAccount(account) {
-        this.account = account.list[1]
+        this.totalAmount = account.assets['CONTRACT']
       },
       updateOrderAmountInfo(orderAmountInfo) {
         this.orderAmountInfo = orderAmountInfo

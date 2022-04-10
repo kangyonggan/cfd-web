@@ -111,8 +111,8 @@
         </template>
       </el-table-column>
       <el-table-column
-          label="强平价格"
-          min-width="110"
+        label="强平价格"
+        min-width="110"
       >
         <template #default="scope">
           <span v-if="scope.row.forceClosePrice !== undefined">
@@ -155,13 +155,17 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <order-close ref="order-close" />
   </div>
 </template>
 
 <script>
 import Big from "big.js"
+import OrderClose from "./order-close"
 
 export default {
+  components: {OrderClose},
   emits: ['updateOrderAmountInfo'],
   data() {
     return {
@@ -170,11 +174,14 @@ export default {
       orderHeldList: [],
       ticketMap: {},
       quotationMap: {},
-      account: {},
+      totalAmount: 0,
       lastCalcTime: 0
     }
   },
   methods: {
+    closeOrder(row) {
+      this.$refs['order-close'].show(row)
+    },
     calcProfit(row) {
       let lastPrice = this.ticketMap[row.quotationCoin + row.marginCoin]
       if (!lastPrice) {
@@ -210,7 +217,7 @@ export default {
       this.refreshOrderHeldList()
     },
     updateAccount(account) {
-      this.account = account.list[1]
+      this.totalAmount = account.assets['CONTRACT']
     },
     updateQuotationList(quotationList) {
       let quotationMap = {}
@@ -244,7 +251,7 @@ export default {
       totalMargin = this.NumberUtil.formatUsdt(totalMargin) * 1
       this.$emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
 
-      let totalAmount = this.account.totalAmount + totalUnsettleProfit
+      let totalAmount = this.totalAmount + totalUnsettleProfit
 
       // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金）
       // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
@@ -252,17 +259,20 @@ export default {
         let item = this.orderHeldList[i]
         let pos = new Big(item.positionSide === 'LONG' ? 1 : -1)
         let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin)
+        if (!item.lastPrice) {
+          continue
+        }
         let openPrice = new Big(item.marginType === 'CROSSED' ? item.lastPrice : item.openPrice)
         let forceClosePrice = openPrice.minus(
-            (
-                totalMargin.minus(
-                    new Big(0.1).times(new Big(item.margin))
-                ).times(pos)
-            ).div(
-                new Big(item.margin).times(new Big(item.leverage))
-            ).times(
-                new Big(openPrice)
-            )
+          (
+            totalMargin.minus(
+              new Big(0.1).times(new Big(item.margin))
+            ).times(pos)
+          ).div(
+            new Big(item.margin).times(new Big(item.leverage))
+          ).times(
+            new Big(openPrice)
+          )
         )
         if (forceClosePrice <= 0) {
           forceClosePrice = '永不强平'

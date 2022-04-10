@@ -2,7 +2,7 @@
   <base-modal
     ref="modal"
     title="平仓"
-    url="/v1/contract/order/close"
+    url="/v1/order/close"
     :params="params"
     @success="success"
     :width="600"
@@ -12,15 +12,17 @@
         <span style="display: inline-block;width: 70px;text-align: right">
           交易对
         </span>
-        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-light)">{{ row.quotationCoin + '/' + row.marginCoin }}</span>
+        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-light)">{{
+          row.quotationCoin + '/' + row.marginCoin
+        }}</span>
       </div>
       <div style="width: 50%;float: left">
         <span style="display: inline-block;width: 70px;text-align: right">
           持仓方向
         </span>
         <span
-          :style="'font-weight: bold;margin-left: 10px;color: ' + (row.operType === 'BULLISH' ? 'var(--el-color-success)' : 'var(--el-color-danger)')"
-        >{{ row.operType === 'BULLISH' ? '做多' : '做空' }}({{ row.leverage }}x)
+          :style="'font-weight: bold;margin-left: 10px;color: ' + (row.positionSide === 'LONG' ? 'var(--el-color-success)' : 'var(--el-color-danger)')"
+        >{{ row.positionSide === 'LONG' ? '做多' : '做空' }}({{ row.leverage }}x)
         </span>
       </div>
       <div style="width: 50%;float: left;margin-top: 20px;">
@@ -34,25 +36,32 @@
         <span style="display: inline-block;width: 70px;text-align: right">
           最新价格
         </span>
-        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-light)">{{ lastPrice }}
+        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-light)">{{ row.lastPrice }}
         </span>
       </div>
       <div style="width: 50%;float: left;margin-top: 20px;">
         <span style="display: inline-block;width: 70px;text-align: right">
-          手续费
+          预计盈亏
         </span>
-        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-light)">{{ row.txFee }} USDT
+        <span
+          style="font-weight: bold;margin-left: 10px;"
+          :class="row.profitClass"
+        >
+          {{ row.profit * 1 >= 0 ? '+' : '' }}{{
+            NumberUtil.formatUsdt(row.profit)
+          }} USDT
         </span>
       </div>
       <div style="width: 50%;float: right;margin-top: 20px;">
         <span style="display: inline-block;width: 70px;text-align: right">
-          预计盈亏
+          回报率
         </span>
 
         <span
-          :style="'font-weight: bold;margin-left: 10px;color: ' + (profit >= 0 ? 'var(--el-color-success)' : 'var(--el-color-danger)')"
+          :class="row.profitClass"
+          style="font-weight: bold;margin-left: 10px;"
         >
-          {{ profit > 0 ? '+' : '' }}{{ profit === '' ? '--' : (profit + '(' + profitRate + ')') }}
+          {{ row.profitRate }}
         </span>
       </div>
     </div>
@@ -61,55 +70,32 @@
 </template>
 
 <script>
-  import BaseModal from '@/components/base-modal.vue'
+import BaseModal from '@/components/base-modal.vue'
 
-  export default {
-    emits: ['success'],
-    components: {BaseModal},
-    data() {
-      return {
-        params: {
-          closePrice: 1,
-          orderNo: ''
-        },
-        profit: '',
-        profitRate: '',
-        row: {},
-        lastPrice: '--',
-      }
-    },
-    methods: {
-      show(row) {
-        this.row = row
-        this.params = {
-          closePrice: row.marketPrice,
-          orderNo: row.orderNo,
-        }
-        this.lastPrice = '--'
-        this.profit = ''
-        this.profitRate = ''
-        this.calcProfit()
-        this.$refs.modal.show()
+export default {
+  emits: ['success'],
+  components: {BaseModal},
+  data() {
+    return {
+      params: {
+        orderNo: ''
       },
-      success() {
-        this.$success('平仓成功')
-        this.$emit('success')
-      },
-      calcProfit() {
-        let lastPrice = this.row.marketPrice
-        this.lastPrice = lastPrice
-        // 收益率 = 方向 * (收 - 开) / 开 * 杠杆
-        let profitRate = (this.row.operType === 'BULLISH' ? 1 : -1) * (lastPrice - this.row.openPrice) / this.row.openPrice * this.row.leverage
-        // 收益 = 方向 * (收 - 开) / 开 * 保证金 * 杠杆
-        this.profit = this.NumberUtil.formatUsdt(profitRate * this.row.margin)
-        this.profitRate = this.NumberUtil.formatUsdt(profitRate * 100) + '%'
+      row: {},
+    }
+  },
+  methods: {
+    show(row) {
+      this.row = row
+      this.params = {
+        orderNo: row.orderNo,
       }
+      this.$refs.modal.show()
     },
-    watch: {
-      '$store.state.contractPriceMap': function () {
-        this.calcProfit()
-      }
+    success() {
+      this.$success('平仓成功')
+      this.$emit('success')
     }
   }
+}
 </script>
 
