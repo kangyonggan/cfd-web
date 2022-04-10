@@ -47,11 +47,10 @@ export default {
     formatTooltip(value) {
       return value + 'x'
     },
-    show() {
+    show(leverage) {
       this.symbol = this.$route.query.symbol || 'BTCUSDT'
       this.maxLeverage = this.$store.getters.getQuotationMap[this.symbol].maxLeverage
       this.minLeverage = this.$store.getters.getQuotationMap[this.symbol].minLeverage
-      let leverage = localStorage.getItem('leverage-' + this.symbol) || '20'
       this.params.leverage = leverage * 1
       this.$refs.modal.show()
     },

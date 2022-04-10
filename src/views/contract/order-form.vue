@@ -59,7 +59,7 @@
         </div>
         <div
           class="action"
-          @click="$refs['switch-leverage'].show()"
+          @click="$refs['switch-leverage'].show(leverage)"
         >
           {{ leverage }}x
         </div>
@@ -118,7 +118,8 @@
         this.leverage = leverage
       },
       calcAvailableMargin() {
-        return new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
+        let availableAmount = new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
+        return availableAmount < 0 ? 0 : availableAmount
       },
       changeType(type) {
         this.type = type
@@ -131,6 +132,11 @@
         this.orderAmountInfo = orderAmountInfo
       }
     },
+    watch: {
+      '$route'(newRoute) {
+        this.leverage = localStorage.getItem('leverage-' + (newRoute.query.symbol || 'BTCUSDT')) || '20'
+      }
+    }
   }
 </script>
 
