@@ -106,7 +106,7 @@
         if (!isNaN(value) && value * 1 > 0) {
           callback()
         } else {
-          callback(new Error('触发价格有误'))
+          callback(new Error('请输入触发价'))
         }
       },
       validateMargin: function (rule, value, callback) {
@@ -127,7 +127,7 @@
           }
           callback()
         } else {
-          callback(new Error('保证金有误'))
+          callback(new Error('请输入保证金'))
         }
       },
       updateAvailableAmount(availableAmount) {
