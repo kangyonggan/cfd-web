@@ -213,8 +213,13 @@ export default {
     },
     updateTicket(ticket) {
       this.ticketMap[ticket.symbol] = ticket
-      if (new Date().getTime() - this.lastCalcTime > 1000) {
-        this.refreshOrderHeldList(this.orderHeldList)
+
+      if (this.$store.getters.getUserInfo.uid) {
+        if (new Date().getTime() - this.lastCalcTime > 1000) {
+          this.refreshOrderHeldList(this.orderHeldList)
+        }
+      } else {
+        this.orderHeldList = []
       }
     },
     updateAccount(account) {
