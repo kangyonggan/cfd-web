@@ -181,7 +181,7 @@
       },
       show(type, currency) {
         if (!type) {
-          type = 'CAPITAL_CONTRACT'
+          type = 'CONTRACT_CAPITAL'
         }
         if (!currency) {
           currency = 'USDT'

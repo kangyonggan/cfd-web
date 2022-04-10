@@ -21,6 +21,12 @@
           <div class="btm">
             {{ NumberUtil.formatUsdt(totalAmount ) }}
           </div>
+          <el-icon
+            class="transfer-btn"
+            @click="transfer"
+          >
+            <circle-plus />
+          </el-icon>
         </div>
         <div class="item">
           <div class="top">
@@ -56,15 +62,15 @@
         </div>
         <div
           class="action"
-          @click="$refs['switch-margin-type'].show(marginType)"
+          @click="changeMarginType"
         >
           {{ marginType ? (marginType === 'CROSSED' ? '全仓' : '逐仓'): '--' }}
         </div>
         <div
           class="action"
-          @click="$refs['switch-leverage'].show(leverage)"
+          @click="changeLeverage"
         >
-          {{ leverage }}x
+          {{ leverage ? leverage + 'x' : '--' }}
         </div>
       </div>
     </div>
@@ -93,6 +99,7 @@
       ref="switch-leverage"
       @success="updateLeverageSuccess"
     />
+    <transfer-modal ref="transfer-modal" />
   </div>
 </template>
 
@@ -101,16 +108,18 @@
   import SwitchMarginType from "./switch-margin-type"
   import Big from "big.js"
   import SwitchLeverage from "./switch-leverage";
+  import {CirclePlus} from '@element-plus/icons'
+  import TransferModal from "@/views/wallet/transfer-modal";
 
   export default {
-    components: {SwitchLeverage, SwitchMarginType, OpenForm},
+    components: {TransferModal, SwitchLeverage, SwitchMarginType, OpenForm, CirclePlus},
     emits: ['success'],
     data() {
       return {
         type: localStorage.getItem('orderType') || 'MARKET',
         marginType: '',
         totalAmount: 0,
-        leverage: localStorage.getItem('leverage-' + (this.$route.query.symbol || 'BTCUSDT')) || '20',
+        leverage: '',
         orderAmountInfo: {
           unsettleProfit: 0,
           totalMargin: 0,
@@ -118,6 +127,27 @@
       }
     },
     methods: {
+      transfer() {
+        if (this.leverage) {
+          this.$refs['transfer-modal'].show()
+        } else {
+          this.$router.push('/login')
+        }
+      },
+      changeLeverage() {
+        if (this.leverage) {
+          this.$refs['switch-leverage'].show(this.leverage)
+        } else {
+          this.$router.push('/login')
+        }
+      },
+      changeMarginType() {
+        if (this.marginType) {
+          this.$refs['switch-margin-type'].show(this.marginType)
+        } else {
+          this.$router.push('/login')
+        }
+      },
       updateLeverageSuccess(leverage) {
         this.leverage = leverage
       },
@@ -143,11 +173,24 @@
       },
       updateOrderAmountInfo(orderAmountInfo) {
         this.orderAmountInfo = orderAmountInfo
+      },
+    },
+    mounted() {
+      if (this.$store.getters.getUserInfo.uid) {
+        this.leverage = localStorage.getItem('leverage-' + (this.$route.query.symbol || 'BTCUSDT')) || '20'
+      } else {
+        this.leverage = ''
+        this.marginType = ''
       }
     },
     watch: {
       '$route'(newRoute) {
-        this.leverage = localStorage.getItem('leverage-' + (newRoute.query.symbol || 'BTCUSDT')) || '20'
+        if (this.$store.getters.getUserInfo.uid) {
+          this.leverage = localStorage.getItem('leverage-' + (newRoute.query.symbol || 'BTCUSDT')) || '20'
+        } else {
+          this.leverage = ''
+          this.marginType = ''
+        }
       }
     }
   }
@@ -184,6 +227,7 @@
         float: right;
 
         .item {
+          position: relative;
           width: 150px;
           display: inline-block;
           font-size: 13px;
@@ -198,6 +242,15 @@
           .btm {
             font-size: 15px;
             color: var(--app-text-color-light);
+          }
+
+          .transfer-btn {
+            position: absolute;
+            right: 5px;
+            top: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--el-color-primary);
           }
         }
 
