@@ -2,21 +2,21 @@
   <base-modal
     ref="modal"
     title="修改保证金模式"
-    url="/v1/contract/order/switchMode"
+    url="/v1/order/marginType"
     :params="params"
     :width="320"
-    @success="$emit('success', this.params.mode)"
+    @success="$emit('success', this.params.marginType)"
   >
     <el-form-item
-      prop="mode"
+      prop="marginType"
       label="保证金模式"
       style="margin-bottom: 0 !important;"
     >
-      <el-radio-group v-model="params.mode">
-        <el-radio label="FULL">
+      <el-radio-group v-model="params.marginType">
+        <el-radio label="CROSSED">
           全仓
         </el-radio>
-        <el-radio label="SINGLE">
+        <el-radio label="ISOLATED">
           逐仓
         </el-radio>
       </el-radio-group>
@@ -33,13 +33,13 @@
     data() {
       return {
         params: {
-          mode: ''
+          marginType: ''
         }
       }
     },
     methods: {
       show(marginType) {
-        this.params.mode = marginType
+        this.params.marginType = marginType
         this.$refs.modal.show()
       }
     }

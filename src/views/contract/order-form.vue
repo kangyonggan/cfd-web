@@ -54,8 +54,11 @@
             {{ NumberUtil.formatUsdt(calcAvailableMargin()) }}
           </div>
         </div>
-        <div class="action">
-          {{ marginType ? (marginType === 'SINGLE' ? '逐仓' : '全仓'): '--' }}
+        <div
+          class="action"
+          @click="$refs['switch-margin-type'].show(marginType)"
+        >
+          {{ marginType ? (marginType === 'CROSSED' ? '全仓' : '逐仓'): '--' }}
         </div>
         <div
           class="action"
@@ -84,6 +87,7 @@
 
     <switch-margin-type
       ref="switch-margin-type"
+      @success="marginType = $event"
     />
     <switch-leverage
       ref="switch-leverage"
@@ -104,7 +108,7 @@
     data() {
       return {
         type: localStorage.getItem('orderType') || 'MARKET',
-        marginType: 'CROSSED',
+        marginType: '',
         totalAmount: 0,
         leverage: localStorage.getItem('leverage-' + (this.$route.query.symbol || 'BTCUSDT')) || '20',
         orderAmountInfo: {
@@ -127,6 +131,7 @@
       },
       updateAccount(account) {
         this.totalAmount = account.assets['CONTRACT']
+        this.marginType = account.marginType
       },
       updateOrderAmountInfo(orderAmountInfo) {
         this.orderAmountInfo = orderAmountInfo
