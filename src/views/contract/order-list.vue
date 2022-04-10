@@ -209,12 +209,13 @@ export default {
       }
     },
     updateOrderHeld(orderHeldList) {
-      this.orderHeldList = orderHeldList
-      this.refreshOrderHeldList()
+      this.refreshOrderHeldList(orderHeldList)
     },
     updateTicket(ticket) {
       this.ticketMap[ticket.symbol] = ticket
-      this.refreshOrderHeldList()
+      if (new Date().getTime() - this.lastCalcTime > 1000) {
+        this.refreshOrderHeldList(this.orderHeldList)
+      }
     },
     updateAccount(account) {
       this.totalAmount = account.assets['CONTRACT']
@@ -227,21 +228,18 @@ export default {
 
       this.quotationMap = quotationMap
     },
-    refreshOrderHeldList() {
-      if (new Date().getTime() - this.lastCalcTime < 1000) {
-        return
-      }
+    refreshOrderHeldList(orderHeldList) {
       this.lastCalcTime = new Date().getTime()
       let totalUnsettleProfit = 0
       let totalMargin = 0
-      for (let i = 0; i < this.orderHeldList.length; i++) {
-        let item = this.orderHeldList[i]
+      for (let i = 0; i < orderHeldList.length; i++) {
+        let item = orderHeldList[i]
         let res = this.calcProfit(item)
         item.lastPrice = res.lastPrice || undefined
         item.profit = res.profit
         item.profitRate = res.profitRate
         item.profitClass = res.profitClass
-        this.orderHeldList[i] = item
+        orderHeldList[i] = item
 
         totalUnsettleProfit += res.profit * 1
         totalMargin += item.margin
@@ -255,8 +253,8 @@ export default {
 
       // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金）
       // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
-      for (let i = 0; i < this.orderHeldList.length; i++) {
-        let item = this.orderHeldList[i]
+      for (let i = 0; i < orderHeldList.length; i++) {
+        let item = orderHeldList[i]
         let pos = new Big(item.positionSide === 'LONG' ? 1 : -1)
         let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin)
         if (!item.lastPrice) {
@@ -280,8 +278,10 @@ export default {
         } else {
           item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.quotationMap[item.quotationCoin])
         }
-        this.orderHeldList[i] = item
+        orderHeldList[i] = item
       }
+
+      this.orderHeldList = orderHeldList
     },
     changeSymbol(symbol) {
       this.$router.push({

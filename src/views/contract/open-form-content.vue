@@ -70,10 +70,6 @@
         required: true,
         type: String
       },
-      symbol: {
-        required: true,
-        type: String
-      },
       leverage: {
         required: true,
         type: String
@@ -82,6 +78,7 @@
     data() {
       return {
         loading: false,
+        symbol: '',
         readonlyVal: '最优市价',
         priceScale: PriceScale,
         params: {
@@ -163,6 +160,14 @@
           })
         })
       },
+    },
+    mounted() {
+      this.symbol = this.$route.query.symbol || 'BTCUSDT'
+    },
+    watch: {
+      '$route'(newRoute) {
+        this.symbol = newRoute.query.symbol || 'BTCUSDT'
+      }
     }
   }
 </script>

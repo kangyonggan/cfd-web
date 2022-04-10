@@ -67,7 +67,6 @@
       class="open-form"
       v-if="type === 'MARKET'"
       ref="market-form"
-      :symbol="symbol"
       :leverage="leverage"
       :type="type"
       @success="$emit('success')"
@@ -77,7 +76,6 @@
       v-else
       class="open-form"
       ref="plan-form"
-      :symbol="symbol"
       :leverage="leverage"
       :type="type"
       @success="$emit('success')"
@@ -99,7 +97,6 @@
     emits: ['success'],
     data() {
       return {
-        symbol: '',
         type: localStorage.getItem('orderType') || 'MARKET',
         leverage: '20',
         marginType: 'CROSSED',
@@ -114,12 +111,6 @@
       calcAvailableMargin() {
         return new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
       },
-      /**
-       * 加载杠杆、可用保证金
-       */
-      reload() {
-        this.symbol = this.$route.query.symbol || 'BTCUSDT'
-      },
       changeType(type) {
         this.type = type
         localStorage.setItem('orderType', type)
@@ -131,9 +122,6 @@
         this.orderAmountInfo = orderAmountInfo
       }
     },
-    activated() {
-      this.reload()
-    }
   }
 </script>
 
