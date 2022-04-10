@@ -83,7 +83,12 @@
         min-width="100"
       >
         <template #default="scope">
-          {{ scope.row.lastPrice }}
+          <span v-if="scope.row.lastPrice !== undefined">
+            {{ scope.row.lastPrice }}
+          </span>
+          <span v-else>
+            --
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -106,19 +111,24 @@
         </template>
       </el-table-column>
       <el-table-column
+          label="强平价格"
+          min-width="110"
+      >
+        <template #default="scope">
+          <span v-if="scope.row.forceClosePrice !== undefined">
+            {{ scope.row.forceClosePrice }}
+          </span>
+          <span v-else>
+            --
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="止盈/止损"
         min-width="130"
       >
         <template #default="scope">
           {{ scope.row.profitPrice || '--' }}/{{ scope.row.lossPrice || '--' }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="强平价格"
-        min-width="110"
-      >
-        <template #default="scope">
-          {{ scope.row.forceClosePrice }}
         </template>
       </el-table-column>
       <el-table-column
@@ -220,7 +230,7 @@ export default {
       for (let i = 0; i < this.orderHeldList.length; i++) {
         let item = this.orderHeldList[i]
         let res = this.calcProfit(item)
-        item.lastPrice = res.lastPrice
+        item.lastPrice = res.lastPrice || undefined
         item.profit = res.profit
         item.profitRate = res.profitRate
         item.profitClass = res.profitClass
@@ -240,12 +250,22 @@ export default {
       // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
       for (let i = 0; i < this.orderHeldList.length; i++) {
         let item = this.orderHeldList[i]
-        let pos = item.positionSide === 'LONG' ? 1 : -1
-        let totalMargin = item.marginType === 'CROSSED' ? totalAmount : item.margin
-        let openPrice = item.marginType === 'CROSSED' ? item.lastPrice : item.openPrice
-        let forceClosePrice = new Big(openPrice - (totalMargin - 0.1 * item.margin) * pos).div(item.margin * item.leverage) * openPrice
+        let pos = new Big(item.positionSide === 'LONG' ? 1 : -1)
+        let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin)
+        let openPrice = new Big(item.marginType === 'CROSSED' ? item.lastPrice : item.openPrice)
+        let forceClosePrice = openPrice.minus(
+            (
+                totalMargin.minus(
+                    new Big(0.1).times(new Big(item.margin))
+                ).times(pos)
+            ).div(
+                new Big(item.margin).times(new Big(item.leverage))
+            ).times(
+                new Big(openPrice)
+            )
+        )
         if (forceClosePrice <= 0) {
-          forceClosePrice = '--'
+          forceClosePrice = '永不强平'
           item.forceClosePrice = forceClosePrice
         } else {
           item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.quotationMap[item.quotationCoin])

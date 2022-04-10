@@ -19,7 +19,7 @@
             账户余额(USDT)
           </div>
           <div class="btm">
-            {{ account.totalAmount }}
+            {{ NumberUtil.formatUsdt(account.totalAmount ) }}
           </div>
         </div>
         <div class="item">
@@ -27,7 +27,7 @@
             净资产(USDT)
           </div>
           <div class="btm">
-            {{ account.totalAmount === undefined ? '--' : (account.totalAmount + orderAmountInfo.unsettleProfit) }}
+            {{ account.totalAmount === undefined ? '--' : NumberUtil.formatUsdt((account.totalAmount + orderAmountInfo.unsettleProfit)) }}
           </div>
         </div>
         <div class="item">
@@ -35,7 +35,7 @@
             持仓保证金(USDT)
           </div>
           <div class="btm">
-            {{ orderAmountInfo.totalMargin }}
+            {{ NumberUtil.formatUsdt(orderAmountInfo.totalMargin) }}
           </div>
         </div>
         <div class="item">
@@ -43,7 +43,7 @@
             未实现盈亏(USDT)
           </div>
           <div class="btm">
-            {{ orderAmountInfo.unsettleProfit }}
+            {{ NumberUtil.formatUsdt(orderAmountInfo.unsettleProfit) }}
           </div>
         </div>
         <div class="item">
@@ -51,7 +51,7 @@
             可用保证金(USDT)
           </div>
           <div class="btm">
-            {{ account.totalAmount + orderAmountInfo.unsettleProfit - orderAmountInfo.totalMargin }}
+            {{ NumberUtil.formatUsdt(calcAvailableMargin()) }}
           </div>
         </div>
         <div class="action">
@@ -92,6 +92,7 @@
 <script>
   import OpenForm from './open-form'
   import SwitchMarginType from "./switch-margin-type"
+  import Big from "big.js"
 
   export default {
     components: {SwitchMarginType, OpenForm},
@@ -112,6 +113,9 @@
       }
     },
     methods: {
+      calcAvailableMargin() {
+        return new Big(this.account.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
+      },
       /**
        * 加载杠杆、可用保证金
        */
