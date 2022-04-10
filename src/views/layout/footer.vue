@@ -1,28 +1,32 @@
 <template>
   <div class="footer">
-    Copyright © {{ DateTimeUtil.format(new Date().getTime(), 'yyyy') }} CFD.
-    <el-tooltip
-      style="margin-left: 20px;"
-      :content="theme === 'light' ? '切到黑夜模式' : '切到白天模式'"
-      placement="top"
+    <span style="margin-right: 20px;">
+      Copyright © {{ DateTimeUtil.format(new Date().getTime(), 'yyyy') }} CFD
+    </span>
+    <el-icon
+      style="vertical-align: middle"
+      v-if="theme === 'light'"
+      :size="22"
+      @click="changeTheme"
     >
-      <el-icon
-        :color="theme === 'light' ? '#555' : '#D5D5D5'"
-        :size="22"
-        @click="changeTheme"
-      >
-        <opportunity />
-      </el-icon>
-    </el-tooltip>
-    <el-backtop />
+      <Moon />
+    </el-icon>
+    <el-icon
+      style="vertical-align: middle"
+      v-else
+      :size="22"
+      @click="changeTheme"
+    >
+      <Sunny />
+    </el-icon>
   </div>
 </template>
 
 <script>
-import {Opportunity} from '@element-plus/icons'
+import {Sunny, Moon} from '@element-plus/icons'
 
 export default {
-  components: {Opportunity},
+  components: {Sunny, Moon},
   data() {
     return {
       theme: localStorage.getItem('theme') || 'light'
@@ -38,6 +42,9 @@ export default {
       localStorage.setItem('theme', this.theme)
       document.documentElement.setAttribute('theme', this.theme);
     }
+  },
+  mounted() {
+    document.documentElement.setAttribute('theme', this.theme);
   }
 }
 </script>
@@ -49,5 +56,6 @@ export default {
   color: var(--app-text-color-dark);
   border-top: 1px solid var(--app-border-color);
   text-align: center;
+  min-width: 1320px;
 }
 </style>
