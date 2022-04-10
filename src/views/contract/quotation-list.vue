@@ -17,8 +17,7 @@
           <span style="color: var(--el-color-primary)">
             {{ scope.row.quotationCoin }}
           </span>
-          <span style="font-size: 12px;color: var(--app-text-color-dark)">
-            /{{ scope.row.marginCoin }}
+          <span style="font-size: 12px;color: var(--app-text-color-dark)">/{{ scope.row.marginCoin }}
           </span>
         </template>
       </el-table-column>

@@ -40,12 +40,16 @@
         min-width="100"
       >
         <template #default="scope">
-          <span
-            style="cursor: pointer;"
-            @click="changeSymbol(scope.row.quotationCoin + scope.row.marginCoin)"
-          >
-            {{ scope.row.quotationCoin }}{{ scope.row.marginCoin }}
-          </span>
+          <div style="cursor: pointer;">
+            <span
+              style="color: var(--el-color-primary)"
+              @click="changeSymbol(scope.row.quotationCoin + scope.row.marginCoin)"
+            >
+              {{ scope.row.quotationCoin }}
+            </span>
+            <span style="font-size: 12px;color: var(--app-text-color-dark)">/{{ scope.row.marginCoin }}
+            </span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -74,11 +78,12 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="lastPrice"
         label="最新价格"
         min-width="100"
       >
         <template #default="scope">
-          {{ ticketMap[scope.row.quotationCoin + scope.row.marginCoin] ? NumberUtil.format(ticketMap[scope.row.quotationCoin + scope.row.marginCoin].close, quotationMap[scope.row.quotationCoin]) : '--' }}
+          {{ scope.row.lastPrice }}
         </template>
       </el-table-column>
       <el-table-column
@@ -91,7 +96,9 @@
             :class="scope.row.profitClass"
             v-if="scope.row.profit"
           >
-            {{ scope.row.profit }}({{ scope.row.profitRate }})
+            {{ scope.row.profit * 1 >= 0 ? '+' : '' }}{{
+              NumberUtil.formatUsdt(scope.row.profit)
+            }}({{ scope.row.profitRate }})
           </span>
           <span v-else>
             --
@@ -111,7 +118,7 @@
         min-width="110"
       >
         <template #default="scope">
-          {{ scope.row.forceClosePrice || '--' }}
+          {{ scope.row.forceClosePrice }}
         </template>
       </el-table-column>
       <el-table-column
@@ -145,110 +152,151 @@
 import Big from "big.js"
 
 export default {
-    data() {
-      return {
-        loading: false,
-        activeTab: localStorage.getItem('orderTab') || '0',
-        orderHeldList: [],
-        ticketMap: {},
-        quotationMap: {},
-      }
-    },
-    methods: {
-      calcProfit(row) {
-        let lastPrice = this.ticketMap[row.quotationCoin + row.marginCoin]
-        if (!lastPrice) {
-          return {
-            profit: '',
-            profitClass: '',
-            profitRate: '',
-          }
-        }
-        lastPrice = lastPrice.close
-        // 未实现盈亏 = 方向 * 保证金 * 杠杆 * (最新价-开仓价)/开仓价
-        let pos = row.positionSide === 'LONG' ? 1 : -1
-        let profit = new Big(pos * row.margin * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
-        // 回报率 = 方向 * 杠杆 * (最新价-开仓价)/开仓价
-        let profitRate = new Big(pos * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
-
-        let addIcon = profit >= 0 ? '+' : ''
-
+  emits: ['updateOrderAmountInfo'],
+  data() {
+    return {
+      loading: false,
+      activeTab: localStorage.getItem('orderTab') || '0',
+      orderHeldList: [],
+      ticketMap: {},
+      quotationMap: {},
+      account: {},
+      lastCalcTime: 0
+    }
+  },
+  methods: {
+    calcProfit(row) {
+      let lastPrice = this.ticketMap[row.quotationCoin + row.marginCoin]
+      if (!lastPrice) {
         return {
-          profit: addIcon + this.NumberUtil.formatUsdt(profit),
-          profitClass: profit >= 0 ? 'bullish' : 'bearish',
-          profitRate: addIcon + this.NumberUtil.format(profitRate * 100, 2) + '%',
+          lastPrice: '',
+          profit: '',
+          profitClass: '',
+          profitRate: '',
         }
-      },
-      updateOrderHeld(orderHeldList) {
-        this.orderHeldList = orderHeldList
-        this.refreshOrderHeldList()
-      },
-      updateTicket(ticket) {
-        this.ticketMap[ticket.symbol] = ticket
-        this.refreshOrderHeldList()
-      },
-      updateQuotationList(quotationList) {
-        let quotationMap = {}
-        for (let i = 0; i < quotationList.length; i++) {
-          quotationMap[quotationList[i].quotationCoin] = quotationList[i].quotationPrecision
-        }
+      }
+      lastPrice = lastPrice.close
+      // 未实现盈亏 = 方向 * 保证金 * 杠杆 * (最新价-开仓价)/开仓价
+      let pos = row.positionSide === 'LONG' ? 1 : -1
+      let profit = new Big(pos * row.margin * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
+      // 回报率 = 方向 * 杠杆 * (最新价-开仓价)/开仓价
+      let profitRate = new Big(pos * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
 
-        this.quotationMap = quotationMap
-      },
-      refreshOrderHeldList() {
-        for (let i = 0; i < this.orderHeldList.length; i++) {
-          let item = this.orderHeldList[i]
-          let res = this.calcProfit(item)
-          item.profit = res.profit
-          item.profitRate = res.profitRate
-          item.profitClass = res.profitClass
-          this.orderHeldList[i] = item
-        }
-      },
-      changeSymbol(symbol) {
-        this.$router.push({
-          to: '/',
-          query: {
-            symbol: symbol,
-            interval: this.$route.query.interval
-          }
-        })
-        scrollTo(0, 0)
-      },
-      changeTab(tab) {
-        this.activeTab = tab
-        localStorage.setItem('orderTab', tab)
+      let addIcon = profit >= 0 ? '+' : ''
+
+      return {
+        lastPrice: lastPrice,
+        profit: profit,
+        profitClass: profit >= 0 ? 'bullish' : 'bearish',
+        profitRate: addIcon + this.NumberUtil.format(profitRate * 100, 2) + '%',
       }
     },
-  }
+    updateOrderHeld(orderHeldList) {
+      this.orderHeldList = orderHeldList
+      this.refreshOrderHeldList()
+    },
+    updateTicket(ticket) {
+      this.ticketMap[ticket.symbol] = ticket
+      this.refreshOrderHeldList()
+    },
+    updateAccount(account) {
+      this.account = account.list[1]
+    },
+    updateQuotationList(quotationList) {
+      let quotationMap = {}
+      for (let i = 0; i < quotationList.length; i++) {
+        quotationMap[quotationList[i].quotationCoin] = quotationList[i].quotationPrecision
+      }
+
+      this.quotationMap = quotationMap
+    },
+    refreshOrderHeldList() {
+      if (new Date().getTime() - this.lastCalcTime < 1000) {
+        return
+      }
+      this.lastCalcTime = new Date().getTime()
+      let totalUnsettleProfit = 0
+      let totalMargin = 0
+      for (let i = 0; i < this.orderHeldList.length; i++) {
+        let item = this.orderHeldList[i]
+        let res = this.calcProfit(item)
+        item.lastPrice = res.lastPrice
+        item.profit = res.profit
+        item.profitRate = res.profitRate
+        item.profitClass = res.profitClass
+        this.orderHeldList[i] = item
+
+        totalUnsettleProfit += res.profit * 1
+        totalMargin += item.margin
+      }
+
+      totalUnsettleProfit = this.NumberUtil.formatUsdt(totalUnsettleProfit) * 1
+      totalMargin = this.NumberUtil.formatUsdt(totalMargin) * 1
+      this.$emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
+
+      let totalAmount = this.account.totalAmount + totalUnsettleProfit
+
+      // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金）
+      // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
+      for (let i = 0; i < this.orderHeldList.length; i++) {
+        let item = this.orderHeldList[i]
+        let pos = item.positionSide === 'LONG' ? 1 : -1
+        let totalMargin = item.marginType === 'CROSSED' ? totalAmount : item.margin
+        let openPrice = item.marginType === 'CROSSED' ? item.lastPrice : item.openPrice
+        let forceClosePrice = new Big(openPrice - (totalMargin - 0.1 * item.margin) * pos).div(item.margin * item.leverage) * openPrice
+        if (forceClosePrice <= 0) {
+          forceClosePrice = '--'
+          item.forceClosePrice = forceClosePrice
+        } else {
+          item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.quotationMap[item.quotationCoin])
+        }
+        this.orderHeldList[i] = item
+      }
+    },
+    changeSymbol(symbol) {
+      this.$router.push({
+        to: '/',
+        query: {
+          symbol: symbol,
+          interval: this.$route.query.interval
+        }
+      })
+      scrollTo(0, 0)
+    },
+    changeTab(tab) {
+      this.activeTab = tab
+      localStorage.setItem('orderTab', tab)
+    }
+  },
+}
 </script>
 
 <style scoped lang="scss">
-  .order-list {
-    clear: both;
-    float: left;
-    width: calc(100% - 20px);
+.order-list {
+  clear: both;
+  float: left;
+  width: calc(100% - 20px);
 
-    .header {
-      width: 100%;
-      height: 45px;
-      padding-left: 10px;
-      border-top: 1px solid var(--app-border-color);
-      background: var(--app-bg-color-light);
+  .header {
+    width: 100%;
+    height: 45px;
+    padding-left: 10px;
+    border-top: 1px solid var(--app-border-color);
+    background: var(--app-bg-color-light);
 
-      span {
-        display: inline-block;
-        height: 43px;
-        line-height: 43px;
-        padding: 0 5px;
-        margin-right: 20px;
-        cursor: pointer;
-      }
+    span {
+      display: inline-block;
+      height: 43px;
+      line-height: 43px;
+      padding: 0 5px;
+      margin-right: 20px;
+      cursor: pointer;
+    }
 
-      .active {
-        color: var(--app-text-color-white);
-        border-bottom: 2px solid var(--el-color-primary);
-      }
+    .active {
+      color: var(--app-text-color-white);
+      border-bottom: 2px solid var(--el-color-primary);
     }
   }
+}
 </style>

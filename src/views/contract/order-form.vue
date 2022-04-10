@@ -14,27 +14,52 @@
         限价
       </span>
       <div class="actions">
-        <span class="item">
-          账户余额 {{ account.totalAmount === undefined ? '--' : account.totalAmount + ' USDT' }}
-        </span>
-        <span class="item">
-          净资产 {{ account.netAmount === undefined ? '--' : account.netAmount + ' USDT' }}
-        </span>
-        <span class="item">
-          持仓保证金 {{ account.frozenAmount === undefined ? '--' : account.frozenAmount + ' USDT' }}
-        </span>
-        <span class="item">
-          未实现盈亏 {{ account.unsettleAmount === undefined ? '--' : account.unsettleAmount + ' USDT' }}
-        </span>
-        <span class="item">
-          可用保证金 {{ account.availableAmount === undefined ? '--' : account.availableAmount + ' USDT' }}
-        </span>
-        <span class="item">
-          --
-        </span>
-        <span class="item">
+        <div class="item">
+          <div class="top">
+            账户余额(USDT)
+          </div>
+          <div class="btm">
+            {{ account.totalAmount }}
+          </div>
+        </div>
+        <div class="item">
+          <div class="top">
+            净资产(USDT)
+          </div>
+          <div class="btm">
+            {{ account.totalAmount === undefined ? '--' : (account.totalAmount + orderAmountInfo.unsettleProfit) }}
+          </div>
+        </div>
+        <div class="item">
+          <div class="top">
+            持仓保证金(USDT)
+          </div>
+          <div class="btm">
+            {{ orderAmountInfo.totalMargin }}
+          </div>
+        </div>
+        <div class="item">
+          <div class="top">
+            未实现盈亏(USDT)
+          </div>
+          <div class="btm">
+            {{ orderAmountInfo.unsettleProfit }}
+          </div>
+        </div>
+        <div class="item">
+          <div class="top">
+            可用保证金(USDT)
+          </div>
+          <div class="btm">
+            {{ account.totalAmount + orderAmountInfo.unsettleProfit - orderAmountInfo.totalMargin }}
+          </div>
+        </div>
+        <div class="action">
           {{ marginType ? (marginType === 'SINGLE' ? '逐仓' : '全仓'): '--' }}
-        </span>
+        </div>
+        <div class="action">
+          {{ leverage }}x
+        </div>
       </div>
     </div>
 
@@ -77,7 +102,13 @@
         type: localStorage.getItem('orderType') || 'MARKET',
         leverage: '20',
         marginType: 'CROSSED',
-        account: {}
+        account: {
+          totalAmount: 0
+        },
+        orderAmountInfo: {
+          unsettleProfit: 0,
+          totalMargin: 0,
+        }
       }
     },
     methods: {
@@ -93,6 +124,9 @@
       },
       updateAccount(account) {
         this.account = account.list[1]
+      },
+      updateOrderAmountInfo(orderAmountInfo) {
+        this.orderAmountInfo = orderAmountInfo
       }
     },
     activated() {
@@ -132,17 +166,33 @@
         float: right;
 
         .item {
+          width: 150px;
           display: inline-block;
           font-size: 13px;
           border-right: 1px solid var(--app-border-color);
           text-align: center;
-          min-width: 60px;
-          padding: 0 15px;
-          margin-top: 15px;
+          margin-top: 6px;
+
+          .top {
+            font-size: 12px;
+          }
+
+          .btm {
+            font-size: 15px;
+            color: var(--app-text-color-light);
+          }
         }
 
-        .item:last-child {
-          border-right: 0;
+        .action {
+          float: right;
+          width: 50px;
+          display: inline-block;
+          font-size: 13px;
+          border-right: 1px solid var(--app-border-color);
+          text-align: center;
+          margin-top: 15px;
+          cursor: pointer;
+          color: var(--el-color-primary);
         }
       }
     }

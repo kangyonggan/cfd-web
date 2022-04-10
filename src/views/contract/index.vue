@@ -17,6 +17,7 @@
     <order-list
       ref="order-list"
       @success="$refs['order-form'].reload()"
+      @update-order-amount-info="updateOrderAmountInfo"
     />
 
     <base-account-ws
@@ -50,9 +51,13 @@ export default {
     },
     accountUpdate(data) {
       this.$refs['order-form'].updateAccount(data)
+      this.$refs['order-list'].updateAccount(data)
     },
     orderHeldUpdate(orderHeldList) {
       this.$refs['order-list'].updateOrderHeld(orderHeldList)
+    },
+    updateOrderAmountInfo(orderAmountInfo) {
+      this.$refs['order-form'].updateOrderAmountInfo(orderAmountInfo)
     }
   },
 }
