@@ -101,9 +101,7 @@
             :class="scope.row.profitClass"
             v-if="scope.row.profit"
           >
-            {{ scope.row.profit * 1 >= 0 ? '+' : '' }}{{
-              NumberUtil.formatUsdt(scope.row.profit)
-            }}({{ scope.row.profitRate }})
+            {{ scope.row.addIcon }}{{ NumberUtil.formatUsdt(scope.row.profit) }}({{ scope.row.profitRate }})
           </span>
           <span v-else>
             --
@@ -188,6 +186,7 @@ export default {
         return {
           lastPrice: '',
           profit: '',
+          addIcon: '',
           profitClass: '',
           profitRate: '',
         }
@@ -199,12 +198,13 @@ export default {
       // 回报率 = 方向 * 杠杆 * (最新价-开仓价)/开仓价
       let profitRate = new Big(pos * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
 
-      let addIcon = profit >= 0 ? '+' : ''
+      let addIcon = profitRate > 0 ? '+' : ''
 
       return {
         lastPrice: lastPrice,
         profit: profit,
-        profitClass: profit >= 0 ? 'bullish' : 'bearish',
+        addIcon: addIcon,
+        profitClass: profitRate > 0 ? 'bullish' : profitRate < 0 ? 'bearish' : '',
         profitRate: addIcon + this.NumberUtil.format(profitRate * 100, 2) + '%',
       }
     },
@@ -236,6 +236,7 @@ export default {
         let item = orderHeldList[i]
         let res = this.calcProfit(item)
         item.lastPrice = res.lastPrice || undefined
+        item.addIcon = res.addIcon
         item.profit = res.profit
         item.profitRate = res.profitRate
         item.profitClass = res.profitClass

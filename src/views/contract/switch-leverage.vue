@@ -1,7 +1,7 @@
 <template>
   <base-modal
     ref="modal"
-    :title="'调整杠杆 ' + symbol.toUpperCase()"
+    :title="'调整杠杆 ' + symbol"
     :auto-submit="false"
     :before-submit="submit"
   >
@@ -10,67 +10,57 @@
       label="杠杆"
       style="margin-bottom: 0 !important;"
     >
-      <el-radio-group
-        v-model="leverage"
-        size="small"
-        class="leverage-group"
-      >
-        <el-radio-button
-          v-for="lv in leverageList"
-          :key="lv"
-          :label="lv"
-        >
-          {{ lv }}X
-        </el-radio-button>
-      </el-radio-group>
+      <el-input-number
+        style="width: 80%"
+        v-model="params.leverage"
+        :min="minLeverage"
+        :max="maxLeverage"
+      />
     </el-form-item>
+    <el-slider
+      v-model="params.leverage"
+      :min="minLeverage"
+      :max="maxLeverage"
+      :format-tooltip="formatTooltip"
+      style="width: 64%;margin-top: 30px;margin-left: 95px;"
+    />
   </base-modal>
 </template>
 
 <script>
-  import BaseModal from '@/components/base-modal.vue'
+import BaseModal from '@/components/base-modal.vue'
 
-  export default {
-    components: {BaseModal},
-    emits: ['success'],
-    data() {
-      return {
-        symbol: '',
+export default {
+  emits: ['success'],
+  components: {BaseModal},
+  data() {
+    return {
+      maxLeverage: 0,
+      minLeverage: 1,
+      symbol: '',
+      params: {
         leverage: '',
-        leverageList: [],
       }
+    }
+  },
+  methods: {
+    formatTooltip(value) {
+      return value + 'x'
     },
-    methods: {
-      show(symbol, leverage, leverageList) {
-        this.symbol = symbol
-        this.leverage = leverage
-        this.leverageList = leverageList
-        this.$refs.modal.show()
-      },
-      submit() {
-        this.$refs.modal.close()
-        this.$emit('success', this.leverage)
-      }
+    show() {
+      this.symbol = this.$route.query.symbol || 'BTCUSDT'
+      this.maxLeverage = this.$store.getters.getQuotationMap[this.symbol].maxLeverage
+      this.minLeverage = this.$store.getters.getQuotationMap[this.symbol].minLeverage
+      let leverage = localStorage.getItem('leverage-' + this.symbol) || '20'
+      this.params.leverage = leverage * 1
+      this.$refs.modal.show()
+    },
+    submit() {
+      this.$refs.modal.close()
+      localStorage.setItem('leverage-' + this.symbol, this.params.leverage)
+      this.$emit('success', this.params.leverage)
     }
   }
+}
 </script>
-
-<style scoped lang="scss">
-  ::v-deep(.leverage-group) {
-    .el-radio-button__inner {
-      background: none;
-      color: var(--app-text-color);
-    }
-
-    .el-radio-button__inner {
-      background: none;
-      color: var(--app-text-color);
-    }
-
-    .is-active .el-radio-button__inner {
-      background: var(--el-color-primary);
-      color: var(--app-text-color-white);
-    }
-  }
-</style>
 

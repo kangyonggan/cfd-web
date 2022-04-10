@@ -70,10 +70,6 @@
         required: true,
         type: String
       },
-      leverage: {
-        required: true,
-        type: String
-      },
     },
     data() {
       return {
@@ -144,7 +140,7 @@
 
           params.type = this.type
           params.positionSide = this.positionSide
-          params.leverage = this.leverage
+          params.leverage = localStorage.getItem('leverage-' + this.symbol) || '20'
           params.quotationCoin = this.symbol.replace('USDT', '')
 
           this.axios.post('/v1/order/open', params).then(() => {

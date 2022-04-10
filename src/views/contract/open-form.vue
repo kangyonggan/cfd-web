@@ -3,7 +3,6 @@
     <open-form-content
       ref="buy-form"
       :type="type"
-      :leverage="leverage"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
       position-side="LONG"
       @success="$emit('success')"
@@ -11,7 +10,6 @@
     <open-form-content
       ref="sell-form"
       :type="type"
-      :leverage="leverage"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
       position-side="SHORT"
       @success="$emit('success')"
@@ -27,10 +25,6 @@
     components: {OpenFormContent},
     props: {
       type: {
-        required: true,
-        type: String
-      },
-      leverage: {
         required: true,
         type: String
       },

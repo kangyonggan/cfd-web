@@ -57,7 +57,10 @@
         <div class="action">
           {{ marginType ? (marginType === 'SINGLE' ? '逐仓' : '全仓'): '--' }}
         </div>
-        <div class="action">
+        <div
+          class="action"
+          @click="$refs['switch-leverage'].show()"
+        >
           {{ leverage }}x
         </div>
       </div>
@@ -67,7 +70,6 @@
       class="open-form"
       v-if="type === 'MARKET'"
       ref="market-form"
-      :leverage="leverage"
       :type="type"
       @success="$emit('success')"
     />
@@ -76,13 +78,16 @@
       v-else
       class="open-form"
       ref="plan-form"
-      :leverage="leverage"
       :type="type"
       @success="$emit('success')"
     />
 
     <switch-margin-type
       ref="switch-margin-type"
+    />
+    <switch-leverage
+      ref="switch-leverage"
+      @success="updateLeverageSuccess"
     />
   </div>
 </template>
@@ -91,16 +96,17 @@
   import OpenForm from './open-form'
   import SwitchMarginType from "./switch-margin-type"
   import Big from "big.js"
+  import SwitchLeverage from "./switch-leverage";
 
   export default {
-    components: {SwitchMarginType, OpenForm},
+    components: {SwitchLeverage, SwitchMarginType, OpenForm},
     emits: ['success'],
     data() {
       return {
         type: localStorage.getItem('orderType') || 'MARKET',
-        leverage: '20',
         marginType: 'CROSSED',
         totalAmount: 0,
+        leverage: localStorage.getItem('leverage-' + (this.$route.query.symbol || 'BTCUSDT')) || '20',
         orderAmountInfo: {
           unsettleProfit: 0,
           totalMargin: 0,
@@ -108,6 +114,9 @@
       }
     },
     methods: {
+      updateLeverageSuccess(leverage) {
+        this.leverage = leverage
+      },
       calcAvailableMargin() {
         return new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
       },
