@@ -77,6 +77,7 @@
         symbol: '',
         readonlyVal: '最优市价',
         priceScale: PriceScale,
+        availableAmount: 0,
         params: {
           triggerPrice: '',
           margin: '',
@@ -110,19 +111,27 @@
       },
       validateMargin: function (rule, value, callback) {
         if (!isNaN(value) && value * 1 > 0) {
-          // let availableMargin = this.marginCoinConfig.available
-          // if (value > availableMargin) {
-          //   callback(new Error('保证金不足'))
-          //   return
-          // }
-          // if (value < this.marginCoinConfig.minMargin) {
-          //   callback(new Error('合约交易保证金太少,不能开仓'))
-          //   return
-          // }
+          if (value > this.availableAmount) {
+            callback(new Error('可用保证金不足'))
+            return
+          }
+
+          let quotationConfig = this.$store.getters.getQuotationMap[this.symbol]
+          if (value < quotationConfig.minMargin) {
+            callback(new Error('最小开仓保证金为 ' + quotationConfig.minMargin + ' USDT'))
+            return
+          }
+          if (quotationConfig.maxMargin > 0 && value > quotationConfig.maxMargin) {
+            callback(new Error('最大开仓保证金为 ' + quotationConfig.maxMargin + ' USDT'))
+            return
+          }
           callback()
         } else {
           callback(new Error('保证金有误'))
         }
+      },
+      updateAvailableAmount(availableAmount) {
+        this.availableAmount = availableAmount
       },
       submit() {
         if (!this.$store.getters.getUserInfo.uid) {

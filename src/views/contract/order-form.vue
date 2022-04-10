@@ -123,7 +123,15 @@
       },
       calcAvailableMargin() {
         let availableAmount = new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
-        return availableAmount < 0 ? 0 : availableAmount
+        availableAmount = availableAmount < 0 ? 0 : availableAmount
+
+        if (this.$refs['market-form']) {
+          this.$refs['market-form'].updateAvailableAmount(availableAmount)
+        }
+        if (this.$refs['plan-form']) {
+          this.$refs['plan-form'].updateAvailableAmount(availableAmount)
+        }
+        return availableAmount
       },
       changeType(type) {
         this.type = type

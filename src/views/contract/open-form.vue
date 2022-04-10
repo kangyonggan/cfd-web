@@ -1,14 +1,14 @@
 <template>
   <div style="width: 100%">
     <open-form-content
-      ref="buy-form"
+      ref="long-form"
       :type="type"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
       position-side="LONG"
       @success="$emit('success')"
     />
     <open-form-content
-      ref="sell-form"
+      ref="short-form"
       :type="type"
       style="width: calc(50% - 40px);float: left;padding: 15px 20px"
       position-side="SHORT"
@@ -30,6 +30,10 @@
       },
     },
     methods: {
+      updateAvailableAmount(availableAmount) {
+        this.$refs['long-form'].updateAvailableAmount(availableAmount)
+        this.$refs['short-form'].updateAvailableAmount(availableAmount)
+      }
     }
   }
 </script>
