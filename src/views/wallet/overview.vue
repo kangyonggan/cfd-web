@@ -11,7 +11,7 @@
         />
         <div class="actions">
           <div class="asset">
-            {{ account.totalAmount + orderAmountInfo.unsettleProfit }} USDT
+            {{ NumberUtil.format(account.totalAmount + orderAmountInfo.unsettleProfit) }} USDT
           </div>
           <div
             style="margin-top: 30px;"

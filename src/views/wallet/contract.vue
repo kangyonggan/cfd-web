@@ -5,7 +5,7 @@
     <div class="content">
       <div class="overview">
         <div class="asset">
-          {{ NumberUtil.formatUsdt((account.totalAmount + orderAmountInfo.unsettleProfit)) }} USDT
+          {{ NumberUtil.format((account.totalAmount + orderAmountInfo.unsettleProfit)) }} USDT
 
           <el-button
             type="primary"
@@ -194,8 +194,17 @@
       updateOrderHeldList(orderHeldList) {
         this.orderHeldList = orderHeldList
       },
+      getOverview() {
+        this.axios.get('/v1/wallet/overview').then(data => {
+          this.updateAccount(data)
+        }).catch(res => {
+          this.$error(res.msg)
+        })
+      },
     },
     mounted() {
+      this.getOverview()
+
       this.$eventBus.on('updateAccount', this.updateAccount)
       this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
       this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)

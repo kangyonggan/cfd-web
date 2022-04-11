@@ -6,7 +6,7 @@
       <div class="overview">
         <div class="actions">
           <div class="asset">
-            {{ totalAmount }} USDT
+            {{ NumberUtil.format(totalAmount) }} USDT
           </div>
           <div
             style="margin-top: 20px;"
