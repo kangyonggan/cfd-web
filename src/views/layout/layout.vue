@@ -42,6 +42,7 @@
     margin: 0;
     padding: 0;
     min-width: 1200px;
+    font-family: Menlo;
   }
 
   html {

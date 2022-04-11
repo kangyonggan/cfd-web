@@ -181,7 +181,7 @@ export default {
     },
     changeSymbol(symbol) {
       this.$router.push({
-        to: '/',
+        path: '/contract',
         query: {
           symbol: symbol,
           interval: this.$route.query.interval

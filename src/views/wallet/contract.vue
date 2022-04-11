@@ -5,7 +5,7 @@
     <div class="content">
       <div class="overview">
         <div class="asset">
-          总资产：88888888.88888888 USDT
+          {{ NumberUtil.formatUsdt((account.totalAmount + orderAmountInfo.unsettleProfit)) }} USDT
 
           <el-button
             type="primary"
@@ -28,7 +28,7 @@
               账户余额(USDT)
             </div>
             <div class="value">
-              88888888.88888888
+              {{ NumberUtil.formatUsdt(account.totalAmount) }}
             </div>
           </div>
           <div class="item">
@@ -36,7 +36,7 @@
               未实现盈亏(USDT)
             </div>
             <div class="value">
-              88888888.88888888
+              {{ NumberUtil.formatUsdt(orderAmountInfo.unsettleProfit) }}
             </div>
           </div>
           <div class="item">
@@ -44,7 +44,7 @@
               持仓保证金(USDT)
             </div>
             <div class="value">
-              88888888.88888888
+              {{ NumberUtil.formatUsdt(orderAmountInfo.totalMargin) }}
             </div>
           </div>
           <div class="item">
@@ -52,7 +52,7 @@
               可用保证金(USDT)
             </div>
             <div class="value">
-              88888888.8888
+              {{ NumberUtil.formatUsdt(account.totalAmount - orderAmountInfo.totalMargin + orderAmountInfo.unsettleProfit) }}
             </div>
           </div>
         </div>
@@ -62,35 +62,96 @@
         仓位
       </div>
       <el-table
-        :data="orderList"
+        :data="orderHeldList"
         style="width: 100%"
       >
         <el-table-column
-          prop="date"
-          label="合约"
-          width="180"
+          prop="quotationCoin"
+          label="交易对"
+          min-width="100"
+        >
+          <template #default="scope">
+            <div
+              style="cursor: pointer"
+              @click="changeSymbol(scope.row.quotationCoin + scope.row.marginCoin)"
+            >
+              <span style="color: var(--el-color-primary)">
+                {{ scope.row.quotationCoin }}
+              </span>
+              <span style="font-size: 12px;color: var(--app-text-color-dark)">/{{ scope.row.marginCoin }}
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="positionSide"
+          label="方向"
+          min-width="100"
+        >
+          <template #default="scope">
+            <span :class="scope.row.positionSide === 'LONG' ? 'bullish' : 'bearish'">
+              {{ scope.row.positionSide === 'LONG' ? '做多' : '做空' }}({{ scope.row.leverage }}x)
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="margin"
+          label="保证金"
+          min-width="110"
         />
         <el-table-column
-          prop="name"
-          label="数量"
-          width="180"
-        />
+          prop="openPrice"
+          label="开仓价格"
+          min-width="100"
+        >
+          <template #default="scope">
+            {{ scope.row.openPrice }}
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="address"
-          label="开仓价"
-        />
+          prop="lastPrice"
+          label="最新价格"
+          min-width="100"
+        >
+          <template #default="scope">
+            <span v-if="scope.row.lastPrice !== undefined">
+              {{ scope.row.lastPrice }}
+            </span>
+            <span v-else>
+              --
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="address"
-          label="最新价"
-        />
-        <el-table-column
-          prop="address"
+          prop="unsettleProfit"
           label="未实现盈亏"
-        />
+          min-width="170"
+        >
+          <template #default="scope">
+            <span
+              :class="scope.row.profitClass"
+              v-if="scope.row.profit"
+            >
+              {{ scope.row.addIcon }}{{ NumberUtil.formatUsdt(scope.row.profit) }}({{ scope.row.profitRate }})
+            </span>
+            <span v-else>
+              --
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="address"
-          label="操作"
-        />
+          label="强平价格"
+          min-width="110"
+        >
+          <template #default="scope">
+            <span v-if="scope.row.forceClosePrice !== undefined">
+              {{ scope.row.forceClosePrice }}
+            </span>
+            <span v-else>
+              --
+            </span>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -108,12 +169,36 @@
     components: {Sidebar, TransferModal},
     data() {
       return {
-        loading: false,
-        orderList: []
+        account: {},
+        orderAmountInfo: {},
+        orderHeldList: []
       }
     },
-    methods: {},
+    methods: {
+      changeSymbol(symbol) {
+        this.$router.push({
+          path: '/contract',
+          query: {
+            symbol: symbol,
+            interval: this.$route.query.interval
+          }
+        })
+        scrollTo(0, 0)
+      },
+      updateOrderAmountInfo(orderAmountInfo) {
+        this.orderAmountInfo = orderAmountInfo
+      },
+      updateAccount(account) {
+        this.account = account
+      },
+      updateOrderHeldList(orderHeldList) {
+        this.orderHeldList = orderHeldList
+      },
+    },
     mounted() {
+      this.$eventBus.on('updateAccount', this.updateAccount)
+      this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
+      this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)
     }
   }
 </script>
@@ -125,7 +210,7 @@
 
     .overview {
       .asset {
-        font-size: 20px;
+        font-size: 26px;
         font-weight: 500;
         margin-top: 10px;
         color: var(--app-text-color-light);

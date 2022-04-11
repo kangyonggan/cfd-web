@@ -6,10 +6,10 @@
       <div class="overview">
         <div class="actions">
           <div class="asset">
-            总资产：{{ totalAmount }} USDT
+            {{ totalAmount }} USDT
           </div>
           <div
-            style="margin-top: 30px;"
+            style="margin-top: 20px;"
             v-loading="loading"
           >
             <el-button
@@ -243,7 +243,7 @@
         float: left;
 
         .asset {
-          font-size: 20px;
+          font-size: 26px;
           font-weight: 500;
           margin-top: 20px;
           color: var(--app-text-color-light);

@@ -11,11 +11,10 @@
         />
         <div class="actions">
           <div class="asset">
-            净资产(USDT)：
-            {{ account.totalAmount + orderAmountInfo.unsettleProfit }}
+            {{ account.totalAmount + orderAmountInfo.unsettleProfit }} USDT
           </div>
           <div
-            style="margin-top: 40px;"
+            style="margin-top: 30px;"
           >
             <el-button
               type="primary"
@@ -173,7 +172,7 @@ export default {
       float: left;
 
       .asset {
-        font-size: 20px;
+        font-size: 26px;
         font-weight: 500;
         margin-top: 50px;
         color: var(--app-text-color-light);
