@@ -4,7 +4,7 @@
       v-loading="loading"
       :data="quotationList"
       :row-style="tableRowStyle"
-      :cell-style="{padding: '5px'}"
+      :cell-style="{padding: '5px 0'}"
       height="398"
       @row-click="changeSymbol"
     >
@@ -43,12 +43,16 @@
       >
         <template #default="scope">
           <span
+            style="padding-right: 5px;"
             v-if="scope.row.rose !== undefined"
             :class="scope.row.rose > 0 ? 'bullish' : scope.row.rose < 0 ? 'bearish' : ''"
           >
             {{ scope.row.rose >= 0 ? '+' : '' }}{{ NumberUtil.formatUsdt(scope.row.rose * 100) }}%
           </span>
-          <span v-else>
+          <span
+            v-else
+            style="padding-right: 5px;"
+          >
             --
           </span>
         </template>

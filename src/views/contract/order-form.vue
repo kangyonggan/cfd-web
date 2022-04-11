@@ -153,6 +153,13 @@ export default {
     calcAvailableMargin() {
       let availableAmount = new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
       availableAmount = availableAmount < 0 ? 0 : availableAmount
+
+      if (this.$refs['market-form']) {
+        this.$refs['market-form'].updateAvailableAmount(availableAmount)
+      }
+      if (this.$refs['plan-form']) {
+        this.$refs['plan-form'].updateAvailableAmount(availableAmount)
+      }
       return availableAmount
     },
     changeType(type) {
@@ -160,7 +167,6 @@ export default {
       localStorage.setItem('orderType', type)
     },
     updateAccount(account) {
-      console.log('updateAccount', account)
       this.totalAmount = account.assets['CONTRACT']
       this.marginType = account.marginType
     },
@@ -181,9 +187,6 @@ export default {
     // 订阅账户 和 订单金额变化
     this.$eventBus.on('updateAccount', this.updateAccount)
     this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
-
-    // 请求账户
-    this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ACCOUNT'})
   },
   watch: {
     '$route'(newRoute) {

@@ -5,7 +5,7 @@
     label-position="right"
     :model="params"
     :rules="rules"
-    label-width="120px"
+    label-width="90px"
   >
     <el-form-item
       prop="triggerPrice"
@@ -44,7 +44,7 @@
     </el-form-item>
 
     <el-button
-      style="width: 100%;margin-top: 5px;"
+      style="width: 100%;"
       :type="positionSide === 'LONG' ? 'success' : 'danger'"
       size="medium"
       @click="submit"
@@ -153,7 +153,6 @@
             this.$success('下单成功')
             this.params.triggerPrice = ''
             this.params.margin = ''
-            this.$emit('success')
           }).catch(res => {
             this.$error(res.msg)
           }).finally(() => {
@@ -161,6 +160,9 @@
             this.$refs['form'].clearValidate()
           })
         })
+      },
+      updateAvailableAmount(availableAmount) {
+        this.availableAmount = availableAmount
       },
     },
     mounted() {
@@ -176,14 +178,6 @@
 
 <style scoped lang="scss">
   .form {
-    height: 147px;
-
-    .stop-price {
-      float: left;
-      width: calc(50% - 59px);
-      margin-left: 15px;
-      margin-bottom: 0 !important;
-    }
-
+    height: 165px;
   }
 </style>

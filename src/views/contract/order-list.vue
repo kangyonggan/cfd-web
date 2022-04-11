@@ -208,7 +208,7 @@ export default {
         profitRate: addIcon + this.NumberUtil.format(profitRate * 100, 2) + '%',
       }
     },
-    updateOrderHeld(orderHeldList) {
+    updateOrderHeldList(orderHeldList) {
       this.refreshOrderHeldList(orderHeldList)
     },
     updateTicket(ticket) {
@@ -253,7 +253,7 @@ export default {
 
       totalUnsettleProfit = this.NumberUtil.formatUsdt(totalUnsettleProfit) * 1
       totalMargin = this.NumberUtil.formatUsdt(totalMargin) * 1
-      this.$emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
+      this.$eventBus.emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
 
       let totalAmount = this.totalAmount + totalUnsettleProfit
 
@@ -304,6 +304,23 @@ export default {
       localStorage.setItem('orderTab', tab)
     }
   },
+  mounted() {
+    this.$eventBus.on('updateTicket', this.updateTicket)
+    this.$eventBus.on('updateAccount', this.updateAccount)
+    this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)
+
+    this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ACCOUNT'})
+    this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_HELD'})
+  },
+  watch: {
+    '$route'() {
+      if (!this.$store.getters.getUserInfo.token) {
+        return
+      }
+      this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ACCOUNT'})
+      this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_HELD'})
+    }
+  }
 }
 </script>
 
