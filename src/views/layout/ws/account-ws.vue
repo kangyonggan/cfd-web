@@ -193,7 +193,7 @@ export default {
           forceClosePrice = '永不强平'
           item.forceClosePrice = forceClosePrice
         } else {
-          item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.quotationMap[item.quotationCoin])
+          item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.$store.getters.getQuotationMap[item.quotationCoin + item.marginCoin].quotationPrecision)
         }
         orderHeldList[i] = item
       }
