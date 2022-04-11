@@ -7,20 +7,11 @@
 import Env from '@/util/env'
 
 export default {
-  emits: ['account-update', 'order-held-update', 'order-delegate-update'],
-  props: {
-    req: {
-      required: false,
-      type: Array,
-      default: function () {
-        return []
-      }
-    }
-  },
   data() {
     return {
       ws: undefined,
       retryCount: 0,
+      oldReq: []
     }
   },
   methods: {
@@ -39,9 +30,13 @@ export default {
 
       let that = this;
       this.ws.onopen = function () {
-        that.sendWs()
+        if (that.oldReq.length) {
+          for (let i = 0; i < that.oldReq.length; i++) {
+            that.sendMsg(that.oldReq[i])
+          }
+          that.oldReq = []
+        }
       }
-
       this.ws.onmessage = function (e) {
         let msg = JSON.parse(e.data)
         let event = msg.event
@@ -52,10 +47,13 @@ export default {
           that.sendHeartbeat()
         } else if (event === 'ACCOUNT_UPDATE') {
           // 账户更新
-          that.$emit('account-update', data)
+          that.$eventBus.emit('updateAccount', data)
         } else if (event === 'ORDER_HELD_UPDATE') {
           // 持仓订单更新
-          that.$emit('order-held-update', data)
+          that.$eventBus.emit('updateOrderHeldList', data)
+        } else if (event === 'ORDER_DELEGATE_UPDATE') {
+          // 委托订单更新
+          that.$eventBus.emit('updateOrderDelegateList', data)
         } else if (event === 'ERROR') {
           that.$error(data)
         }
@@ -78,11 +76,11 @@ export default {
       }
       this.ws = undefined
     },
-    sendWs() {
-      for (let i = 0; i < this.req.length; i++) {
+    sendReq(reqTopics) {
+      for (let i = 0; i < reqTopics.length; i++) {
         let req = {
           method: 'REQ',
-          topic: this.req[i]
+          topic: reqTopics[i]
         }
         this.sendMsg(req)
       }
@@ -97,11 +95,14 @@ export default {
     sendMsg(req) {
       if (this.ws && this.ws.readyState === 1) {
         this.ws.send(JSON.stringify(req))
+      } else {
+        this.oldReq.push(req)
       }
     },
   },
   mounted() {
     this.initWs()
+    this.$eventBus.on('sendAccountMsg', this.sendMsg)
   },
   watch: {
     '$route'() {

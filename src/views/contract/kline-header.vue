@@ -28,9 +28,7 @@
 export default {
   data() {
     return {
-      loading: false,
-      symbol: '',
-      interval: '',
+      interval: localStorage.getItem('interval') || '1h',
       fundFeeRate: '',
       lastPrice: '--',
       priceColor: '',
@@ -84,26 +82,29 @@ export default {
       this.$router.push({
         to: '/',
         query: {
-          symbol: this.symbol,
+          symbol: this.$route.query.symbol || 'BTCUSDT',
           interval: interval
         }
       })
     },
-    updateLastPrice(lastPrice) {
-      let oldPrice = this.lastPrice === '--' ? 0 : this.lastPrice
-      this.priceColor = oldPrice <= lastPrice ? 'bullish' : 'bearish'
-      this.lastPrice = lastPrice
-    }
   },
   mounted() {
-    this.symbol = this.$route.query.symbol || 'BTCUSDT'
-    this.interval = this.$route.query.interval || localStorage.getItem('interval') || '1h'
+    // 监听最新K线
+    this.$eventBus.on('updateKline', data => {
+      if (data.symbol === (this.$route.query.symbol || 'BTCUSDT') && data.interval === this.interval) {
+        let lastPrice = data.close
+        let oldPrice = this.lastPrice === '--' ? 0 : this.lastPrice
+        this.priceColor = oldPrice <= lastPrice ? 'bullish' : 'bearish'
+        this.lastPrice = lastPrice
+      }
+    })
   },
   watch: {
-    '$route.query.symbol': function () {
-      this.symbol = this.$route.query.symbol || 'BTCUSDT'
-    }
-  }
+    '$route': function () {
+      this.priceColor = ''
+      this.lastPrice = '--'
+    },
+  },
 };
 </script>
 
@@ -114,6 +115,7 @@ export default {
   .bullish {
     color: var(--el-color-success);
   }
+
   .bearish {
     color: var(--el-color-danger);
   }

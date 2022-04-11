@@ -5,6 +5,7 @@
     label-position="right"
     :model="params"
     :rules="rules"
+    label-width="120px"
   >
     <el-form-item
       prop="triggerPrice"
@@ -59,7 +60,6 @@
   import PriceScale from './price-scale'
 
   export default {
-    emits: ['success'],
     components: {NaturalInput},
     props: {
       type: {
@@ -130,9 +130,6 @@
           callback(new Error('请输入保证金'))
         }
       },
-      updateAvailableAmount(availableAmount) {
-        this.availableAmount = availableAmount
-      },
       submit() {
         if (!this.$store.getters.getUserInfo.uid) {
           this.$router.push({
@@ -181,38 +178,11 @@
   .form {
     height: 147px;
 
-    ::v-deep(.el-input-group__append) {
-      width: 58px;
-      text-align: center;
-    }
-
-    ::v-deep(.el-form-item__label) {
-      width: 70px;
-      height: 32px;
-      line-height: 32px;
-      text-align: right;
-      color: #a6afc6;
-    }
-
-    ::v-deep(.el-form-item) {
-      margin-bottom: 20px !important;
-    }
-
-    ::v-deep(.el-form-item__content) {
-      display: inline-block;
-      line-height: 32px;
-      width: calc(100% - 70px);
-    }
-
     .stop-price {
       float: left;
       width: calc(50% - 59px);
       margin-left: 15px;
       margin-bottom: 0 !important;
-    }
-
-    ::v-deep(.stop-price .el-form-item__content) {
-      width: 100%;
     }
 
   }

@@ -18,6 +18,7 @@ import {use} from "echarts/core"
 import {CanvasRenderer} from 'echarts/renderers'
 import {TitleComponent, TooltipComponent, LegendComponent, GridComponent, ToolboxComponent } from 'echarts/components'
 import {LineChart, BarChart, PieChart} from 'echarts/charts'
+import eventBus from 'vue3-eventbus'
 
 use([
   CanvasRenderer,
@@ -32,6 +33,7 @@ use([
 ])
 
 let app = createApp(App).use(store).use(router).use(ElementPlus, {locale: zhCn}).use(VueAxios, axios)
+app.use(eventBus)
 app.component('VChart', ECharts)
 app.mount('#app')
 

@@ -28,12 +28,6 @@
         required: true,
         type: String
       },
-    },
-    methods: {
-      updateAvailableAmount(availableAmount) {
-        this.$refs['long-form'].updateAvailableAmount(availableAmount)
-        this.$refs['short-form'].updateAvailableAmount(availableAmount)
-      }
     }
   }
 </script>

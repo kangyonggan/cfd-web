@@ -11,7 +11,7 @@
       <el-table-column
         label="交易对"
         :sortable="true"
-        width="120"
+        min-width="110"
       >
         <template #default="scope">
           <span style="color: var(--el-color-primary)">
@@ -26,6 +26,7 @@
         label="最新价"
         :sortable="true"
         align="right"
+        min-width="110"
       >
         <template #default="scope">
           <span :class="scope.row.priceColorClass">
@@ -38,7 +39,7 @@
         label="24h涨跌"
         :sortable="true"
         align="right"
-        width="115"
+        min-width="120"
       >
         <template #default="scope">
           <span
@@ -58,7 +59,6 @@
 
 <script>
   export default {
-    emits: ['updateQuotationList'],
     data() {
       return {
         loading: false,
@@ -97,26 +97,15 @@
           }
         }
       },
-      loadQuotationList() {
-        this.loading = true
-        this.axios.get('/v1/market/quotationList').then(data => {
-          let quotationMap = {}
-          for (let i = 0; i < data.length; i++) {
-            quotationMap[data[i].quotationCoin + data[i].marginCoin] = data[i]
-          }
-          this.$store.commit('setQuotationMap', quotationMap)
-
-          this.quotationList = data
-          this.$emit('updateQuotationList', data)
-        }).catch(res => {
-          this.$error(res.msg)
-        }).finally(() => {
-          this.loading = false
-        })
-      },
     },
     mounted() {
-      this.loadQuotationList()
+      this.$eventBus.on('updateTicket', this.updateTicket)
+      this.quotationList = Object.values(this.$store.getters.getQuotationMap)
+      this.$eventBus.on('updateQuotationList', quotationList => {
+        if (!this.quotationList.length) {
+          this.quotationList = quotationList
+        }
+      })
     }
   }
 </script>

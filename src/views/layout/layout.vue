@@ -1,5 +1,11 @@
 <template>
   <div style="height: 100%">
+    <!-- 订阅行情 -->
+    <market-ws />
+
+    <!-- 订阅账户 -->
+    <account-ws />
+
     <div class="wrapper">
       <navbar />
 
@@ -19,9 +25,11 @@
 <script>
   import Navbar from "./navbar"
   import Footer from "./footer"
+  import AccountWs from "./ws/account-ws";
+  import MarketWs from "./ws/market-ws";
 
   export default {
-    components: {Footer, Navbar},
+    components: {AccountWs,MarketWs, Footer, Navbar},
   }
 </script>
 

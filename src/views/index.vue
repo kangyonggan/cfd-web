@@ -91,16 +91,11 @@
 </template>
 
 <script>
-  import Env from '@/util/env'
-
   export default {
     data() {
       return {
         email: '',
         quotationList: [],
-        hasSubTicket: false,
-        ws: undefined,
-        retryCount: 0
       }
     },
     methods: {
@@ -126,97 +121,15 @@
           }
         }
       },
-      /**
-       * 初始化ws
-       */
-      initWs() {
-        this.ws = new WebSocket(Env.wsHost + '/ws/market')
-
-        let that = this;
-        this.ws.onopen = function () {
-          if (that.quotationList.length && !that.hasSubTicket) {
-            that.subTickets()
-          }
-        }
-
-        this.ws.onmessage = function (e) {
-          let msg = JSON.parse(e.data)
-          let event = msg.event
-          let data = msg.data
-          if (event === 'TICKET') {
-            // 最新价 & 涨跌幅 & 成交量
-            that.updateTicket(data)
-          } else if (event === 'PING') {
-            // 心跳，回应 pong
-            that.sendHeartbeat()
-          }
-        }
-
-        this.ws.onclose = function () {
-          if (that.ws) {
-            that.ws.close()
-          }
-          that.ws = undefined
-
-          that.retryCount %= 10
-          that.retryCount++
-          let timeout = that.retryCount * 2000
-          setTimeout(function () {
-            that.initWs()
-          }, timeout)
-        }
-      },
-      sendHeartbeat() {
-        let req = {
-          method: 'REQ',
-          topic: 'PONG'
-        }
-        if (this.ws && this.ws.readyState === 1) {
-          this.ws.send(JSON.stringify(req))
-        }
-      },
-      subTickets() {
-        // 订阅全币种最新价
-        let topics = ''
-        for (let i = 0; i < this.quotationList.length; i++) {
-          if (i) {
-            topics += ','
-          }
-          topics += 'TICKET_' + this.quotationList[i].quotationCoin + this.quotationList[i].marginCoin
-        }
-
-        let req = {
-          method: 'SUB',
-          topic: topics
-        }
-        if (this.ws && this.ws.readyState === 1) {
-          this.ws.send(JSON.stringify(req))
-        }
-        this.hasSubTicket = true
-      },
-      loadQuotationList() {
-        this.loading = true
-        this.axios.get('/v1/market/quotationList').then(data => {
-          let quotationMap = {}
-          for (let i = 0; i < data.length; i++) {
-            quotationMap[data[i].quotationCoin + data[i].marginCoin] = data[i]
-          }
-          this.$store.commit('setQuotationMap', quotationMap)
-
-          this.quotationList = data
-          if (!this.hasSubTicket) {
-            this.subTickets()
-          }
-        }).catch(res => {
-          this.$error(res.msg)
-        }).finally(() => {
-          this.loading = false
-        })
-      },
     },
     mounted() {
-      this.loadQuotationList()
-      this.initWs()
+      this.$eventBus.on('updateTicket', this.updateTicket)
+      this.quotationList = Object.values(this.$store.getters.getQuotationMap)
+      this.$eventBus.on('updateQuotationList', quotationList => {
+        if (!this.quotationList.length) {
+          this.quotationList = quotationList
+        }
+      })
     }
   }
 </script>
