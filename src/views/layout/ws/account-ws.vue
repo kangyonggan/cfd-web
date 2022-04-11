@@ -26,6 +26,8 @@ export default {
     initWs() {
       if (!this.$store.getters.getUserInfo.token) {
         this.closeWs()
+        this.$eventBus.emit('updateOrderHeldList', [])
+        this.$eventBus.emit('updateOrderAmountInfo', {unsettleProfit: 0, totalMargin: 0})
         return
       }
       if (this.ws && this.ws.readyState === 1) {
