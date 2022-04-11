@@ -5,13 +5,18 @@
 
 <script>
 import Env from '@/util/env'
+import Big from "big.js"
 
 export default {
   data() {
     return {
       ws: undefined,
       retryCount: 0,
-      oldReq: []
+      oldReq: [],
+      orderHeldList: [],
+      ticketMap: {},
+      totalAmount: 0,
+      lastCalcTime: 0
     }
   },
   methods: {
@@ -47,10 +52,11 @@ export default {
           that.sendHeartbeat()
         } else if (event === 'ACCOUNT_UPDATE') {
           // 账户更新
+          that.totalAmount = data.assets['CONTRACT']
           that.$eventBus.emit('updateAccount', data)
         } else if (event === 'ORDER_HELD_UPDATE') {
           // 持仓订单更新
-          that.$eventBus.emit('updateOrderHeldList', data)
+          that.refreshOrderHeldList(data)
         } else if (event === 'ORDER_DELEGATE_UPDATE') {
           // 委托订单更新
           that.$eventBus.emit('updateOrderDelegateList', data)
@@ -99,10 +105,107 @@ export default {
         this.oldReq.push(req)
       }
     },
+    updateTicket(ticket) {
+      this.ticketMap[ticket.symbol] = ticket
+
+      if (this.$store.getters.getUserInfo.uid) {
+        if (new Date().getTime() - this.lastCalcTime > 1000) {
+          this.refreshOrderHeldList(this.orderHeldList)
+        }
+      } else {
+        this.orderHeldList = []
+      }
+    },
+    calcProfit(row) {
+      let lastPrice = this.ticketMap[row.quotationCoin + row.marginCoin]
+      if (!lastPrice) {
+        return {
+          lastPrice: '',
+          profit: '',
+          addIcon: '',
+          profitClass: '',
+          profitRate: '',
+        }
+      }
+      lastPrice = lastPrice.close
+      // 未实现盈亏 = 方向 * 保证金 * 杠杆 * (最新价-开仓价)/开仓价
+      let pos = row.positionSide === 'LONG' ? 1 : -1
+      let profit = new Big(pos * row.margin * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
+      // 回报率 = 方向 * 杠杆 * (最新价-开仓价)/开仓价
+      let profitRate = new Big(pos * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
+
+      let addIcon = profitRate > 0 ? '+' : ''
+
+      return {
+        lastPrice: lastPrice,
+        profit: profit,
+        addIcon: addIcon,
+        profitClass: profitRate > 0 ? 'bullish' : profitRate < 0 ? 'bearish' : '',
+        profitRate: addIcon + this.NumberUtil.format(profitRate * 100, 2) + '%',
+      }
+    },
+    refreshOrderHeldList(orderHeldList) {
+      this.lastCalcTime = new Date().getTime()
+      let totalUnsettleProfit = 0
+      let totalMargin = 0
+      for (let i = 0; i < orderHeldList.length; i++) {
+        let item = orderHeldList[i]
+        let res = this.calcProfit(item)
+        item.lastPrice = res.lastPrice || undefined
+        item.addIcon = res.addIcon
+        item.profit = res.profit
+        item.profitRate = res.profitRate
+        item.profitClass = res.profitClass
+        orderHeldList[i] = item
+
+        totalUnsettleProfit += res.profit * 1
+        totalMargin += item.margin
+      }
+
+      totalUnsettleProfit = this.NumberUtil.formatUsdt(totalUnsettleProfit) * 1
+      totalMargin = this.NumberUtil.formatUsdt(totalMargin) * 1
+      this.$eventBus.emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
+
+      let totalAmount = this.totalAmount + totalUnsettleProfit
+
+      // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金）
+      // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
+      for (let i = 0; i < orderHeldList.length; i++) {
+        let item = orderHeldList[i]
+        let pos = new Big(item.positionSide === 'LONG' ? 1 : -1)
+        let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin)
+        if (!item.lastPrice) {
+          continue
+        }
+        let openPrice = new Big(item.marginType === 'CROSSED' ? item.lastPrice : item.openPrice)
+        let forceClosePrice = openPrice.minus(
+          (
+            totalMargin.minus(
+              new Big(0.1).times(new Big(item.margin))
+            ).times(pos)
+          ).div(
+            new Big(item.margin).times(new Big(item.leverage))
+          ).times(
+            new Big(openPrice)
+          )
+        )
+        if (forceClosePrice <= 0) {
+          forceClosePrice = '永不强平'
+          item.forceClosePrice = forceClosePrice
+        } else {
+          item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.quotationMap[item.quotationCoin])
+        }
+        orderHeldList[i] = item
+      }
+
+      this.orderHeldList = orderHeldList
+      this.$eventBus.emit('updateOrderHeldList', orderHeldList)
+    },
   },
   mounted() {
     this.initWs()
     this.$eventBus.on('sendAccountMsg', this.sendMsg)
+    this.$eventBus.on('updateTicket', this.updateTicket)
   },
   watch: {
     '$route'() {

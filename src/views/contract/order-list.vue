@@ -74,7 +74,7 @@
         min-width="100"
       >
         <template #default="scope">
-          {{ NumberUtil.format(scope.row.openPrice, quotationMap[scope.row.quotationCoin]) }}
+          {{ scope.row.openPrice }}
         </template>
       </el-table-column>
       <el-table-column
@@ -159,7 +159,6 @@
 </template>
 
 <script>
-import Big from "big.js"
 import OrderClose from "./order-close"
 
 export default {
@@ -170,123 +169,14 @@ export default {
       loading: false,
       activeTab: localStorage.getItem('orderTab') || '0',
       orderHeldList: [],
-      ticketMap: {},
       quotationMap: {},
-      totalAmount: 0,
-      lastCalcTime: 0
     }
   },
   methods: {
     closeOrder(row) {
       this.$refs['order-close'].show(row)
     },
-    calcProfit(row) {
-      let lastPrice = this.ticketMap[row.quotationCoin + row.marginCoin]
-      if (!lastPrice) {
-        return {
-          lastPrice: '',
-          profit: '',
-          addIcon: '',
-          profitClass: '',
-          profitRate: '',
-        }
-      }
-      lastPrice = lastPrice.close
-      // 未实现盈亏 = 方向 * 保证金 * 杠杆 * (最新价-开仓价)/开仓价
-      let pos = row.positionSide === 'LONG' ? 1 : -1
-      let profit = new Big(pos * row.margin * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
-      // 回报率 = 方向 * 杠杆 * (最新价-开仓价)/开仓价
-      let profitRate = new Big(pos * row.leverage * (lastPrice - row.openPrice)).div(row.openPrice)
-
-      let addIcon = profitRate > 0 ? '+' : ''
-
-      return {
-        lastPrice: lastPrice,
-        profit: profit,
-        addIcon: addIcon,
-        profitClass: profitRate > 0 ? 'bullish' : profitRate < 0 ? 'bearish' : '',
-        profitRate: addIcon + this.NumberUtil.format(profitRate * 100, 2) + '%',
-      }
-    },
     updateOrderHeldList(orderHeldList) {
-      this.refreshOrderHeldList(orderHeldList)
-    },
-    updateTicket(ticket) {
-      this.ticketMap[ticket.symbol] = ticket
-
-      if (this.$store.getters.getUserInfo.uid) {
-        if (new Date().getTime() - this.lastCalcTime > 1000) {
-          this.refreshOrderHeldList(this.orderHeldList)
-        }
-      } else {
-        this.orderHeldList = []
-      }
-    },
-    updateAccount(account) {
-      this.totalAmount = account.assets['CONTRACT']
-    },
-    updateQuotationList(quotationList) {
-      let quotationMap = {}
-      for (let i = 0; i < quotationList.length; i++) {
-        quotationMap[quotationList[i].quotationCoin] = quotationList[i].quotationPrecision
-      }
-
-      this.quotationMap = quotationMap
-    },
-    refreshOrderHeldList(orderHeldList) {
-      this.lastCalcTime = new Date().getTime()
-      let totalUnsettleProfit = 0
-      let totalMargin = 0
-      for (let i = 0; i < orderHeldList.length; i++) {
-        let item = orderHeldList[i]
-        let res = this.calcProfit(item)
-        item.lastPrice = res.lastPrice || undefined
-        item.addIcon = res.addIcon
-        item.profit = res.profit
-        item.profitRate = res.profitRate
-        item.profitClass = res.profitClass
-        orderHeldList[i] = item
-
-        totalUnsettleProfit += res.profit * 1
-        totalMargin += item.margin
-      }
-
-      totalUnsettleProfit = this.NumberUtil.formatUsdt(totalUnsettleProfit) * 1
-      totalMargin = this.NumberUtil.formatUsdt(totalMargin) * 1
-      this.$eventBus.emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
-
-      let totalAmount = this.totalAmount + totalUnsettleProfit
-
-      // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金）
-      // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
-      for (let i = 0; i < orderHeldList.length; i++) {
-        let item = orderHeldList[i]
-        let pos = new Big(item.positionSide === 'LONG' ? 1 : -1)
-        let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin)
-        if (!item.lastPrice) {
-          continue
-        }
-        let openPrice = new Big(item.marginType === 'CROSSED' ? item.lastPrice : item.openPrice)
-        let forceClosePrice = openPrice.minus(
-          (
-            totalMargin.minus(
-              new Big(0.1).times(new Big(item.margin))
-            ).times(pos)
-          ).div(
-            new Big(item.margin).times(new Big(item.leverage))
-          ).times(
-            new Big(openPrice)
-          )
-        )
-        if (forceClosePrice <= 0) {
-          forceClosePrice = '永不强平'
-          item.forceClosePrice = forceClosePrice
-        } else {
-          item.forceClosePrice = this.NumberUtil.format(forceClosePrice, this.quotationMap[item.quotationCoin])
-        }
-        orderHeldList[i] = item
-      }
-
       this.orderHeldList = orderHeldList
     },
     changeSymbol(symbol) {
@@ -305,8 +195,6 @@ export default {
     }
   },
   mounted() {
-    this.$eventBus.on('updateTicket', this.updateTicket)
-    this.$eventBus.on('updateAccount', this.updateAccount)
     this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)
 
     this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ACCOUNT'})
