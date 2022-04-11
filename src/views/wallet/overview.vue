@@ -11,11 +11,11 @@
         />
         <div class="actions">
           <div class="asset">
-            总资产：{{ totalAmount }} USDT
+            净资产(USDT)：
+            {{ account.totalAmount + orderAmountInfo.unsettleProfit }}
           </div>
           <div
             style="margin-top: 40px;"
-            v-loading="loading"
           >
             <el-button
               type="primary"
@@ -46,7 +46,6 @@
         </template>
         <ul
           class="account-list"
-          v-loading="loading"
         >
           <li>
             <div>
@@ -54,7 +53,12 @@
             </div>
 
             <div class="asset">
-              {{ assets['CAPITAL'] }} USDT
+              <span v-if="account.assets">
+                {{ account.assets['CAPITAL'] }} USDT
+              </span>
+              <span v-else>
+                --
+              </span>
             </div>
           </li>
           <li>
@@ -63,17 +67,19 @@
             </div>
 
             <div class="asset">
-              {{ assets['CONTRACT'] }} USDT
+              <span v-if="account.assets['CONTRACT']">
+                {{ account.assets['CONTRACT'] + orderAmountInfo.unsettleProfit }} USDT
+              </span>
+              <span v-else>
+                --
+              </span>
             </div>
           </li>
         </ul>
       </el-card>
     </div>
 
-    <transfer-modal
-      ref="transfer-modal"
-      @success="getOverview"
-    />
+    <transfer-modal ref="transfer-modal" />
   </div>
 </template>
 
@@ -85,9 +91,11 @@ export default {
   components: {TransferModal, Sidebar},
   data() {
     return {
-      loading: false,
-      totalAmount: '',
-      assets: {},
+      account: {
+        totalAmount: 0,
+        assets: {}
+      },
+      orderAmountInfo: {},
       optionOverview: {
         color: ['#5dccc8', '#fca235'],
         tooltip: {
@@ -119,30 +127,36 @@ export default {
      * 账户概览
      */
     getOverview() {
-      this.loading = true
-      this.totalAmount = 0
-      this.assets = {}
-      this.optionOverview.series[0].data = []
       this.axios.get('/v1/wallet/overview').then(data => {
-        this.totalAmount = data.totalAmount
-        this.assets = data.assets
-        let seriesData = [{
-          value: data.assets['CAPITAL'],
-          name: '资金账户'
-        }, {
-          value: data.assets['CONTRACT'],
-          name: '合约账户'
-        }]
-        this.optionOverview.series[0].data = seriesData
+        this.updateAccount(data)
       }).catch(res => {
         this.$error(res.msg)
-      }).finally(() => {
-        this.loading = false
       })
-    }
+    },
+    refreshData() {
+      this.optionOverview.series[0].data = [{
+        value: this.account.assets['CAPITAL'],
+        name: '资金账户'
+      }, {
+        value: this.account.assets['CONTRACT'] + this.orderAmountInfo.unsettleProfit,
+        name: '合约账户'
+      }]
+    },
+    updateOrderAmountInfo(orderAmountInfo) {
+      this.orderAmountInfo = orderAmountInfo
+
+      this.refreshData()
+    },
+    updateAccount(account) {
+      this.account = account
+    },
   },
   mounted() {
     this.getOverview()
+
+    // 订阅账户 和 订单金额变化
+    this.$eventBus.on('updateAccount', this.updateAccount)
+    this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
   }
 }
 </script>
@@ -163,12 +177,6 @@ export default {
         font-weight: 500;
         margin-top: 50px;
         color: var(--app-text-color-light);
-
-        span {
-          font-size: 16px;
-          opacity: 0.9;
-          color: var(--app-text-color-dark);
-        }
       }
 
       .el-button {

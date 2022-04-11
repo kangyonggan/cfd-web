@@ -196,18 +196,6 @@ export default {
   },
   mounted() {
     this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)
-
-    this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ACCOUNT'})
-    this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_HELD'})
-  },
-  watch: {
-    '$route'() {
-      if (!this.$store.getters.getUserInfo.token) {
-        return
-      }
-      this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ACCOUNT'})
-      this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_HELD'})
-    }
   }
 }
 </script>

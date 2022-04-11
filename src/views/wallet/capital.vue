@@ -226,9 +226,7 @@
       }
     },
     mounted() {
-      // 订阅账户 和 订单
-      // this.$eventBus.on('updateAccount', this.updateAccount)
-      // this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
+      this.reload()
     }
   }
 </script>

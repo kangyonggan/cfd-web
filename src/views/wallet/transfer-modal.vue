@@ -5,7 +5,6 @@
     url="/v1/wallet/transfer"
     :params="params"
     :rules="rules"
-    @success="$emit('success', $event)"
     :width="500"
   >
     <el-form-item prop="type">
@@ -50,7 +49,7 @@
       </el-select>
     </el-form-item>
     <div style="padding-left: 95px;">
-      可用：{{ amountMap[params.currency] }}
+      可用：{{ amountMap[params.currency] + orderAmountInfo.unsettleProfit }}
     </div>
     <el-form-item
       prop="amount"
@@ -66,7 +65,7 @@
         <template #append>
           <span
             class="select-all"
-            @click="params.amount = amountMap[params.currency]"
+            @click="params.amount = amountMap[params.currency] + orderAmountInfo.unsettleProfit"
           >
             全部
           </span>
@@ -82,7 +81,6 @@
   import {Switch} from '@element-plus/icons'
 
   export default {
-    emits: ['success'],
     components: {NaturalInput, BaseModal, Switch},
     data() {
       return {
@@ -101,7 +99,8 @@
         },
         transferCurrencies: [],
         currencyList: [],
-        amountMap: {}
+        amountMap: {},
+        orderAmountInfo: {}
       }
     },
     methods: {
@@ -114,7 +113,7 @@
           callback(new Error('金额必须大于0'))
           return;
         }
-        if (value > this.amountMap[this.params.currency]) {
+        if (value > this.amountMap[this.params.currency] + this.orderAmountInfo.unsettleProfit) {
           callback(new Error('可用余额不足'))
           return;
         }
@@ -193,6 +192,13 @@
         this.getTransfer()
         this.$refs.modal.show()
       },
+      updateOrderAmountInfo(orderAmountInfo) {
+        this.orderAmountInfo = orderAmountInfo
+      },
+    },
+    mounted() {
+      // 订阅订单金额变化
+      this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
     }
   }
 </script>

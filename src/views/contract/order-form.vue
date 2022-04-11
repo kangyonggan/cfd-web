@@ -175,10 +175,21 @@ export default {
         this.orderAmountInfo = orderAmountInfo
       }
     },
+    getOverview() {
+      this.loading = true
+      this.axios.get('/v1/wallet/overview').then(data => {
+        this.updateAccount(data)
+      }).catch(res => {
+        this.$error(res.msg)
+      }).finally(() => {
+        this.loading = false
+      })
+    },
   },
   mounted() {
     if (this.$store.getters.getUserInfo.uid) {
       this.leverage = localStorage.getItem('leverage-' + (this.$route.query.symbol || 'BTCUSDT')) || '20'
+      this.getOverview()
     } else {
       this.leverage = ''
       this.marginType = ''
