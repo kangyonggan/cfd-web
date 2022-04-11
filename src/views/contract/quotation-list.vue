@@ -9,6 +9,7 @@
       @row-click="changeSymbol"
     >
       <el-table-column
+        prop="quotationCoin"
         label="交易对"
         :sortable="true"
         min-width="110"
