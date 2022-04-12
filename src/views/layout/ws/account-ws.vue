@@ -12,7 +12,7 @@ export default {
     return {
       ws: undefined,
       retryCount: 0,
-      oldReq: [{method: 'REQ', topic: 'ACCOUNT'}, {method: 'REQ', topic: 'ORDER_HELD'}],
+      oldReq: [{method: 'REQ', topic: 'ACCOUNT'}, {method: 'REQ', topic: 'ORDER_HELD'}, {method: 'REQ', topic: 'ORDER_DELEGATE'}],
       orderHeldList: [],
       ticketMap: {},
       totalAmount: 0,
