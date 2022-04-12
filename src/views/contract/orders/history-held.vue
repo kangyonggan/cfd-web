@@ -94,7 +94,7 @@
           <span :class="scope.row.profit >= 0 ? 'bullish' : 'bearish'">
             {{ scope.row.profit >= 0 ? '+' : '' }}{{
               NumberUtil.format(scope.row.profit)
-            }}({{ NumberUtil.formatUsdt(scope.row.profit / scope.row.margin * 100) }}%)
+            }}({{ scope.row.profit >= 0 ? '+' : '' }}{{ NumberUtil.formatUsdt(scope.row.profit / scope.row.margin * 100) }}%)
           </span>
         </template>
       </el-table-column>
