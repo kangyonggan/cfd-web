@@ -136,9 +136,10 @@
               style="text-align: left"
             >
               {{ item.serialNo }}
+              <base-copy :value="item.serialNo" />
             </div>
             <div class="large">
-              {{ item.amount }}
+              {{ item.amount >= 0 ? '+' : '' }}{{ item.amount }}
             </div>
             <div class="large">
               {{ DateTimeUtil.format(item.createTime) }}
@@ -167,9 +168,10 @@
 <script>
   import Sidebar from './sidebar'
   import TransferModal from "./transfer-modal"
+  import BaseCopy from "@/components/base-copy"
 
   export default {
-    components: {Sidebar, TransferModal},
+    components: {BaseCopy, Sidebar, TransferModal},
     data() {
       return {
         loading: false,
