@@ -5,14 +5,14 @@
       :data="quotationList"
       :row-style="tableRowStyle"
       :cell-style="{padding: '5px 0'}"
-      height="398"
+      height="393"
       @row-click="changeSymbol"
     >
       <el-table-column
         prop="quotationCoin"
         label="交易对"
         :sortable="true"
-        min-width="110"
+        min-width="90"
       >
         <template #default="scope">
           <span style="color: var(--el-color-primary)">
@@ -40,7 +40,7 @@
         label="24h涨跌"
         :sortable="true"
         align="right"
-        min-width="120"
+        min-width="110"
       >
         <template #default="scope">
           <span
@@ -117,9 +117,9 @@
 
 <style scoped lang="scss">
   .quotation-list {
-    width: 330px;
+    width: 320px;
     float: left;
-    height: 398px;
+    height: 393px;
     border-right: 1px solid var(--app-border-color);
   }
 </style>
