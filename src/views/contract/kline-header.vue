@@ -12,7 +12,7 @@
     </ul>
 
     <span style="font-size: 13px;float: right;margin-right: 10px;margin-top: 5px;">
-      资金费率：{{ fundFeeRate === '' ? '--' : fundFeeRate }}
+      资金费率：{{ fundFeeRate === '' ? '--' : NumberUtil.format(fundFeeRate * 100, 4) + '%' }}
     </span>
 
     <span
@@ -90,12 +90,13 @@ export default {
   },
   mounted() {
     // 监听最新K线
-    this.$eventBus.on('updateKline', data => {
-      if (data.symbol === (this.$route.query.symbol || 'BTCUSDT') && data.interval === this.interval) {
+    this.$eventBus.on('updateTicket', data => {
+      if (data.symbol === (this.$route.query.symbol || 'BTCUSDT')) {
         let lastPrice = data.close
         let oldPrice = this.lastPrice === '--' ? 0 : this.lastPrice
         this.priceColor = oldPrice <= lastPrice ? 'bullish' : 'bearish'
         this.lastPrice = lastPrice
+        this.fundFeeRate = data.fundFeeRate
       }
     })
   },
@@ -103,6 +104,7 @@ export default {
     '$route': function () {
       this.priceColor = ''
       this.lastPrice = '--'
+      this.fundFeeRate = ''
     },
   },
 };

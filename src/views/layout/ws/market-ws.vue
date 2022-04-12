@@ -40,7 +40,7 @@ export default {
         let data = msg.data
 
         if (event === 'TICKET') {
-          // 最新价 & 涨跌幅 & 成交量
+          // 最新价 & 涨跌幅 & 资金费率
           that.$eventBus.emit('updateTicket', data)
         } else if (event === 'HISTORY') {
           // 历史K线
