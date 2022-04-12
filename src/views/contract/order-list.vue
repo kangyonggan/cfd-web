@@ -25,6 +25,12 @@
       >
         历史委托
       </span>
+      <span
+        :class="{active: activeTab === '4'}"
+        @click="changeTab('4')"
+      >
+        资金流水
+      </span>
     </div>
 
     <!--当前持仓-->
@@ -76,9 +82,17 @@ export default {
       this.orderDelegateList = orderDelegateList
     },
     changeTab(tab) {
-      this.activeTab = tab
-      localStorage.setItem('orderTab', tab)
+      if (tab === '4') {
+        this.$router.push({
+          path: '/wallet/contract',
+          query: {
+            tab: 1
+          }
+        })
+        return
+      }
 
+      this.activeTab = tab
       if (tab === '0') {
         this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_HELD'})
       } if (tab === '1') {
@@ -88,6 +102,7 @@ export default {
       } else if (tab === '3') {
         this.$refs['history-delegate'].reload()
       }
+      localStorage.setItem('orderTab', tab)
     },
   },
   mounted() {

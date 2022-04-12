@@ -65,7 +65,7 @@
       >
         <el-tab-pane
           label="当前持仓"
-          name="orderHeld"
+          name="0"
         >
           <el-table
             :data="orderHeldList"
@@ -162,7 +162,7 @@
         </el-tab-pane>
         <el-tab-pane
           label="资金流水"
-          name="accountLog"
+          name="1"
         >
           <ul
             class="log-list"
@@ -249,7 +249,7 @@
         account: {},
         orderAmountInfo: {},
         orderHeldList: [],
-        activeTab: localStorage.getItem('contractActiveTab') || 'orderHeld',
+        activeTab: '',
         accountLogList: [],
         loadingAccountLog: false,
         total: 0,
@@ -258,10 +258,12 @@
     },
     methods: {
       changeTab() {
-        localStorage.setItem('contractActiveTab', this.activeTab)
-        if (this.activeTab === 'accountLog') {
-          this.getAccountLog()
-        }
+        this.$router.push({
+          path: '/wallet/contract',
+          query: {
+            tab: this.activeTab
+          }
+        })
       },
       getTransferType(type) {
         if (type === 'TRANSFER_IN') {
@@ -322,11 +324,22 @@
     },
     mounted() {
       this.getOverview()
-      this.changeTab()
+      this.activeTab = this.$route.query.tab || '0'
+      if (this.activeTab === '1') {
+        this.getAccountLog()
+      }
 
       this.$eventBus.on('updateAccount', this.updateAccount)
       this.$eventBus.on('updateOrderAmountInfo', this.updateOrderAmountInfo)
       this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)
+    },
+    watch: {
+      '$route': function (newRoute) {
+        this.activeTab = newRoute.query.tab || '0'
+        if (this.activeTab === '1') {
+          this.getAccountLog()
+        }
+      }
     }
   }
 </script>
