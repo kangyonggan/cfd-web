@@ -40,7 +40,7 @@
         min-width="150"
       >
         <template #default="scope">
-          ***{{ scope.row.orderNo.substring(15) }}<base-copy :value="scope.row.orderNo" />
+          {{ scope.row.orderNo.substring(0, 3) }}***{{ scope.row.orderNo.substring(18) }}<base-copy :value="scope.row.orderNo" />
         </template>
       </el-table-column>
       <el-table-column
@@ -71,6 +71,15 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="closeType"
+        label="平仓类型"
+        min-width="100"
+      >
+        <template #default="scope">
+          {{ getCloseType(scope.row.closeType) }}
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="closePrice"
         label="平仓价格"
         min-width="100"
@@ -78,11 +87,39 @@
       <el-table-column
         prop="profit"
         label="盈亏"
-        min-width="170"
+        min-width="200"
       >
         <template #default="scope">
           <span :class="scope.row.profit >= 0 ? 'bullish' : 'bearish'">
-            {{ scope.row.profit >= 0 ? '+' : '' }}{{ NumberUtil.formatUsdt(scope.row.profit) }}({{ NumberUtil.formatUsdt(scope.row.profit / scope.row.margin * 100) }}%)
+            {{ scope.row.profit >= 0 ? '+' : '' }}{{ NumberUtil.format(scope.row.profit) }}({{ NumberUtil.formatUsdt(scope.row.profit / scope.row.margin * 100) }}%)
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="fee"
+        label="手续费"
+        min-width="150"
+      >
+        <template #default="scope">
+          <span :class="scope.row.fee >= 0 ? 'bullish' : 'bearish'">
+            -{{ NumberUtil.format(scope.row.fee) }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="fundFee"
+        label="资金费"
+        min-width="150"
+      >
+        <template #default="scope">
+          <span
+            v-if="scope.row.fundFee"
+            :class="scope.row.fundFee > 0 ? 'bullish' : 'bearish'"
+          >
+            {{ scope.row.fundFee >= 0 ? '+' : '' }}{{ NumberUtil.format(scope.row.fundFee) }}
+          </span>
+          <span v-else>
+            --
           </span>
         </template>
       </el-table-column>
@@ -122,6 +159,15 @@ export default {
     }
   },
   methods: {
+    getCloseType(closeType) {
+      if (closeType === 'USER_CLOSE') {
+        return '用户平仓'
+      } else if (closeType === 'FORCE_CLOSE') {
+        return '系统强平'
+      } else if (closeType === 'DELEGATE_CLOSE') {
+        return '委托平仓'
+      }
+    },
     changeSymbol(symbol) {
       this.$router.push({
         path: '/contract',

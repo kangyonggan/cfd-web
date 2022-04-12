@@ -38,7 +38,7 @@
       min-width="150"
     >
       <template #default="scope">
-        ***{{ scope.row.orderNo.substring(15) }}<base-copy :value="scope.row.orderNo" />
+        {{ scope.row.orderNo.substring(0, 3) }}***{{ scope.row.orderNo.substring(18) }}<base-copy :value="scope.row.orderNo" />
       </template>
     </el-table-column>
     <el-table-column

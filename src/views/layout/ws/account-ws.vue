@@ -170,12 +170,12 @@ export default {
 
       let totalAmount = this.totalAmount + totalUnsettleProfit
 
-      // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金）
+      // 强平价=开仓价-(账户余额-0.1*保证金)*方向/保证金/杠杆*开仓价（逐仓把账户余额换成保证金并加上资金费）
       // 由于账户余额中加上了未实现盈亏，所以开仓价用最新价替换（逐仓还是用开仓价）
       for (let i = 0; i < orderHeldList.length; i++) {
         let item = orderHeldList[i]
         let pos = new Big(item.positionSide === 'LONG' ? 1 : -1)
-        let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin)
+        let totalMargin = new Big(item.marginType === 'CROSSED' ? totalAmount : item.margin + item.fundFee)
         if (!item.lastPrice) {
           continue
         }
