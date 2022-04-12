@@ -29,25 +29,38 @@
 
     <!--当前持仓-->
     <order-held
-      v-if="activeTab === '0'"
+      v-show="activeTab === '0'"
       :order-held-list="orderHeldList"
     />
 
     <!--当前委托-->
     <order-delegate
-      v-if="activeTab === '1'"
+      v-show="activeTab === '1'"
       :order-delegate-list="orderDelegateList"
+    />
+
+    <!--历史持仓-->
+    <history-held
+      v-show="activeTab === '2'"
+      ref="history-held"
+    />
+
+    <!--历史委托-->
+    <history-delegate
+      v-show="activeTab === '3'"
+      ref="history-delegate"
     />
   </div>
 </template>
 
 <script>
 import OrderHeld from "./orders/order-held"
-import OrderDelegate from "./orders/order-delegate";
+import OrderDelegate from "./orders/order-delegate"
+import HistoryHeld from "./orders/history-held"
+import HistoryDelegate from "./orders/history-delegate"
 
 export default {
-  components: {OrderDelegate, OrderHeld},
-  emits: ['updateOrderAmountInfo'],
+  components: {OrderDelegate, OrderHeld, HistoryHeld, HistoryDelegate},
   data() {
     return {
       activeTab: localStorage.getItem('orderTab') || '0',
@@ -66,16 +79,19 @@ export default {
       this.activeTab = tab
       localStorage.setItem('orderTab', tab)
 
-      this.getOrderDelegate()
-    },
-    getOrderDelegate() {
-      if (this.tab === '1') {
+      if (tab === '0') {
+        this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_HELD'})
+      } if (tab === '1') {
         this.$eventBus.emit('sendAccountMsg', {method: 'REQ', topic: 'ORDER_DELEGATE'})
+      } else if (tab === '2') {
+        this.$refs['history-held'].reload()
+      } else if (tab === '3') {
+        this.$refs['history-delegate'].reload()
       }
-    }
+    },
   },
   mounted() {
-    this.getOrderDelegate()
+    this.changeTab(this.activeTab)
 
     this.$eventBus.on('updateOrderHeldList', this.updateOrderHeldList)
     this.$eventBus.on('updateOrderDelegateList', this.updateOrderDelegateList)

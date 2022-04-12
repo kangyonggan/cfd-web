@@ -56,7 +56,7 @@
     </el-table-column>
     <el-table-column
       prop="createTime"
-      label="下单时间"
+      label="创建时间"
       width="190"
     >
       <template #default="scope">

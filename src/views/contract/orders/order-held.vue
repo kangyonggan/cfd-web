@@ -41,11 +41,7 @@
       prop="openPrice"
       label="开仓价格"
       min-width="100"
-    >
-      <template #default="scope">
-        {{ scope.row.openPrice }}
-      </template>
-    </el-table-column>
+    />
     <el-table-column
       prop="lastPrice"
       label="最新价格"
