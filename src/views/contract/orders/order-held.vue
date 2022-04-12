@@ -33,6 +33,15 @@
       </template>
     </el-table-column>
     <el-table-column
+      prop="orderNo"
+      label="订单号"
+      min-width="150"
+    >
+      <template #default="scope">
+        ***{{ scope.row.orderNo.substring(15) }}<base-copy :value="scope.row.orderNo" />
+      </template>
+    </el-table-column>
+    <el-table-column
       prop="margin"
       label="保证金"
       min-width="110"
@@ -124,9 +133,10 @@
 
 <script>
 import OrderClose from "../order-close"
+import BaseCopy from "@/components/base-copy"
 
 export default {
-  components: {OrderClose},
+  components: {BaseCopy, OrderClose},
   props: {
     orderHeldList: {
       required: true,

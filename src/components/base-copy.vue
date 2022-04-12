@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <el-icon
       style="cursor: pointer;margin-left: 5px;"
       @click="copy"
@@ -11,7 +11,7 @@
       :id="id"
       :value="value"
     >
-  </div>
+  </span>
 </template>
 
 <script>
