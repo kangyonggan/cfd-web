@@ -40,7 +40,8 @@
         min-width="150"
       >
         <template #default="scope">
-          {{ scope.row.orderNo.substring(0, 3) }}***{{ scope.row.orderNo.substring(18) }}<base-copy :value="scope.row.orderNo" />
+          {{ scope.row.orderNo.substring(0, 3) }}***{{ scope.row.orderNo.substring(18) }}
+          <base-copy :value="scope.row.orderNo" />
         </template>
       </el-table-column>
       <el-table-column
@@ -91,7 +92,9 @@
       >
         <template #default="scope">
           <span :class="scope.row.profit >= 0 ? 'bullish' : 'bearish'">
-            {{ scope.row.profit >= 0 ? '+' : '' }}{{ NumberUtil.format(scope.row.profit) }}({{ NumberUtil.formatUsdt(scope.row.profit / scope.row.margin * 100) }}%)
+            {{ scope.row.profit >= 0 ? '+' : '' }}{{
+              NumberUtil.format(scope.row.profit)
+            }}({{ NumberUtil.formatUsdt(scope.row.profit / scope.row.margin * 100) }}%)
           </span>
         </template>
       </el-table-column>
@@ -101,9 +104,7 @@
         min-width="150"
       >
         <template #default="scope">
-          <span :class="scope.row.fee >= 0 ? 'bullish' : 'bearish'">
-            -{{ NumberUtil.format(scope.row.fee) }}
-          </span>
+          -{{ NumberUtil.format(scope.row.fee) }}
         </template>
       </el-table-column>
       <el-table-column
