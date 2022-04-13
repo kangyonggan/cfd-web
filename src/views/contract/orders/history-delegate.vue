@@ -103,15 +103,6 @@
           {{ DateTimeUtil.format(scope.row.createTime) }}
         </template>
       </el-table-column>
-      <el-table-column
-        prop="updateTime"
-        label="更新时间"
-        width="190"
-      >
-        <template #default="scope">
-          {{ DateTimeUtil.format(scope.row.updateTime) }}
-        </template>
-      </el-table-column>
     </el-table>
 
     <el-pagination
