@@ -75,7 +75,7 @@
           </div>
           <div :class="'left ' + item.priceColorClass">
             <span v-if="item.lastPrice">
-              ${{ NumberUtil.formatUsdt(item.lastPrice, $store.getters.getQuotationMap[item.quotationCoin + item.marginCoin].quotationPrecision) }}
+              ${{ NumberUtil.format(item.lastPrice, $store.getters.getQuotationMap[item.quotationCoin + item.marginCoin].quotationPrecision) }}
             </span>
             <span v-else>
               --

@@ -49,7 +49,7 @@
     >
       <natural-input
         v-model="params.stopProfitPrice"
-        :precision="priceScale[row.quotationCoin.toLowerCase()]"
+        :precision="$store.getters.getQuotationMap[row.quotationCoin + row.marginCoin].quotationPrecision"
         placeholder="止盈价格"
         size="small"
         @input="calcProfit"
@@ -97,7 +97,6 @@
 <script>
   import BaseModal from '@/components/base-modal.vue'
   import NaturalInput from "../../components/natural-input";
-  import PriceScale from './price-scale'
 
   export default {
     emits: ['success'],
@@ -109,7 +108,6 @@
           stopProfitPrice: '',
           stopLossPrice: '',
         },
-        priceScale: PriceScale,
         profit: '',
         profitRate: '',
         loss: '',

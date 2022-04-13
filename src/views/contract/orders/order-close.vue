@@ -1,7 +1,7 @@
 <template>
   <base-modal
     ref="modal"
-    title="平仓"
+    title="市价平仓"
     url="/v1/order/close"
     :params="params"
     @success="success"
@@ -49,19 +49,16 @@
         >
           {{ row.profit * 1 >= 0 ? '+' : '' }}{{
             NumberUtil.formatUsdt(row.profit)
-          }} USDT
+          }}({{ row.profitRate }})
         </span>
       </div>
       <div style="width: 50%;float: right;margin-top: 20px;">
         <span style="display: inline-block;width: 70px;text-align: right">
-          回报率
+          手续费
         </span>
 
-        <span
-          :class="row.profitClass"
-          style="font-weight: bold;margin-left: 10px;"
-        >
-          {{ row.profitRate }}
+        <span style="font-weight: bold;margin-left: 10px;">
+          {{ calcFee() }}
         </span>
       </div>
     </div>
@@ -71,6 +68,7 @@
 
 <script>
 import BaseModal from '@/components/base-modal.vue'
+import Big from "big.js"
 
 export default {
   emits: ['success'],
@@ -90,6 +88,9 @@ export default {
         orderNo: row.orderNo,
       }
       this.$refs.modal.show()
+    },
+    calcFee() {
+      return new Big(this.row.margin).times(new Big(this.row.leverage)).times(new Big(this.$store.getters.getQuotationMap[this.row.quotationCoin + this.row.marginCoin].closeFeeRate))
     },
     success() {
       this.$success('平仓成功')

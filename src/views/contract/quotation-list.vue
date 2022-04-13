@@ -31,7 +31,7 @@
       >
         <template #default="scope">
           <span :class="scope.row.priceColorClass">
-            {{ scope.row.lastPrice ? NumberUtil.formatUsdt(scope.row.lastPrice, $store.getters.getQuotationMap[scope.row.quotationCoin + scope.row.marginCoin].quotationPrecision) : '--' }}
+            {{ scope.row.lastPrice ? NumberUtil.format(scope.row.lastPrice, $store.getters.getQuotationMap[scope.row.quotationCoin + scope.row.marginCoin].quotationPrecision) : '--' }}
           </span>
         </template>
       </el-table-column>

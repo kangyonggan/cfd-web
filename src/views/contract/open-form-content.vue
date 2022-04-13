@@ -14,7 +14,7 @@
       <natural-input
         v-if="type === 'LIMIT'"
         v-model="params.triggerPrice"
-        :precision="priceScale[symbol.replace('USDT', '').toLowerCase()]"
+        :precision="$store.getters.getQuotationMap[symbol] ? $store.getters.getQuotationMap[symbol].quotationPrecision : 8"
         placeholder="请输入触发价"
         size="small"
       />
@@ -57,7 +57,6 @@
 
 <script>
   import NaturalInput from "../../components/natural-input";
-  import PriceScale from './price-scale'
 
   export default {
     components: {NaturalInput},
@@ -76,7 +75,6 @@
         loading: false,
         symbol: '',
         readonlyVal: '最优市价',
-        priceScale: PriceScale,
         availableAmount: 0,
         params: {
           triggerPrice: '',
@@ -170,7 +168,11 @@
     },
     watch: {
       '$route'(newRoute) {
-        this.symbol = newRoute.query.symbol || 'BTCUSDT'
+        let symbol = newRoute.query.symbol || 'BTCUSDT'
+        if (this.symbol !== symbol) {
+          this.params.triggerPrice = ''
+        }
+        this.symbol = symbol
       }
     }
   }
