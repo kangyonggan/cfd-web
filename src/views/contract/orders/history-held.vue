@@ -127,7 +127,7 @@
       <el-table-column
         prop="closeTime"
         label="平仓时间"
-        minwidth="190"
+        min-width="190"
       >
         <template #default="scope">
           {{ DateTimeUtil.format(scope.row.closeTime) }}
