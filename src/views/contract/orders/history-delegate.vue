@@ -40,7 +40,8 @@
         min-width="150"
       >
         <template #default="scope">
-          {{ scope.row.orderNo.substring(0, 3) }}***{{ scope.row.orderNo.substring(18) }}<base-copy :value="scope.row.orderNo" />
+          {{ scope.row.orderNo.substring(0, 3) }}***{{ scope.row.orderNo.substring(18) }}
+          <base-copy :value="scope.row.orderNo" />
         </template>
       </el-table-column>
       <el-table-column
@@ -50,19 +51,39 @@
       />
       <el-table-column
         prop="triggerPrice"
-        label="委托价格"
+        label="触发价格"
         min-width="100"
       >
         <template #default="scope">
-          {{ scope.row.triggerPrice }}
+          {{ scope.row.triggerDirect === 'GTE' ? '≥' : '≤' }}{{ scope.row.triggerPrice }}
         </template>
       </el-table-column>
       <el-table-column
-        label="止盈/止损"
-        min-width="130"
+        prop="triggerTime"
+        label="触发时间"
+        min-width="190"
       >
         <template #default="scope">
-          {{ scope.row.profitPrice || '--' }}/{{ scope.row.lossPrice || '--' }}
+          <span v-if="scope.row.triggerTime">
+            {{ DateTimeUtil.format(scope.row.triggerTime) }}
+          </span>
+          <span v-else>
+            --
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="openPrice"
+        label="成交价格"
+        min-width="110"
+      >
+        <template #default="scope">
+          <span v-if="scope.row.openPrice">
+            {{ scope.row.openPrice }}
+          </span>
+          <span v-else>
+            --
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -126,9 +147,9 @@ export default {
       } else if (status === 'CANCELED') {
         return '已撤销'
       } else if (status === 'PENDING') {
-        return '平仓中'
+        return '已触发'
       } else if (status === 'CLOSED') {
-        return '已平仓'
+        return '已触发'
       }
     },
     changeSymbol(symbol) {

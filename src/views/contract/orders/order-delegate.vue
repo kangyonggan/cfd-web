@@ -48,11 +48,11 @@
     />
     <el-table-column
       prop="triggerPrice"
-      label="委托价格"
+      label="触发价格"
       min-width="100"
     >
       <template #default="scope">
-        {{ scope.row.triggerPrice }}
+        {{ scope.row.triggerDirect === 'GTE' ? '≥' : '≤' }}{{ scope.row.triggerPrice }}
       </template>
     </el-table-column>
     <el-table-column
@@ -66,7 +66,7 @@
     <el-table-column
       prop="createTime"
       label="创建时间"
-      width="190"
+      min-width="190"
     >
       <template #default="scope">
         {{ DateTimeUtil.format(scope.row.createTime) }}
