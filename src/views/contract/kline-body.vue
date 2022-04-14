@@ -80,7 +80,7 @@ export default {
       this.kline.setOffsetRightSpace(6)
       this.kline.setDataSpace(10)
       this.kline.resize()
-      this.changeIndicator(['VOL'])
+      // this.changeIndicator(['VOL'])
     },
     unsubKline() {
       if (this.symbol) {
