@@ -55,6 +55,14 @@
               {{ calcAvailableAmount() }}
             </div>
           </div>
+          <div class="item">
+            <div class="label">
+              保证金率
+            </div>
+            <div class="value">
+              {{ orderAmountInfo.marginRate }}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -102,9 +110,13 @@
             </el-table-column>
             <el-table-column
               prop="margin"
-              label="保证金"
-              min-width="110"
-            />
+              label="保证金(率)"
+              min-width="150"
+            >
+              <template #default="scope">
+                {{ scope.row.margin }}<span v-if="scope.row.marginType === 'ISOLATED'">({{ scope.row.marginRate }})</span>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="openPrice"
               label="开仓价格"
@@ -379,7 +391,7 @@
         height: 50px;
 
         .item {
-          width: 25%;
+          width: 20%;
           float: left;
 
           .label {

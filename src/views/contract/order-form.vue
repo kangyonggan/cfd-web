@@ -14,6 +14,17 @@
         限价
       </span>
       <div class="actions">
+        <div
+          class="item"
+          v-if="marginType === 'CROSSED'"
+        >
+          <div class="top">
+            保证金率
+          </div>
+          <div class="btm">
+            {{ orderAmountInfo.marginRate }}
+          </div>
+        </div>
         <div class="item">
           <div class="top">
             账户余额(USDT)
@@ -64,6 +75,7 @@
         </div>
         <div
           class="action"
+          style="margin-right: 10px;"
           @click="changeMarginType"
         >
           {{ marginType ? (marginType === 'CROSSED' ? '全仓' : '逐仓') : '--' }}

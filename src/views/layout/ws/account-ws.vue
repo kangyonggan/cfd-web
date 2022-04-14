@@ -150,6 +150,7 @@ export default {
       this.lastCalcTime = new Date().getTime()
       let totalUnsettleProfit = 0
       let totalMargin = 0
+      let marginType = localStorage.getItem('marginType') || 'CROSSED'
       for (let i = 0; i < orderHeldList.length; i++) {
         let item = orderHeldList[i]
         let res = this.calcProfit(item)
@@ -158,6 +159,10 @@ export default {
         item.profit = res.profit
         item.profitRate = res.profitRate
         item.profitClass = res.profitClass
+        if (marginType === 'ISOLATED') {
+          // 逐仓保证金率 = (保证金 + 未实现盈亏 + 资金费) / 保证金
+          item.marginRate = this.NumberUtil.formatUsdt((item.margin + item.profit + item.fundFee) / item.margin * 100) + '%'
+        }
         orderHeldList[i] = item
 
         totalUnsettleProfit += res.profit * 1
@@ -166,7 +171,14 @@ export default {
 
       totalUnsettleProfit = this.NumberUtil.formatUsdt(totalUnsettleProfit) * 1
       totalMargin = this.NumberUtil.formatUsdt(totalMargin) * 1
-      this.$eventBus.emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin})
+
+      // 全仓保证金率 = 净资产 / 总保证金 = (总资产 + 总未实现盈亏) / 总保证金
+      let marginRate = '--'
+      if (marginType === 'CROSSED' && orderHeldList.length > 0) {
+        marginRate = this.NumberUtil.formatUsdt((this.totalAmount + totalUnsettleProfit) / totalMargin * 100) + '%'
+      }
+
+      this.$eventBus.emit('updateOrderAmountInfo', {unsettleProfit: totalUnsettleProfit, totalMargin: totalMargin, marginRate: marginRate})
 
       let totalAmount = this.totalAmount + totalUnsettleProfit
 
