@@ -93,7 +93,7 @@
 
     <switch-margin-type
       ref="switch-margin-type"
-      @success="marginType = $event"
+      @success="updateMarginTypeSuccess"
     />
     <switch-leverage
       ref="switch-leverage"
@@ -126,6 +126,10 @@ export default {
     }
   },
   methods: {
+    updateMarginTypeSuccess(marginType) {
+      this.marginType = marginType
+      localStorage.setItem('marginType', marginType)
+    },
     transfer() {
       if (this.leverage) {
         this.$refs['transfer-modal'].show()
@@ -151,7 +155,12 @@ export default {
       this.leverage = leverage
     },
     calcAvailableMargin() {
-      let availableAmount = new Big(this.totalAmount).plus(new Big(this.orderAmountInfo.unsettleProfit)).minus(new Big(this.orderAmountInfo.totalMargin))
+      // 全仓可用保证金不算上总的未实现盈亏
+      let availableAmount = new Big(this.totalAmount).minus(new Big(this.orderAmountInfo.totalMargin))
+      if (this.marginType === 'CROSSED') {
+        // 全仓可用保证金算上总的未实现盈亏
+        availableAmount = availableAmount.plus(new Big(this.orderAmountInfo.unsettleProfit))
+      }
       availableAmount = availableAmount < 0 ? 0 : availableAmount
 
       if (this.$refs['market-form']) {

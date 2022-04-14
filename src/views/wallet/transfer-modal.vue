@@ -49,7 +49,7 @@
       </el-select>
     </el-form-item>
     <div style="padding-left: 95px;">
-      可用：{{ amountMap[params.currency] + orderAmountInfo.unsettleProfit }}
+      可用：{{ calcAvailableAmount() }}
     </div>
     <el-form-item
       prop="amount"
@@ -65,7 +65,7 @@
         <template #append>
           <span
             class="select-all"
-            @click="params.amount = amountMap[params.currency] + orderAmountInfo.unsettleProfit"
+            @click="params.amount = calcAvailableAmount()"
           >
             全部
           </span>
@@ -104,6 +104,14 @@
       }
     },
     methods: {
+      calcAvailableAmount() {
+        let marginType = localStorage.getItem('marginType') || 'CROSSED'
+        if (marginType === 'CROSSED') {
+          return this.amountMap[this.params.currency] + this.orderAmountInfo.unsettleProfit
+        } else {
+          return this.amountMap[this.params.currency]
+        }
+      },
       validateAmount: function (rule, value, callback) {
         if (value === undefined || value === '') {
           callback()

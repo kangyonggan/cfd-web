@@ -52,7 +52,7 @@
               可用保证金(USDT)
             </div>
             <div class="value">
-              {{ NumberUtil.formatUsdt(account.totalAmount - orderAmountInfo.totalMargin + orderAmountInfo.unsettleProfit) }}
+              {{ calcAvailableAmount() }}
             </div>
           </div>
         </div>
@@ -257,6 +257,14 @@
       }
     },
     methods: {
+      calcAvailableAmount() {
+        let marginType = localStorage.getItem('marginType') || 'CROSSED'
+        if (marginType === 'CROSSED') {
+          return this.NumberUtil.formatUsdt(this.account.totalAmount - this.orderAmountInfo.totalMargin + this.orderAmountInfo.unsettleProfit)
+        } else {
+          return this.NumberUtil.formatUsdt(this.account.totalAmount - this.orderAmountInfo.totalMargin)
+        }
+      },
       changeTab() {
         this.$router.push({
           path: '/wallet/contract',
