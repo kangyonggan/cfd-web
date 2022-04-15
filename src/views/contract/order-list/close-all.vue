@@ -65,7 +65,6 @@ export default {
   },
   methods: {
     show(rows) {
-      console.log(rows)
       let fee = 0
       let profit = 0
       let orderNum = 0
