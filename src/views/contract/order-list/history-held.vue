@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column
         label="止盈/止损"
-        min-width="130"
+        min-width="180"
       >
         <template #default="scope">
           {{ scope.row.profitPrice || '--' }}/{{ scope.row.lossPrice || '--' }}
