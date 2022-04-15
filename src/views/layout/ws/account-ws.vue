@@ -161,7 +161,9 @@ export default {
         let res = this.calcProfit(item)
         item.lastPrice = res.lastPrice || undefined
         item.addIcon = res.addIcon
-        item.profit = res.profit
+        item.profit = res.profit * 1
+        let closeFeeRate = this.$store.getters.getQuotationMap[item.quotationCoin + item.marginCoin] ? this.$store.getters.getQuotationMap[item.quotationCoin + item.marginCoin].closeFeeRate : 0.01
+        item.fee = new Big(item.margin).times(new Big(item.leverage)).times(new Big(closeFeeRate)) * 1
         item.profitRate = res.profitRate
         item.profitClass = res.profitClass
         if (marginType === 'ISOLATED') {

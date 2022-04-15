@@ -31,6 +31,21 @@
       >
         资金流水
       </span>
+
+      <span
+        class="action"
+        v-if="activeTab === '0' && orderHeldList.length"
+        @click="closeAll"
+      >
+        一键平仓
+      </span>
+      <span
+        class="action"
+        v-if="activeTab === '1' && orderDelegateList.length"
+        @click="cancelAll"
+      >
+        全部撤销
+      </span>
     </div>
 
     <!--当前持仓-->
@@ -56,6 +71,8 @@
       v-show="activeTab === '3'"
       ref="history-delegate"
     />
+
+    <close-all ref="close-all" />
   </div>
 </template>
 
@@ -64,9 +81,10 @@ import OrderHeld from "./order-held"
 import OrderDelegate from "./order-delegate"
 import HistoryHeld from "./history-held"
 import HistoryDelegate from "./history-delegate"
+import CloseAll from "./close-all"
 
 export default {
-  components: {OrderDelegate, OrderHeld, HistoryHeld, HistoryDelegate},
+  components: {OrderDelegate, OrderHeld, HistoryHeld, HistoryDelegate, CloseAll},
   data() {
     return {
       activeTab: localStorage.getItem('orderTab') || '0',
@@ -104,6 +122,22 @@ export default {
       }
       localStorage.setItem('orderTab', tab)
     },
+    cancelAll() {
+      this.$confirm('确定撤销全部的委托单吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.axios.delete('/v1/order/cancelAll').then(() => {
+          this.$success('撤销成功')
+        }).catch(res => {
+          this.$error(res.msg)
+        })
+      })
+    },
+    closeAll() {
+      this.$refs['close-all'].show(this.orderHeldList)
+    }
   },
   mounted() {
     this.changeTab(this.activeTab)
@@ -139,6 +173,12 @@ export default {
     .active {
       color: var(--app-text-color-white);
       border-bottom: 2px solid var(--el-color-primary);
+    }
+
+    .action {
+      float: right;
+      color: var(--el-color-primary);
+      font-size: 13px;
     }
   }
 }

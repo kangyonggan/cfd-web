@@ -71,7 +71,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="unsettleProfit"
+        prop="profit"
         label="未实现盈亏"
         min-width="170"
       >

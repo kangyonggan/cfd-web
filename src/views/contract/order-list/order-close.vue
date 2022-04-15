@@ -45,7 +45,7 @@
         </span>
 
         <span style="font-weight: bold;margin-left: 10px;">
-          {{ calcFee() }}
+          {{ row.fee }}
         </span>
       </div>
       <div style="width: 50%;float: right;margin-top: 20px;">
@@ -68,10 +68,8 @@
 
 <script>
 import BaseModal from '@/components/base-modal.vue'
-import Big from "big.js"
 
 export default {
-  emits: ['success'],
   components: {BaseModal},
   data() {
     return {
@@ -89,12 +87,8 @@ export default {
       }
       this.$refs.modal.show()
     },
-    calcFee() {
-      return new Big(this.row.margin).times(new Big(this.row.leverage)).times(new Big(this.$store.getters.getQuotationMap[this.row.quotationCoin + this.row.marginCoin].closeFeeRate))
-    },
     success() {
       this.$success('平仓成功')
-      this.$emit('success')
     }
   }
 }
