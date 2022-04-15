@@ -5,7 +5,6 @@
     label-position="right"
     :model="params"
     :rules="rules"
-    label-width="90px"
   >
     <el-form-item
       prop="triggerPrice"
@@ -29,6 +28,7 @@
     <el-form-item
       label="本金"
       prop="margin"
+      style="margin-bottom: 13px;"
     >
       <natural-input
         v-model="params.margin"
@@ -43,8 +43,42 @@
       </natural-input>
     </el-form-item>
 
+    <div class="stop-price">
+      <div style="float: left">
+        <span style="display: inline-block;width: 76px;text-align: right">止盈止损</span>
+        <el-checkbox
+          v-model="showStop"
+          @change="changeShowStop"
+        />
+      </div>
+      <el-form-item
+        prop="profitPrice"
+        style="float: left"
+      >
+        <natural-input
+          v-if="showStop"
+          v-model="params.profitPrice"
+          size="mini"
+          :precision="$store.getters.getQuotationMap[symbol] ? $store.getters.getQuotationMap[symbol].quotationPrecision : 8"
+          placeholder="止盈价"
+        />
+      </el-form-item>
+      <el-form-item
+        prop="lossPrice"
+        style="float: left"
+      >
+        <natural-input
+          v-if="showStop"
+          v-model="params.lossPrice"
+          :precision="$store.getters.getQuotationMap[symbol] ? $store.getters.getQuotationMap[symbol].quotationPrecision : 8"
+          size="mini"
+          placeholder="止损价"
+        />
+      </el-form-item>
+    </div>
+
     <el-button
-      style="width: 100%;"
+      style="width: 100%;margin-top: 12px;"
       :type="positionSide === 'LONG' ? 'success' : 'danger'"
       size="medium"
       @click="submit"
@@ -76,10 +110,14 @@
         symbol: '',
         readonlyVal: '最优市价',
         availableAmount: 0,
+        lastPrice: '',
+        showStop: localStorage.getItem('showStop-' + this.positionSide) === '1',
         params: {
           triggerPrice: '',
           margin: '',
-          marginCoin: 'USDT'
+          marginCoin: 'USDT',
+          profitPrice: '',
+          lossPrice: ''
         },
         rules: {
           triggerPrice: [
@@ -87,11 +125,110 @@
           ],
           margin: [
             {validator: this.validateMargin}
-          ]
+          ],
+          profitPrice: [
+            {validator: this.validateProfitPrice}
+          ],
+          lossPrice: [
+            {validator: this.validateLossPrice}
+          ],
         },
       }
     },
     methods: {
+      validateProfitPrice: function (rule, value, callback) {
+        if (!this.showStop) {
+          callback()
+          return
+        }
+        if (!value && value !== 0) {
+          callback()
+          return
+        }
+        if (isNaN(value) || value * 1 <= 0) {
+          callback(new Error('触发价格有误'))
+          return;
+        }
+        // 做多止盈不能低于最新价/触发价
+        if (this.positionSide === 'LONG') {
+          if (this.type === 'LIMIT') {
+            if (!this.params.triggerPrice) {
+              callback(new Error('请先输入触发价'))
+              return;
+            } else if (value * 1 < this.params.triggerPrice * 1) {
+              callback(new Error('止盈价不得低于触发价'))
+              return;
+            }
+          } else if (value * 1 < this.lastPrice * 1) {
+            callback(new Error('止盈价不得低于最新价'))
+            return;
+          }
+        } else {
+          // 做空止盈不能高于最新价/触发价
+          if (this.type === 'LIMIT') {
+            if (!this.params.triggerPrice) {
+              callback(new Error('请先输入触发价'))
+              return;
+            } else if (value * 1 > this.params.triggerPrice * 1) {
+              callback(new Error('止盈价不得高于触发价'))
+              return;
+            }
+          } else if (value * 1 > this.lastPrice * 1) {
+            callback(new Error('止盈价不得高于最新价'))
+            return;
+          }
+        }
+
+        callback()
+      },
+      validateLossPrice: function (rule, value, callback) {
+        if (!this.showStop) {
+          callback()
+          return
+        }
+        if (!value && value !== 0) {
+          callback()
+          return
+        }
+        if (isNaN(value) || value * 1 <= 0) {
+          callback(new Error('触发价格有误'))
+          return;
+        }
+        // 做多止损不能高于最新价/触发价
+        if (this.positionSide === 'LONG') {
+          if (this.type === 'LIMIT') {
+            if (!this.params.triggerPrice) {
+              callback(new Error('请先输入触发价'))
+              return;
+            } else if (value * 1 > this.params.triggerPrice * 1) {
+              callback(new Error('止损价不得高于触发价'))
+              return;
+            }
+          } else if (value * 1 > this.lastPrice * 1) {
+            callback(new Error('止损价不得高于最新价'))
+            return;
+          }
+        } else {
+          // 做空止损不能低于最新价/触发价
+          if (this.type === 'LIMIT') {
+            if (!this.params.triggerPrice) {
+              callback(new Error('请先输入触发价'))
+              return;
+            } else if (value * 1 < this.params.triggerPrice * 1) {
+              callback(new Error('止损价不得低于触发价'))
+              return;
+            }
+          } else if (value * 1 < this.lastPrice * 1) {
+            callback(new Error('止损价不得低于最新价'))
+            return;
+          }
+        }
+
+        callback()
+      },
+      changeShowStop() {
+        localStorage.setItem('showStop-' + this.positionSide, this.showStop ? '1' : '0')
+      },
       validatePrice: function (rule, value, callback) {
         if (this.type === 'MARKET') {
           callback()
@@ -165,6 +302,13 @@
     },
     mounted() {
       this.symbol = this.$route.query.symbol || 'BTCUSDT'
+
+      // 监听最新K线
+      this.$eventBus.on('updateTicket', data => {
+        if (data.symbol === this.symbol) {
+          this.lastPrice = data.close
+        }
+      })
     },
     watch: {
       '$route'(newRoute) {
@@ -180,6 +324,43 @@
 
 <style scoped lang="scss">
   .form {
-    height: 165px;
+    height: 185px;
+
+    ::v-deep(.el-form-item) {
+      margin-bottom: 18px;
+    }
+
+    ::v-deep(.el-form-item__label) {
+      width: 90px;
+      height: 32px;
+      line-height: 32px;
+      text-align: right;
+    }
+
+    ::v-deep(.el-form-item__content) {
+      display: inline-block;
+      line-height: 32px;
+      width: calc(100% - 70px);
+    }
+
+    ::v-deep(.el-form-item__error) {
+      padding-top: 1px;
+    }
+
+    .stop-price {
+      float: left;
+      width: 100%;
+
+      .el-checkbox {
+        margin-left: 12px;
+      }
+
+      .el-form-item {
+        width: calc(50% - 62px);
+        margin-bottom: 0;
+        margin-left: 10px;
+        margin-top: 3px;
+      }
+    }
   }
 </style>
