@@ -287,6 +287,8 @@
           this.axios.post('/v1/order/open', params).then(() => {
             this.$success('下单成功')
             this.params.triggerPrice = ''
+            this.params.profitPrice = ''
+            this.params.lossPrice = ''
             this.params.margin = ''
           }).catch(res => {
             this.$error(res.msg)
