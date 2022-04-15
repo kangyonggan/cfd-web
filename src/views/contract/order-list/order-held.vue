@@ -173,7 +173,7 @@ export default {
       scrollTo(0, 0)
     },
     reverseOrder(row) {
-      this.$confirm('确定反向开仓吗？', '提示', {
+      this.$confirm('确定市价平仓并反向开仓吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
