@@ -239,6 +239,13 @@
           return
         }
         if (!isNaN(value) && value * 1 > 0) {
+          // 触发价不能偏离最新价的xx%
+          let quotationConfig = this.$store.getters.getQuotationMap[this.symbol]
+          let offsetPrice = quotationConfig.priceOffset * this.lastPrice
+          if (value > this.lastPrice + offsetPrice || value < this.lastPrice - offsetPrice) {
+            callback(new Error('触发价不能偏离最新价的' + this.NumberUtil.formatUsdt(quotationConfig.priceOffset * 100) + '%'))
+            return
+          }
           callback()
         } else {
           callback(new Error('请输入触发价'))
