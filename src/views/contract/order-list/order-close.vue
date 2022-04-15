@@ -41,6 +41,15 @@
       </div>
       <div style="width: 50%;float: left;margin-top: 20px;">
         <span style="display: inline-block;width: 70px;text-align: right">
+          手续费
+        </span>
+
+        <span style="font-weight: bold;margin-left: 10px;">
+          {{ calcFee() }}
+        </span>
+      </div>
+      <div style="width: 50%;float: right;margin-top: 20px;">
+        <span style="display: inline-block;width: 70px;text-align: right">
           预计盈亏
         </span>
         <span
@@ -50,15 +59,6 @@
           {{ row.profit * 1 >= 0 ? '+' : '' }}{{
             NumberUtil.formatUsdt(row.profit)
           }}({{ row.profitRate }})
-        </span>
-      </div>
-      <div style="width: 50%;float: right;margin-top: 20px;">
-        <span style="display: inline-block;width: 70px;text-align: right">
-          手续费
-        </span>
-
-        <span style="font-weight: bold;margin-left: 10px;">
-          {{ calcFee() }}
         </span>
       </div>
     </div>

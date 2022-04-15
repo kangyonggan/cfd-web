@@ -102,7 +102,7 @@
       </el-table-column>
       <el-table-column
         label="止盈/止损"
-        min-width="130"
+        min-width="180"
       >
         <template #default="scope">
           <span
@@ -118,15 +118,6 @@
           >
             {{ scope.row.lossPrice || '设置' }}
           </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="openTime"
-        label="开仓时间"
-        min-width="190"
-      >
-        <template #default="scope">
-          {{ DateTimeUtil.format(scope.row.openTime) }}
         </template>
       </el-table-column>
       <el-table-column

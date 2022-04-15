@@ -23,14 +23,40 @@
         >{{ row.positionSide === 'LONG' ? '做多' : '做空' }}({{ row.leverage }}x)
         </span>
       </div>
-      <div style="width: 50%;float: left;margin-top: 20px;">
+      <div
+        style="width: 50%;float: left;margin-top: 20px;"
+        v-if="row.status === 'NEW'"
+      >
+        <span style="display: inline-block;width: 70px;text-align: right">
+          触发价格
+        </span>
+        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-dark)">{{ row.triggerPrice }}
+        </span>
+      </div>
+      <div
+        style="width: 50%;float: left;margin-top: 20px;"
+        v-else
+      >
         <span style="display: inline-block;width: 70px;text-align: right">
           开仓价格
         </span>
         <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-dark)">{{ row.openPrice }}
         </span>
       </div>
-      <div style="width: 50%;float: right;margin-top: 20px;">
+      <div
+        style="width: 50%;float: right;margin-top: 20px;"
+        v-if="row.status === 'NEW'"
+      >
+        <span style="display: inline-block;width: 70px;text-align: right">
+          保证金
+        </span>
+        <span style="font-weight: bold;margin-left: 10px;color: var(--app-text-color-dark)">{{ row.margin }}
+        </span>
+      </div>
+      <div
+        style="width: 50%;float: right;margin-top: 20px;"
+        v-else
+      >
         <span style="display: inline-block;width: 70px;text-align: right">
           最新价格
         </span>
@@ -75,7 +101,6 @@
   import NaturalInput from "@/components/natural-input";
 
   export default {
-    emits: ['success'],
     components: {BaseModal, NaturalInput},
     data() {
       return {
@@ -102,23 +127,32 @@
           callback()
           return
         }
+
+        let lastPrice = this.row.status === 'NEW' ? this.row.triggerPrice : this.row.lastPrice
+        let text = this.row.status === 'NEW' ? '触发价' : '最新价'
+
         if (value <= 0) {
           callback(new Error(this.label + '必须大于0'))
+          return
         } else if (this.params.type === 'profitPrice') {
-          if (this.row.positionSide === 'LONG' && value < this.row.lastPrice) {
-            callback(new Error('做多' + this.label + '不能小于最新价'))
-          } else if (this.row.positionSide === 'SHORT' && value > this.row.lastPrice) {
-            callback(new Error('做多' + this.label + '不能大于最新价'))
+          if (this.row.positionSide === 'LONG' && value < lastPrice) {
+            callback(new Error('做多' + this.label + '不能小于' + text))
+            return
+          } else if (this.row.positionSide === 'SHORT' && value > lastPrice) {
+            callback(new Error('做空' + this.label + '不能大于' + text))
+            return
           }
         } else if (this.params.type === 'lossPrice') {
-          if (this.row.positionSide === 'LONG' && value > this.row.lastPrice) {
-            callback(new Error('做多' + this.label + '不能大于最新价'))
-          } else if (this.row.positionSide === 'SHORT' && value < this.row.lastPrice) {
-            callback(new Error('做多' + this.label + '不能小于最新价'))
+          if (this.row.positionSide === 'LONG' && value > lastPrice) {
+            callback(new Error('做多' + this.label + '不能大于' + text))
+            return
+          } else if (this.row.positionSide === 'SHORT' && value < lastPrice) {
+            callback(new Error('做空' + this.label + '不能小于' + text))
+            return
           }
-        } else {
-          callback()
         }
+
+        callback()
       },
       show(row, type) {
         this.row = row
@@ -137,7 +171,6 @@
       },
       success() {
         this.$success('设置成功')
-        this.$emit('success')
       },
       calcProfit(price) {
         if (!price) {
@@ -145,8 +178,11 @@
           this.profitRate = ''
           return
         }
+
+        let openPrice = this.row.status === 'NEW' ? this.row.triggerPrice : this.row.openPrice
+
         // 收益率 = 方向 * (收 - 开) / 开 * 杠杆
-        let profitRate = (this.row.positionSide === 'LONG' ? 1 : -1) * (price * 1 - this.row.openPrice * 1) / this.row.openPrice * this.row.leverage
+        let profitRate = (this.row.positionSide === 'LONG' ? 1 : -1) * (price * 1 - openPrice * 1) / openPrice * this.row.leverage
         // 收益 = 方向 * (收 - 开) / 开 * 保证金 * 杠杆
         this.profit = this.NumberUtil.formatUsdt(profitRate * this.row.margin)
         this.profitRate = this.NumberUtil.formatUsdt(profitRate * 100) + '%'
