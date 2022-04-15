@@ -47,6 +47,7 @@ export default {
       this.ws.onmessage = function (e) {
         let msg = JSON.parse(e.data)
         let event = msg.event
+        let topic = msg.topic
         let data = msg.data
 
         if (event === 'PING') {
@@ -63,7 +64,11 @@ export default {
           // 委托订单更新
           that.$eventBus.emit('updateOrderDelegateList', data)
         } else if (event === 'ERROR') {
-          that.$error(data)
+          if (topic === '1006') {
+            that.$error(data)
+            that.$store.commit("setUserInfo", {})
+            that.$router.push('/login')
+          }
         }
       }
 
