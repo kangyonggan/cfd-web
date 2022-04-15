@@ -44,7 +44,7 @@
       </el-table-column>
       <el-table-column
         prop="margin"
-        label="保证金(率)"
+        label="保证金"
         min-width="150"
       >
         <template #default="scope">
@@ -105,7 +105,19 @@
         min-width="130"
       >
         <template #default="scope">
-          {{ scope.row.profitPrice || '--' }}/{{ scope.row.lossPrice || '--' }}
+          <span
+            @click="setProfitPrice(scope.row)"
+            style="cursor: pointer;border-bottom: 1px dashed var(--app-text-color-light);padding-bottom: 1px;"
+          >
+            {{ scope.row.profitPrice || '设置' }}
+          </span>
+          /
+          <span
+            @click="setLossPrice(scope.row)"
+            style="cursor: pointer;border-bottom: 1px dashed var(--app-text-color-light);padding-bottom: 1px;"
+          >
+            {{ scope.row.lossPrice || '设置' }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -134,15 +146,18 @@
     </el-table>
 
     <order-close ref="order-close" />
+
+    <profit-loss ref="profit-loss" />
   </div>
 </template>
 
 <script>
 import OrderClose from "./order-close"
+import ProfitLoss from "./profit-loss"
 import BaseCopy from "@/components/base-copy"
 
 export default {
-  components: {BaseCopy, OrderClose},
+  components: {BaseCopy, OrderClose, ProfitLoss},
   props: {
     orderHeldList: {
       required: true,
@@ -159,6 +174,12 @@ export default {
         }
       })
       scrollTo(0, 0)
+    },
+    setProfitPrice(row) {
+      this.$refs['profit-loss'].show(row, 'profitPrice')
+    },
+    setLossPrice(row) {
+      this.$refs['profit-loss'].show(row, 'lossPrice')
     },
   }
 }

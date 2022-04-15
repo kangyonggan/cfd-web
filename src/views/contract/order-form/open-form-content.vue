@@ -90,7 +90,7 @@
 </template>
 
 <script>
-  import NaturalInput from "../../components/natural-input";
+  import NaturalInput from "@/components/natural-input";
 
   export default {
     components: {NaturalInput},

@@ -110,7 +110,7 @@
             </el-table-column>
             <el-table-column
               prop="margin"
-              label="保证金(率)"
+              label="保证金"
               min-width="150"
             >
               <template #default="scope">
@@ -181,7 +181,7 @@
             v-loading="loadingAccountLog"
           >
             <li>
-              <div>
+              <div style="padding-left: 5px;width: calc(14% - 5px)">
                 币种
               </div>
               <div>
@@ -196,7 +196,10 @@
               <div class="large">
                 金额
               </div>
-              <div class="large">
+              <div
+                class="large"
+                style="padding-right: 5px;"
+              >
                 时间
               </div>
             </li>
@@ -209,7 +212,7 @@
               v-for="item in accountLogList"
               :key="item.id"
             >
-              <div>
+              <div style="padding-left: 5px;width: calc(14% - 5px)">
                 {{ item.currency }}
               </div>
               <div>
@@ -225,7 +228,10 @@
               <div class="large">
                 {{ item.amount >= 0 ? '+' : '' }}{{ item.amount }}
               </div>
-              <div class="large">
+              <div
+                class="large"
+                style="padding-right: 5px;"
+              >
                 {{ DateTimeUtil.format(item.createTime) }}
               </div>
             </li>
@@ -428,7 +434,7 @@
           }
 
           .large {
-            width: 24%;
+            width: calc(24% - 5px);
             text-align: right;
           }
         }

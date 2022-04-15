@@ -88,7 +88,7 @@
       <el-table-column
         prop="profit"
         label="盈亏"
-        min-width="200"
+        min-width="220"
       >
         <template #default="scope">
           <span :class="scope.row.profit >= 0 ? 'bullish' : 'bearish'">

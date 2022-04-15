@@ -60,10 +60,10 @@
 </template>
 
 <script>
-import OrderHeld from "./orders/order-held"
-import OrderDelegate from "./orders/order-delegate"
-import HistoryHeld from "./orders/history-held"
-import HistoryDelegate from "./orders/history-delegate"
+import OrderHeld from "./order-held"
+import OrderDelegate from "./order-delegate"
+import HistoryHeld from "./history-held"
+import HistoryDelegate from "./history-delegate"
 
 export default {
   components: {OrderDelegate, OrderHeld, HistoryHeld, HistoryDelegate},

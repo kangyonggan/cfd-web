@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%">
+  <div style="width: 100%;clear: both">
     <open-form-content
       ref="long-form"
       :type="type"
