@@ -56,6 +56,7 @@ export default {
         } else if (event === 'ACCOUNT_UPDATE') {
           // 账户更新
           that.totalAmount = data.assets['CONTRACT']
+          localStorage.setItem('marginType', data.marginType)
           that.$eventBus.emit('updateAccount', data)
         } else if (event === 'ORDER_HELD_UPDATE') {
           // 持仓订单更新

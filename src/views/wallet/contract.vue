@@ -26,6 +26,14 @@
           <div class="item">
             <div class="label">
               账户余额(USDT)
+              <el-tooltip
+                content="包含持仓保证金，但是不包含浮动盈亏"
+                placement="top"
+              >
+                <el-icon>
+                  <question-filled />
+                </el-icon>
+              </el-tooltip>
             </div>
             <div class="value">
               {{ NumberUtil.formatUsdt(account.totalAmount) }}
@@ -50,14 +58,33 @@
           <div class="item">
             <div class="label">
               可用保证金(USDT)
+              <el-tooltip
+                content="逐仓模式不包含浮动盈亏"
+                placement="top"
+              >
+                <el-icon>
+                  <question-filled />
+                </el-icon>
+              </el-tooltip>
             </div>
             <div class="value">
               {{ calcAvailableAmount() }}
             </div>
           </div>
-          <div class="item">
+          <div
+            class="item"
+            v-if="account.marginType === 'CROSSED'"
+          >
             <div class="label">
               保证金率
+              <el-tooltip
+                content="保证金率越大，发生强平风险越小，当保证金率降到0时会发生强平"
+                placement="top"
+              >
+                <el-icon>
+                  <question-filled />
+                </el-icon>
+              </el-tooltip>
             </div>
             <div class="value">
               {{ orderAmountInfo.marginRate }}
@@ -259,9 +286,10 @@
   import Sidebar from './sidebar'
   import TransferModal from "./transfer-modal"
   import BaseCopy from "@/components/base-copy"
+  import { QuestionFilled } from '@element-plus/icons'
 
   export default {
-    components: {Sidebar, TransferModal, BaseCopy},
+    components: {Sidebar, TransferModal, BaseCopy, QuestionFilled},
     data() {
       return {
         account: {},

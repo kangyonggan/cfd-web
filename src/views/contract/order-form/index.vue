@@ -20,6 +20,14 @@
         >
           <div class="top">
             保证金率
+            <el-tooltip
+              content="保证金率越大，发生强平风险越小，当保证金率降到0时会发生强平"
+              placement="top"
+            >
+              <el-icon>
+                <question-filled />
+              </el-icon>
+            </el-tooltip>
           </div>
           <div class="btm">
             {{ orderAmountInfo.marginRate }}
@@ -28,6 +36,14 @@
         <div class="item">
           <div class="top">
             账户余额(USDT)
+            <el-tooltip
+              content="包含持仓保证金，但是不包含浮动盈亏"
+              placement="top"
+            >
+              <el-icon>
+                <question-filled />
+              </el-icon>
+            </el-tooltip>
           </div>
           <div class="btm">
             {{ NumberUtil.formatUsdt(totalAmount) }}
@@ -42,6 +58,14 @@
         <div class="item">
           <div class="top">
             净资产(USDT)
+            <el-tooltip
+              content="包含持仓保证金和浮动盈亏"
+              placement="top"
+            >
+              <el-icon>
+                <question-filled />
+              </el-icon>
+            </el-tooltip>
           </div>
           <div class="btm">
             {{
@@ -68,6 +92,14 @@
         <div class="item">
           <div class="top">
             可用保证金(USDT)
+            <el-tooltip
+              content="逐仓模式不包含浮动盈亏"
+              placement="top"
+            >
+              <el-icon>
+                <question-filled />
+              </el-icon>
+            </el-tooltip>
           </div>
           <div class="btm">
             {{ NumberUtil.formatUsdt(calcAvailableMargin()) }}
@@ -120,11 +152,11 @@ import OpenForm from './open-form'
 import SwitchMarginType from "./switch-margin-type"
 import Big from "big.js"
 import SwitchLeverage from "./switch-leverage";
-import {CirclePlus} from '@element-plus/icons'
+import {CirclePlus, QuestionFilled} from '@element-plus/icons'
 import TransferModal from "@/views/wallet/transfer-modal";
 
 export default {
-  components: {TransferModal, SwitchLeverage, SwitchMarginType, OpenForm, CirclePlus},
+  components: {TransferModal, SwitchLeverage, SwitchMarginType, OpenForm, CirclePlus, QuestionFilled},
   data() {
     return {
       type: localStorage.getItem('orderType') || 'MARKET',
@@ -157,6 +189,7 @@ export default {
       }
     },
     changeMarginType() {
+      localStorage.setItem('marginType', this.marginType)
       if (this.marginType) {
         this.$refs['switch-margin-type'].show(this.marginType)
       } else {
