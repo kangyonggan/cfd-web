@@ -132,6 +132,12 @@
           >
             平仓
           </span>
+          <span
+            style="color: var(--el-color-primary);cursor: pointer"
+            @click="reverseOrder(scope.row)"
+          >
+            反向
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -165,6 +171,21 @@ export default {
         }
       })
       scrollTo(0, 0)
+    },
+    reverseOrder(row) {
+      this.$confirm('确定反向开仓吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.axios.post('/v1/order/reverseOrder', {
+          orderNo: row.orderNo
+        }).then(() => {
+          this.$success('操作成功')
+        }).catch(res => {
+          this.$error(res.msg)
+        })
+      })
     },
     setProfitPrice(row) {
       this.$refs['profit-loss'].show(row, 'profitPrice')
