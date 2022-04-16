@@ -155,7 +155,7 @@
           let seriesData = []
           for (let i = 0; i < data.profitList.length; i++) {
             seriesData[i] = {
-              value: data.profitList[i],
+              value: this.NumberUtil.formatUsdt(data.profitList[i]),
               color: data.profitList[i] >= 0 ? '' : 'eb4d5c'
             }
           }
