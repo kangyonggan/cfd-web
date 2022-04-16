@@ -26,6 +26,7 @@
             </el-button>
             <el-button
               plain
+              @click="$refs['transfer-inner-modal'].show()"
             >
               转账
             </el-button>
@@ -79,15 +80,17 @@
     </div>
 
     <transfer-modal ref="transfer-modal" />
+    <transfer-inner-modal ref="transfer-inner-modal" />
   </div>
 </template>
 
 <script>
 import Sidebar from './sidebar'
 import TransferModal from "./transfer-modal"
+import TransferInnerModal from "./transfer-inner-modal"
 
 export default {
-  components: {TransferModal, Sidebar},
+  components: {TransferModal, Sidebar, TransferInnerModal},
   data() {
     return {
       account: {

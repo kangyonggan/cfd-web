@@ -10,6 +10,19 @@
         :rules="rules"
       >
         <el-form-item
+          label="UID"
+          prop="uid"
+        >
+          <el-input
+            v-model="uid"
+            readonly
+          >
+            <template #append>
+              <base-copy :value="uid" />
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item
           label="昵称"
           prop="nickName"
         >
@@ -84,13 +97,15 @@
 <script>
   import Sidebar from './sidebar'
   import {UploadFilled} from "@element-plus/icons"
+  import BaseCopy from "@/components/base-copy";
 
   export default {
-    components: {Sidebar, UploadFilled},
+    components: {BaseCopy, Sidebar, UploadFilled},
     data() {
       return {
         uploading: false,
         loading: false,
+        uid: '',
         params: {
           nickName: '',
           tags: '',
@@ -130,7 +145,6 @@
         return true
       },
       uploadSuccess(res) {
-        console.log(res)
         if (!res.success) {
           this.$error(res.msg);
           return;
@@ -147,6 +161,7 @@
           this.$store.commit('setUserInfo', data)
           this.params.nickName = data.nickName
           this.params.tags = data.tags
+          this.uid = data.uid
           if (data.tags) {
             this.selectedTags = data.tags.split(',')
           }

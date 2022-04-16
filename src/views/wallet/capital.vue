@@ -22,6 +22,7 @@
             </el-button>
             <el-button
               plain
+              @click="$refs['transfer-inner-modal'].show()"
             >
               转账
             </el-button>
@@ -162,16 +163,22 @@
       ref="transfer-modal"
       @success="reload"
     />
+
+    <transfer-inner-modal
+      ref="transfer-inner-modal"
+      @success="reload"
+    />
   </div>
 </template>
 
 <script>
   import Sidebar from './sidebar'
   import TransferModal from "./transfer-modal"
+  import TransferInnerModal from "./transfer-inner-modal"
   import BaseCopy from "@/components/base-copy"
 
   export default {
-    components: {BaseCopy, Sidebar, TransferModal},
+    components: {BaseCopy, Sidebar, TransferModal, TransferInnerModal},
     data() {
       return {
         loading: false,
@@ -190,6 +197,10 @@
           return '划转-转入'
         } else if (type === 'TRANSFER_OUT') {
           return '划转-转出'
+        } else if (type === 'TRANSFER_INNER_IN') {
+          return '转账-转入'
+        } else if (type === 'TRANSFER_INNER_OUT') {
+          return '转账-转出'
         }
 
         return  type
@@ -291,11 +302,11 @@
 
         div {
           display: inline-block;
-          width: 14%;
+          width: 12%;
         }
 
         .large {
-          width: 24%;
+          width: 25%;
           text-align: right;
         }
       }
