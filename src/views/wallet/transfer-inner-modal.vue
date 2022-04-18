@@ -6,6 +6,8 @@
     :params="params"
     :rules="rules"
     :width="500"
+    :auto-submit="false"
+    :before-submit="submit"
   >
     <el-form-item
       prop="toUid"
@@ -92,6 +94,7 @@
 
 <script>
   import BaseModal from '@/components/base-modal.vue'
+  import Md5 from 'js-md5'
   import NaturalInput from "../../components/natural-input";
 
   export default {
@@ -124,6 +127,11 @@
       }
     },
     methods: {
+      submit() {
+        let params = Object.assign({}, this.params)
+        params.payPwd = Md5(params.payPwd)
+        this.$refs.modal.submit(params)
+      },
       validateAmount: function (rule, value, callback) {
         if (value === undefined || value === '') {
           callback()
