@@ -106,7 +106,7 @@
     methods: {
       calcAvailableAmount() {
         let marginType = localStorage.getItem('marginType') || 'CROSSED'
-        if (marginType === 'CROSSED' && this.params.type === 'CAPITAL_CONTRACT') {
+        if (marginType === 'CROSSED' && this.params.type === 'CONTRACT_CAPITAL') {
           return this.amountMap[this.params.currency] + this.orderAmountInfo.unsettleProfit
         } else {
           return this.amountMap[this.params.currency]
