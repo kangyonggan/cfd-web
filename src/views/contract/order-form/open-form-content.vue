@@ -26,14 +26,14 @@
     </el-form-item>
 
     <el-form-item
-      label="本金"
+      label="保证金"
       prop="margin"
       style="margin-bottom: 13px;"
     >
       <natural-input
         v-model="params.margin"
         :precision="2"
-        placeholder="请输入下单本金"
+        placeholder="请输入下单保证金"
         size="small"
         append
       >

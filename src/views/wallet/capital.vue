@@ -14,10 +14,14 @@
           >
             <el-button
               type="primary"
+              @click="$warning('开发中')"
             >
               充值
             </el-button>
-            <el-button plain>
+            <el-button
+              plain
+              @click="$warning('开发中')"
+            >
               提币
             </el-button>
             <el-button
