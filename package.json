@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "deploy": "ssh root@kangyonggan.com 'rm -rf /srv/apps/cfd-web/*';scp -r dist/* root@kangyonggan.com:/srv/apps/cfd-web/",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
