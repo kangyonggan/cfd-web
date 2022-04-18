@@ -26,7 +26,7 @@
             </el-button>
             <el-button
               plain
-              @click="$refs['transfer-inner-modal'].show()"
+              @click="transferInner"
             >
               转账
             </el-button>
@@ -54,7 +54,7 @@
 
             <div class="asset">
               <span v-if="account.assets">
-                {{ account.assets['CAPITAL'] }} USDT
+                {{ NumberUtil.format(account.assets['CAPITAL']) * 1 }} USDT
               </span>
               <span v-else>
                 --
@@ -68,7 +68,7 @@
 
             <div class="asset">
               <span v-if="account.assets['CONTRACT']">
-                {{ account.assets['CONTRACT'] + orderAmountInfo.unsettleProfit }} USDT
+                {{ NumberUtil.format(account.assets['CONTRACT'] + orderAmountInfo.unsettleProfit) * 1 }} USDT
               </span>
               <span v-else>
                 --
@@ -125,6 +125,13 @@ export default {
     }
   },
   methods: {
+    transferInner() {
+      if (!this.$store.getters.getUserInfo.hasPayPwd) {
+        this.$warning('请先到账户管理中设置支付密码')
+        return
+      }
+      this.$refs['transfer-inner-modal'].show()
+    },
     /**
      * 账户概览
      */

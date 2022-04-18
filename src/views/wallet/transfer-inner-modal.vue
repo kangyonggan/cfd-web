@@ -74,6 +74,19 @@
         </template>
       </natural-input>
     </el-form-item>
+    <el-form-item
+      prop="payPwd"
+      label="金额"
+    >
+      <el-input
+        style="width: 90%"
+        v-model="params.payPwd"
+        type="password"
+        show-password
+        clearable
+        placeholder="请输入支付密码"
+      />
+    </el-form-item>
   </base-modal>
 </template>
 
@@ -89,7 +102,8 @@
         params: {
           toUid: '',
           currency: '',
-          amount: ''
+          amount: '',
+          payPwd: ''
         },
         rules: {
           toUid: [
@@ -99,6 +113,9 @@
           amount: [
             {required: true, message: '请输入划转金额'},
             {validator: this.validateAmount}
+          ],
+          payPwd: [
+            {required: true, message: '请输入支付密码'}
           ],
         },
         currencyList: [],

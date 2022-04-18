@@ -77,8 +77,8 @@
             支付密码
           </div>
           <div class="desc">
-            <span v-if="profile.hasPayPwd">已设置，提币时需要进行支付密码验证</span>
-            <span v-else>未设置，不能进行提币</span>
+            <span v-if="profile.hasPayPwd">已设置，转账和提币时需要进行支付密码验证</span>
+            <span v-else>未设置，不能进行转账和提币</span>
           </div>
         </div>
         <div class="actions">

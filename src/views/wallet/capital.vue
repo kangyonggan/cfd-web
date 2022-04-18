@@ -22,7 +22,7 @@
             </el-button>
             <el-button
               plain
-              @click="$refs['transfer-inner-modal'].show()"
+              @click="transferInner"
             >
               转账
             </el-button>
@@ -192,6 +192,13 @@
       }
     },
     methods: {
+      transferInner() {
+        if (!this.$store.getters.getUserInfo.hasPayPwd) {
+          this.$warning('请先到账户管理中设置支付密码')
+          return
+        }
+        this.$refs['transfer-inner-modal'].show()
+      },
       getTransferType(type) {
         if (type === 'TRANSFER_IN') {
           return '划转-转入'
