@@ -212,6 +212,8 @@
           return '转账-转入'
         } else if (type === 'TRANSFER_INNER_OUT') {
           return '转账-转出'
+        } else if (type === 'AIR_DROP') {
+          return '空投'
         }
 
         return  type
