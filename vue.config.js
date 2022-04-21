@@ -6,7 +6,7 @@ module.exports = {
     public: '0.0.0.0:9086',
     proxy: {
       '/cfd-api': {
-        target: 'http://localhost:9080',
+        target: 'http://192.168.0.106:9080',
         changeOrigin: true,
         pathRewrite: {
           '^/cfd-api': ""
