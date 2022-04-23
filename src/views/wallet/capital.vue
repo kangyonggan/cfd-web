@@ -14,7 +14,7 @@
           >
             <el-button
               type="primary"
-              @click="$warning('开发中')"
+              @click="$refs['recharge-modal'].show()"
             >
               充值
             </el-button>
@@ -140,7 +140,7 @@
               class="large"
               style="text-align: left"
             >
-              {{ item.serialNo }}
+              {{ item.serialNo.substring(0, 5) }}***{{ item.serialNo.substring(item.serialNo.length - 5) }}
               <base-copy :value="item.serialNo" />
             </div>
             <div class="large">
@@ -172,17 +172,22 @@
       ref="transfer-inner-modal"
       @success="reload"
     />
+
+    <recharge-modal
+      ref="recharge-modal"
+    />
   </div>
 </template>
 
 <script>
   import Sidebar from './sidebar'
   import TransferModal from "./transfer-modal"
+  import RechargeModal from "./recharge-modal"
   import TransferInnerModal from "./transfer-inner-modal"
   import BaseCopy from "@/components/base-copy"
 
   export default {
-    components: {BaseCopy, Sidebar, TransferModal, TransferInnerModal},
+    components: {BaseCopy, Sidebar, TransferModal, TransferInnerModal, RechargeModal},
     data() {
       return {
         loading: false,
@@ -214,6 +219,8 @@
           return '转账-转出'
         } else if (type === 'AIR_DROP') {
           return '空投'
+        } else if (type === 'RECHARGE') {
+          return '充值'
         }
 
         return  type

@@ -18,7 +18,7 @@
           >
             <el-button
               type="primary"
-              @click="$warning('开发中')"
+              @click="$refs['recharge-modal'].show()"
             >
               充值
             </el-button>
@@ -85,6 +85,7 @@
 
     <transfer-modal ref="transfer-modal" />
     <transfer-inner-modal ref="transfer-inner-modal" />
+    <recharge-modal ref="recharge-modal" />
   </div>
 </template>
 
@@ -92,9 +93,10 @@
 import Sidebar from './sidebar'
 import TransferModal from "./transfer-modal"
 import TransferInnerModal from "./transfer-inner-modal"
+import RechargeModal from "./recharge-modal"
 
 export default {
-  components: {TransferModal, Sidebar, TransferInnerModal},
+  components: {TransferModal, RechargeModal, Sidebar, TransferInnerModal},
   data() {
     return {
       account: {

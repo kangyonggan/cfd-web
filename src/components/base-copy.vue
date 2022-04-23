@@ -20,8 +20,9 @@ export default {
   components: {DocumentCopy},
   props: {
     value: {
-      required: true,
-      type: [String, Number]
+      required: false,
+      type: [String, Number],
+      default: ''
     }
   },
   data() {
