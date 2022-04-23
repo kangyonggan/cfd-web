@@ -47,7 +47,7 @@
             {{ item.currency }}
           </span>
           <span style="float: right;color: var(--app-text-color-dark);font-size: 13px;">
-            {{ item.totalAmount - item.frozenAmount }}
+            {{ NumberUtil.format(item.totalAmount - item.frozenAmount) * 1 }}
           </span>
         </el-option>
       </el-select>

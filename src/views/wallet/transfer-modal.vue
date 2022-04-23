@@ -42,9 +42,6 @@
           <span style="float: left">
             {{ item.currency }}
           </span>
-          <span style="float: right;color: var(--app-text-color-dark);font-size: 13px;">
-            {{ item.availableAmount }}
-          </span>
         </el-option>
       </el-select>
     </el-form-item>
