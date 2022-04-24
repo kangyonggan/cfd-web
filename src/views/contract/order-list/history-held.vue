@@ -48,12 +48,20 @@
         prop="margin"
         label="保证金"
         min-width="110"
-      />
+      >
+        <template #default="scope">
+          {{ NumberUtil.format(scope.row.margin) * 1 }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="openPrice"
         label="开仓价格"
         min-width="100"
-      />
+      >
+        <template #default="scope">
+          {{ NumberUtil.format(scope.row.openPrice) * 1 }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="openTime"
         label="开仓时间"
@@ -84,7 +92,11 @@
         prop="closePrice"
         label="平仓价格"
         min-width="100"
-      />
+      >
+        <template #default="scope">
+          {{ NumberUtil.format(scope.row.closePrice) * 1 }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="profit"
         label="盈亏"
