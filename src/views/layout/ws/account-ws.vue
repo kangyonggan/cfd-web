@@ -33,7 +33,10 @@ export default {
       if (this.ws && this.ws.readyState === 1) {
         return
       }
-      this.ws = new WebSocket(Env.wsHost + '/ws/account?Authorization=' + this.$store.getters.getUserInfo.token)
+      let ts = new Date().getTime()
+      let deviceId = localStorage.getItem('deviceId') || ''
+      let sign = require("js-sha256").sha256(ts + deviceId)
+      this.ws = new WebSocket(Env.wsHost + '/ws/account?Authorization=' + this.$store.getters.getUserInfo.token + '&timestamp=' + ts + '&deviceId=' + deviceId + '&sign=' + sign)
 
       let that = this;
       this.ws.onopen = function () {

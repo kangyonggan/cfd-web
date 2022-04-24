@@ -1,4 +1,5 @@
 import axios from 'axios'
+let sha256 = require("js-sha256").sha256
 
 // 30s超时
 let baseUrl = '/cfd-api/'
@@ -20,18 +21,20 @@ if (!deviceId) {
 
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
-  if (config.baseURL === baseUrl) {
-    if (config.data) {
-      config.data._ts = undefined
-    }
-    let userInfo = JSON.parse(localStorage.getItem('userInfo'))
-    if (userInfo && userInfo.token) {
-      config.headers['Authorization'] = userInfo.token
-    }
+  if (config.data) {
+    config.data._ts = undefined
+  }
+  let userInfo = JSON.parse(localStorage.getItem('userInfo'))
+  if (userInfo && userInfo.token) {
+    config.headers['Authorization'] = userInfo.token
   }
   config.headers['deviceId'] = deviceId
   config.headers['deviceName'] = deviceName
   config.headers['platform'] = platform
+
+  let ts = new Date().getTime()
+  config.headers['timestamp'] = ts
+  config.headers['sign'] = sha256(ts + deviceId)
 
   return config
 }, function (error) {
@@ -42,15 +45,13 @@ axios.interceptors.request.use(function (config) {
 
 // 响应拦截器
 axios.interceptors.response.use(function (response) {
-  if (response.config.baseURL === baseUrl) {
-    if (response.data.success) {
-      return response.data.data
-    }
-    return Promise.reject({
-      msg: response.data.msg,
-      code: response.data.code
-    })
+  if (response.data.success) {
+    return response.data.data
   }
+  return Promise.reject({
+    msg: response.data.msg,
+    code: response.data.code
+  })
 }, function (error) {
   return Promise.reject({
     code: error.response.status,

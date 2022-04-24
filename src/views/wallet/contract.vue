@@ -5,7 +5,7 @@
     <div class="content">
       <div class="overview">
         <div class="asset">
-          {{ NumberUtil.format((account.totalAmount + orderAmountInfo.unsettleProfit)) }} USDT
+          {{ NumberUtil.format((account.assets['CONTRACT'] + orderAmountInfo.unsettleProfit)) }} USDT
 
           <el-button
             style="float: right"
@@ -36,7 +36,7 @@
               </el-tooltip>
             </div>
             <div class="value">
-              {{ NumberUtil.formatUsdt(account.totalAmount) }}
+              {{ NumberUtil.formatUsdt(account.assets['CONTRACT']) }}
             </div>
           </div>
           <div class="item">
@@ -292,7 +292,11 @@
     components: {Sidebar, TransferModal, BaseCopy, QuestionFilled},
     data() {
       return {
-        account: {},
+        account: {
+          assets: {
+            'CONTRACT': 0
+          }
+        },
         orderAmountInfo: {},
         orderHeldList: [],
         activeTab: '',
@@ -306,9 +310,9 @@
       calcAvailableAmount() {
         let marginType = localStorage.getItem('marginType') || 'CROSSED'
         if (marginType === 'CROSSED') {
-          return this.NumberUtil.formatUsdt(this.account.totalAmount - this.orderAmountInfo.totalMargin + this.orderAmountInfo.unsettleProfit)
+          return this.NumberUtil.formatUsdt(this.account.assets['CONTRACT'] - this.orderAmountInfo.totalMargin + this.orderAmountInfo.unsettleProfit)
         } else {
-          return this.NumberUtil.formatUsdt(this.account.totalAmount - this.orderAmountInfo.totalMargin)
+          return this.NumberUtil.formatUsdt(this.account.assets['CONTRACT'] - this.orderAmountInfo.totalMargin)
         }
       },
       changeTab() {

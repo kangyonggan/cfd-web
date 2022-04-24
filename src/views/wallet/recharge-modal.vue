@@ -4,6 +4,7 @@
     title="充值"
     :auto-submit="false"
     :submit-disabled="true"
+    :width="600"
   >
     <el-form-item
       prop="currency"
@@ -90,13 +91,13 @@
       </div>
       <ol style="float: left;font-size: 13px;color: var(--app-text-color-dark)">
         <li>
-          此地址只可接收{{ protocol.currency }}
+          此地址只可接收{{ protocol.currency }}({{ protocol.netRemark }})
         </li>
         <li>
           最小充值数量：{{ protocol.rechargeMinAmount }} {{ protocol.currency }}
         </li>
         <li>
-          充值到账后我们将以短信的方式通知您
+          充值到账后我们将以邮件的方式通知您
         </li>
       </ol>
     </el-form-item>
@@ -190,7 +191,3 @@
     },
   }
 </script>
-
-<style scoped lang="scss">
-
-</style>

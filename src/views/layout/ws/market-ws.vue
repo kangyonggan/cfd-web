@@ -22,7 +22,10 @@ export default {
       if (this.ws && this.ws.readyState === 1) {
         return
       }
-      this.ws = new WebSocket(Env.wsHost + '/ws/market')
+      let ts = new Date().getTime()
+      let deviceId = localStorage.getItem('deviceId') || ''
+      let sign = require("js-sha256").sha256(ts + deviceId)
+      this.ws = new WebSocket(Env.wsHost + '/ws/market?timestamp=' + ts + '&deviceId=' + deviceId + '&sign=' + sign)
       this.ws.onopen = function () {
         that.sendMsg({method: 'REQ', topic: 'QUOTATION_LIST'})
         if (that.oldReq.length) {
