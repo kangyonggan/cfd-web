@@ -78,7 +78,7 @@
     </el-form-item>
     <el-form-item
       prop="payPwd"
-      label="金额"
+      label="支付密码"
     >
       <el-input
         style="width: 90%"
