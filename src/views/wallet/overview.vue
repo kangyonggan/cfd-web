@@ -24,7 +24,7 @@
             </el-button>
             <el-button
               plain
-              @click="$warning('开发中')"
+              @click="withdraw"
             >
               提币
             </el-button>
@@ -86,6 +86,7 @@
     <transfer-modal ref="transfer-modal" />
     <transfer-inner-modal ref="transfer-inner-modal" />
     <recharge-modal ref="recharge-modal" />
+    <withdraw-modal ref="withdraw-modal" />
   </div>
 </template>
 
@@ -94,9 +95,10 @@ import Sidebar from './sidebar'
 import TransferModal from "./transfer-modal"
 import TransferInnerModal from "./transfer-inner-modal"
 import RechargeModal from "./recharge-modal"
+import WithdrawModal from "./withdraw-modal"
 
 export default {
-  components: {TransferModal, RechargeModal, Sidebar, TransferInnerModal},
+  components: {TransferModal, RechargeModal, WithdrawModal, Sidebar, TransferInnerModal},
   data() {
     return {
       account: {
@@ -137,6 +139,13 @@ export default {
         return
       }
       this.$refs['transfer-inner-modal'].show()
+    },
+    withdraw() {
+      if (!this.$store.getters.getUserInfo.hasPayPwd) {
+        this.$warning('请先到账户管理中设置支付密码')
+        return
+      }
+      this.$refs['withdraw-modal'].show()
     },
     /**
      * 账户概览

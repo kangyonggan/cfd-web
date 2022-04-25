@@ -74,24 +74,12 @@
     </el-form-item>
     <el-form-item>
       <div
-        v-show="protocol.address"
         id="qrcode"
         style="width: 150px;height: 150px; float: left;border: 1px solid var(--app-border-color);"
       />
-      <div
-        v-show="!protocol.address"
-        style="width: 150px;height: 150px; float: left;border: 1px solid var(--app-border-color);text-align: center;"
-      >
-        <span
-          @click="bindAddress"
-          style="margin-top: 50px;color: var(--el-color-primary);display: inline-block;cursor: pointer"
-        >
-          创建地址
-        </span>
-      </div>
       <ol style="float: left;font-size: 13px;color: var(--app-text-color-dark)">
         <li>
-          此地址只可接收{{ protocol.currency }}({{ protocol.netRemark }})
+          此地址只可接收{{ protocol.currency }}(<span style="color: var(--el-color-primary)">{{ protocol.netRemark }}</span>)
         </li>
         <li>
           最小充值数量：{{ protocol.rechargeMinAmount }} {{ protocol.currency }}
@@ -125,19 +113,6 @@
       }
     },
     methods: {
-      bindAddress() {
-        if (this.loading) {
-          return
-        }
-        this.loading = true
-        this.axios.post('/v1/wallet/address', this.params).then(() => {
-          this.getRecharge()
-        }).catch(res => {
-          this.$error(res.msg)
-        }).finally(() => {
-          this.loading = false
-        })
-      },
       changeCurrency() {
         for (let i = 0; i < this.currencyList.length; i++) {
           if (this.currencyList[i].currency === this.params.currency) {
