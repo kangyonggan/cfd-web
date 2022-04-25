@@ -154,6 +154,9 @@ export default {
       scrollTo(0, 0)
     },
     reload(pageNum) {
+      if (!this.$store.getters.getUserInfo.uid) {
+        return
+      }
       if (!pageNum) {
         pageNum = 1
       }
