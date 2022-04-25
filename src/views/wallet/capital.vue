@@ -230,6 +230,8 @@
           return '空投'
         } else if (type === 'RECHARGE') {
           return '充值'
+        } else if (type === 'WITHDRAW') {
+          return '提币'
         }
 
         return  type
