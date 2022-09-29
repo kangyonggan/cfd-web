@@ -132,7 +132,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('cfd'),
+  history: createWebHistory(),
   mode: 'history',
   routes
 })
