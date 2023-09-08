@@ -9,12 +9,17 @@ axios.defaults.baseURL = baseUrl
 
 let deviceId = localStorage.getItem('deviceId') || ''
 let deviceName = ''
+let platform = ''
 try {
   deviceName = navigator.userAgentData.brands[2].brand
 } catch (e) {
   deviceName = navigator.userAgent
 }
-let platform = navigator.userAgentData.platform
+try {
+  platform = navigator.userAgentData.platform
+} catch (e) {
+  platform = navigator.platform
+}
 
 if (!deviceId) {
   const fpPromise = import('@fingerprintjs/fingerprintjs').then(FingerprintJS => FingerprintJS.load())
