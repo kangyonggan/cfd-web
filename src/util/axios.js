@@ -8,7 +8,12 @@ axios.defaults.headers['Content-Type'] = 'application/json'
 axios.defaults.baseURL = baseUrl
 
 let deviceId = localStorage.getItem('deviceId') || ''
-let deviceName = navigator.userAgentData.brands[2].brand
+let deviceName = ''
+try {
+  deviceName = navigator.userAgentData.brands[2].brand
+} catch (e) {
+  deviceName = navigator.userAgent
+}
 let platform = navigator.userAgentData.platform
 
 if (!deviceId) {
