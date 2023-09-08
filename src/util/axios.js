@@ -15,6 +15,10 @@ try {
 } catch (e) {
   deviceName = navigator.userAgent
 }
+if (deviceName.length > 64) {
+  deviceName = deviceName.substring(0, 64)
+}
+
 try {
   platform = navigator.userAgentData.platform
 } catch (e) {
