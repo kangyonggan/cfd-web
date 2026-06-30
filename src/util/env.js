@@ -3,10 +3,10 @@ let env = {}
 env.wsHost = 'ws://127.0.0.1:9080'
 
 if (process.env.NODE_ENV !== 'development') {
-  env.wsHost = 'ws://192.168.100.39:9080'
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  env.wsHost = `${wsProtocol}//${window.location.host}/cfd-api`
 }
 
 export default env
-
 
 
